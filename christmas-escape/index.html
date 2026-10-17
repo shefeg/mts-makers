@@ -259,8 +259,189 @@ details { margin-top: 12px; } summary { cursor: pointer; font-weight: 700; color
 @media print { body { background: #fff; } .ui { display: none; } #preview { padding: 0; gap: 0; display: block; }
   #preview .er-page { box-shadow: none; } }
 @media (max-width: 720px) { .steps3, .players { grid-template-columns: 1fr; } .form { grid-template-columns: 1fr; } }
-</style></head>
+</style>
+<!-- mts-assistant-styles -->
+<style id="mts-assistant-styles">
+  #mts-bar {
+    position: sticky;
+    top: 0;
+    z-index: 99999;
+    background: #1F5E5B;
+    color: #fff;
+    padding: 10px 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  .mts-bar-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .mts-bar-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #F4C95D;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mts-bar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .mts-btn {
+    border: none;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.1s, background 0.15s;
+    font-family: inherit;
+    text-decoration: none;
+  }
+  .mts-btn:active { transform: scale(0.97); }
+  .mts-btn-chatgpt {
+    background: #ffffff;
+    color: #1F5E5B;
+  }
+  .mts-btn-chatgpt:hover { background: #FFF8EE; }
+  .mts-btn-paste {
+    background: #F07F5E;
+    color: #ffffff;
+  }
+  .mts-btn-paste:hover { background: #e06c4b; }
+  #mts-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2B2B2B;
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+    z-index: 100000;
+    display: none;
+    pointer-events: none;
+    text-align: center;
+    max-width: 90vw;
+    line-height: 1.4;
+  }
+  @media print {
+    #mts-bar, #mts-toast, #mts-assistant-styles { display: none !important; }
+  }
+  @media (max-width: 640px) {
+    #mts-bar { padding: 8px 12px; }
+    .mts-bar-inner { flex-direction: column; align-items: stretch; gap: 6px; }
+    .mts-bar-title { justify-content: center; font-size: 12px; }
+    .mts-bar-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .mts-btn { justify-content: center; padding: 9px 8px; font-size: 12px; }
+  }
+</style>
+
+</head>
 <body>
+<!-- mts-assistant-bar -->
+<div id="mts-bar">
+  <div class="mts-bar-inner">
+    <div class="mts-bar-title">✨ Step 1 &amp; 2 Quick AI Helper</div>
+    <div class="mts-bar-actions">
+      <button id="mts-chatgpt-btn" class="mts-btn mts-btn-chatgpt" title="Copy Prompt & Open ChatGPT">
+        🤖 1. Copy Prompt &amp; Open ChatGPT
+      </button>
+      <button id="mts-paste-btn" class="mts-btn mts-btn-paste" title="Paste AI response into the maker">
+        📋 2. Paste AI Response
+      </button>
+    </div>
+  </div>
+</div>
+<div id="mts-toast"></div>
+
+<script id="mts-assistant-js">
+(function() {
+  var PROMPT = "You are my Christmas escape room helper. I bought the Make Together Studio \"Christmas Escape Room\" (8 printable puzzles, 3 levels). Help me personalize it. You write the story and the setup; the Escape Room Maker builds the puzzles, so never invent puzzles or answers.\n\nThe fixed story: Pip, Santa's youngest elf, wrapped the presents in a Don't-Peek spell, and it froze the Gift Chest shut. Only the magic word melts the frost. Each puzzle gives one letter of the magic word. Nobody is ever locked in; there are no real locks.\n\nAsk me these questions ONE at a time and wait for each answer. I'm welcome to answer in my own language:\n1. Who is playing? (names and ages)\n2. How long and how hard? Offer: 6 puzzles (about 30-40 min), 7 (about 40-50) or 8 (about 45-60). Levels: little (ages 5-7, with a grown-up), clever (8-11), master (12+ and adults). Mixed ages: give each puzzle its own level.\n3. The magic word: it must have exactly as many letters as there are puzzles. Offer: 6 letters SLEIGH, TINSEL, COOKIE, WREATH; 7 letters SNOWMAN, PRESENT, MITTENS; 8 letters FROSTING, GUMDROPS, SNOWFALL; or our own word (a name works if it has the right number of letters).\n4. Where will the presents be, and do we play at the table (I hand over each envelope) or around the house (envelopes hidden in safe spots)?\n5. A team name, and any fun details for the story (pets, family traditions, jokes).\n\nSafety: envelopes and presents only indoors, at child height, in safe places. Never the oven, stove, microwave, dryer, fireplace or its stockings, heaters, candles, plugged-in lights, high shelves, water, or anything outside (porch, yard, garden, balcony, garage, car). Never a door or window to a balcony, terrace or garden, even from inside. The front door only on the inside, with the door closed. No real locks, and nobody is ever locked in a room. If I list an unsafe spot, move it and tell me.\n\nThen give a short summary and ask \"Shall I write your escape room?\" When I say yes, write:\n- STORY: 80-140 words for a grown-up to read aloud. Cozy and funny. Mention Pip, the Gift Chest, the magic word (but never the word itself), the number of puzzles, the timer and the players by name. No brands, film or TV characters, and no song lyrics.\n- FINAL MESSAGE: 25-60 words, warm and happy.\n- ENVELOPES: only for the around-the-house version; envelope 1 is handed to the team at the start.\n\nPut EVERYTHING inside ONE plain code block (three backticks), in exactly this format, so I can paste it into the Escape Room Maker. Never use Canvas, a document or a \"writing block\". Keep the English keywords:\nESCAPE ROOM: [title]\nTEAM: [team name]\nPLAYERS: [Name (age), Name (age)]\nLEVEL: [little, clever, master or mixed]\nLEVELS: [only for mixed: one level per puzzle, comma-separated]\nPUZZLES: [6, 7 or 8]\nMAGIC WORD: [the word]\nTIMER: [minutes]\nHOST: [who runs the game]\nPRESENTS AT: [safe spot]\n---\nSTORY:\n[story]\n---\nFINAL MESSAGE:\n[final message]\n---\nENVELOPES:\n1: hand it to the team at the start\n2: [safe spot]\nFINAL: [who keeps the final envelope]\n\nBefore you answer, check: the magic word has exactly as many letters as puzzles and is not in the story or the team name; LEVELS has one entry per puzzle; every spot is safe and indoors. At the end, ask if I want any changes. If I change anything, give me the whole code block again.\n\nMAKE THE STORY FUNNIER OR SHORTER:\nRewrite the STORY in the code block: [funnier / shorter / with our dog Pepper in it]. Keep Pip, the Gift Chest, the magic word and the format. Give me the whole code block again.\n\nSIBLINGS OF DIFFERENT AGES:\nMy kids are [5] and [11]. Make it a mixed game: give each of the 8 puzzles the level that fits, so both can help. Use LEVEL: mixed and a LEVELS line with one level per puzzle.\n\nA SHORTER GAME:\nWe only have about 30 minutes. Make it 6 puzzles and pick a 6-letter magic word. Update PUZZLES, MAGIC WORD and TIMER.\n\nA CHRISTMAS PARTY FOR 6-10 KIDS:\nIt's a Christmas party for [8] kids aged [7-9]. Split them into two teams with their own team names and write one code block per team, so I can print two copies with the Escape Room Maker.\n\nTHE STORY IN ANOTHER LANGUAGE:\nWrite the STORY and the FINAL MESSAGE in [German / French / Spanish], naturally, not word for word. Keep the keywords (STORY, FINAL MESSAGE, TEAM...) in English. The puzzles stay in English.";
+  var toastEl = document.getElementById('mts-toast');
+
+  function showToast(msg, duration) {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.style.display = 'block';
+    setTimeout(function() { toastEl.style.display = 'none'; }, duration || 3200);
+  }
+
+  // 1. Copy Prompt & Open ChatGPT
+  var gptBtn = document.getElementById('mts-chatgpt-btn');
+  if (gptBtn) {
+    gptBtn.addEventListener('click', function() {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(PROMPT).then(function() {
+          showToast('✅ Prompt copied! Opening ChatGPT... Just paste into chat!');
+          setTimeout(function() {
+            window.open('https://chatgpt.com', '_blank');
+          }, 600);
+        }).catch(function() {
+          window.open('https://chatgpt.com', '_blank');
+        });
+      } else {
+        window.open('https://chatgpt.com', '_blank');
+      }
+    });
+  }
+
+  // 2. Paste from clipboard & trigger maker
+  var pasteBtn = document.getElementById('mts-paste-btn');
+  if (pasteBtn) {
+    pasteBtn.addEventListener('click', function() {
+      if (!navigator.clipboard || !navigator.clipboard.readText) {
+        alert('Clipboard API not available. Please paste manually into the box below.');
+        return;
+      }
+      navigator.clipboard.readText().then(function(text) {
+        var ta = document.querySelector('textarea');
+        if (ta) {
+          ta.value = text;
+          ta.dispatchEvent(new Event('input', { bubbles: true }));
+          ta.dispatchEvent(new Event('change', { bubbles: true }));
+          ta.focus();
+
+          // Auto-trigger the generate / make button if found
+          var makeBtn = document.querySelector('#make, #generate, #build, button.primary, .btn-primary') ||
+                        Array.from(document.querySelectorAll('button')).find(function(b) {
+                          var t = (b.textContent || '').toLowerCase();
+                          return (t.indexOf('make') !== -1 || t.indexOf('generate') !== -1 || t.indexOf('build') !== -1) &&
+                                 b.id !== 'mts-paste-btn' && b.id !== 'mts-chatgpt-btn';
+                        });
+          if (makeBtn) {
+            makeBtn.click();
+            showToast('✅ AI cards pasted & generated!');
+          } else {
+            showToast('✅ Pasted! Click Make my cards below.');
+          }
+        } else {
+          alert('No text field found on this page.');
+        }
+      }).catch(function(err) {
+        alert('Could not read clipboard: ' + err + '\n\nPlease paste manually (Ctrl+V / ⌘+V).');
+      });
+    });
+  }
+})();
+</script>
+<!-- /mts-assistant-bar -->
+
 <div class="ui">
   <div class="top"><img src="data:image/png;base64,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" alt=""><div><h1>Christmas Escape Room Maker</h1>
     <p>Turns your AI chat's answer into your own printable escape room, in our design. Every puzzle is built and checked here, so the answers are always right.</p></div></div>
@@ -1279,82 +1460,4 @@ const q = new URLSearchParams(location.search);
 if (q.get('paper') === 'a4') { $('#paper').value = 'a4'; setPaper(); }
 if (q.get('demo')) { $('#src').value = EXAMPLE; make(true); }
 </script>
-<!-- mts-paste-btn -->
-<style>
-  #mts-paste-btn {
-    position: fixed;
-    bottom: 18px;
-    right: 18px;
-    z-index: 9999;
-    background: #1F5E5B;
-    color: #fff;
-    border: none;
-    border-radius: 50px;
-    padding: 12px 20px;
-    font-size: 15px;
-    font-family: Ubuntu, sans-serif;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 0.2s;
-  }
-  #mts-paste-btn:hover { background: #174644; }
-  #mts-paste-toast {
-    position: fixed;
-    bottom: 76px;
-    right: 18px;
-    z-index: 9999;
-    background: #333;
-    color: #fff;
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 13px;
-    font-family: Ubuntu, sans-serif;
-    display: none;
-    pointer-events: none;
-  }
-  @media print { #mts-paste-btn, #mts-paste-toast { display: none !important; } }
-</style>
-<button id="mts-paste-btn" title="Paste AI response from clipboard">
-  📋 Paste AI Response
-</button>
-<div id="mts-paste-toast">✅ Pasted!</div>
-<script>
-(function() {
-  var btn = document.getElementById('mts-paste-btn');
-  var toast = document.getElementById('mts-paste-toast');
-  if (!btn) return;
-
-  // Find the first <textarea> on the page to paste into
-  function getTarget() {
-    return document.querySelector('textarea');
-  }
-
-  btn.addEventListener('click', function() {
-    if (!navigator.clipboard || !navigator.clipboard.readText) {
-      alert('Clipboard API not available. Please paste manually (Ctrl+V / ⌘+V).');
-      return;
-    }
-    navigator.clipboard.readText().then(function(text) {
-      var ta = getTarget();
-      if (ta) {
-        ta.value = text;
-        ta.dispatchEvent(new Event('input', { bubbles: true }));
-        ta.dispatchEvent(new Event('change', { bubbles: true }));
-        ta.focus();
-      } else {
-        alert('No text field found on the page.');
-      }
-      toast.style.display = 'block';
-      setTimeout(function() { toast.style.display = 'none'; }, 2000);
-    }).catch(function(err) {
-      alert('Could not read clipboard: ' + err + '\nPlease paste manually (Ctrl+V / ⌘+V).');
-    });
-  });
-})();
-</script>
-
 </body></html>
