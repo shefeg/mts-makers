@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Make Together Studio Halloween Bingo Maker</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+<style id="pagesize">@page { size: 8.5in 11in; margin: 0; }</style>
+<style>:root { --ink: #3B2A4A; } /* Make Together Studio bingo engine: pages for print (US Letter default, body.a4 = A4). Light on ink: white paper,
+   season ink for lines and titles, one soft fill for the free centre. Sizes inside squares and calling cards use
+   container units, so 1 or 2 cards per page and Letter / A4 all scale from the same rules; BG.fit() then shrinks
+   anything that is still too wide or too tall. */
+.bg-doc { font-family: 'Ubuntu', 'Segoe UI', Arial, sans-serif; color: #2B2B2B; }
+.bg-doc *, .bg-doc *::before, .bg-doc *::after { box-sizing: border-box; }
+.bg-page { width: 8.5in; height: 11in; padding: .42in .45in .34in; position: relative; overflow: hidden; background: #fff;
+  display: flex; flex-direction: column; page-break-after: always; break-after: page;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body.a4 .bg-page { width: 210mm; height: 297mm; padding: .5in .42in .36in; }
+.bg-emo, .emo span { font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif; line-height: 1; }
+.emo > span { white-space: nowrap; }
+
+/* ---------------------------------------------------------------- player card */
+.bg-cardpage.per1 { padding: .36in .42in .3in; }
+body.a4 .bg-cardpage.per1 { padding: .45in .4in .34in; }
+.bg-card { flex: 1; min-height: 0; display: flex; flex-direction: column; border: 2.5px solid var(--ink); border-radius: 22px;
+  padding: .16in .22in .1in; background: #fff; --cell-min: 10px; --title-min: 20px; }
+.bg-head { display: flex; align-items: center; gap: .12in; height: .92in; flex: none; }
+.bg-deco { flex: none; width: .78in; height: .78in; }
+.bg-deco svg { width: 100%; height: 100%; display: block; }
+.bg-title { flex: 1; min-width: 0; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center;
+  overflow: hidden; }
+.bg-fit { display: inline-block; white-space: nowrap; font-family: Anton, 'Ubuntu', sans-serif; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--ink); font-size: 46px; line-height: 1.04; }
+.bg-meta { display: flex; align-items: flex-end; justify-content: space-between; gap: .3in; height: .36in; flex: none;
+  font-size: 13px; color: #6B655E; margin-bottom: .08in; }
+.bg-name { flex: 1; min-width: 0; display: flex; align-items: flex-end; gap: 6px; height: 100%; overflow: hidden; white-space: nowrap; }
+.bg-name i { flex: 1; border-bottom: 1.5px solid #B8AFA3; height: 1px; margin-bottom: 4px; }
+.bg-name.has b { font-size: 21px; color: var(--ink); line-height: 1.1; }
+.bg-no { flex: none; font-weight: 700; letter-spacing: .04em; }
+.bg-body { flex: 1; min-height: 0; container-type: size; display: flex; justify-content: center; align-items: center; }
+.bg-sq { width: min(100cqw, calc(100cqh - var(--lh, 0px))); display: flex; flex-direction: column; }
+.bg-card.g5 .bg-body { --lh: 0.78in; }
+.bg-letters { display: grid; grid-template-columns: repeat(5, 1fr); height: .7in; margin-bottom: .08in; justify-items: center; align-items: center; }
+.bg-letters span { width: .62in; height: .62in; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-family: Anton, sans-serif; font-size: 30px; line-height: 1; }
+.bg-grid { width: 100%; aspect-ratio: 1; display: grid; grid-template-columns: repeat(var(--g), 1fr); grid-template-rows: repeat(var(--g), 1fr);
+  border: 3px solid var(--ink); border-radius: 14px; overflow: hidden; background: #fff; }
+.bg-cell { position: relative; border-right: 2px solid var(--line); border-bottom: 2px solid var(--line); container-type: size; min-width: 0; min-height: 0; }
+/* the last column and row keep their 2px border, only invisible: every square then has the same size, so the
+   container-unit labels are the same size in every row and column (with border 0 the bottom row's labels shrank) */
+.bg-g5 .bg-cell:nth-child(5n), .g5 .bg-cell:nth-child(5n), .g4 .bg-cell:nth-child(4n), .g3 .bg-cell:nth-child(3n) { border-right-color: transparent; }
+.g5 .bg-cell:nth-child(n+21), .g4 .bg-cell:nth-child(n+13), .g3 .bg-cell:nth-child(n+7) { border-bottom-color: transparent; }
+.bg-in { position: absolute; inset: 6%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; overflow: hidden; }
+.bg-txt { font-weight: 700; color: #2B2B2B; line-height: 1.12; max-width: 100%; overflow-wrap: normal; word-break: normal;
+  hyphens: manual; text-wrap: balance; font-size: 17cqw; }
+.s-phrases .bg-txt { font-size: 12.5cqw; font-weight: 500; line-height: 1.16; }
+.s-pictures .bg-cell.has-pic .bg-txt { font-size: 10.5cqw; font-weight: 700; color: #4F4A44; line-height: 1.05; flex: none; margin-top: 2cqh; }
+.bg-pic { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
+.bg-pic svg { height: 100%; width: 100%; max-height: 66cqh; display: block; }
+.bg-cell.pic-only .bg-pic svg { max-height: 86cqh; }
+.bg-pic.emo span { font-size: 52cqh; }
+.bg-cell.pic-only .bg-pic.emo span { font-size: 70cqh; }
+.bg-cell.free { background: var(--free); }
+.bg-star { flex: none; height: 46cqh; width: 100%; display: flex; align-items: center; justify-content: center; }
+.bg-star svg { height: 100%; width: auto; display: block; }
+.bg-freetxt { font-family: Anton, sans-serif; font-weight: 400; letter-spacing: 1px; text-transform: uppercase; color: var(--em);
+  font-size: 15cqw; flex: none; line-height: 1.1; margin-top: 3cqh; }
+.bg-foot { flex: none; height: .2in; margin-top: .06in; font-size: 9.5px; color: #8A8379; text-align: center; letter-spacing: .03em; }
+.bg-cell.daub::after { content: ''; position: absolute; left: 12%; top: 12%; width: 76%; height: 76%; border-radius: 50%;
+  background: rgba(240, 127, 94, .5); mix-blend-mode: multiply; }
+
+/* two cards per page (paper saver): title column on the left, so the grid gets the whole height of the half page */
+.bg-cardpage.per2 { padding: .3in .42in .26in; }
+.per2 .bg-card { display: grid; grid-template-columns: 1.95in 1fr; grid-template-rows: auto auto 1fr auto; column-gap: .2in;
+  padding: .14in .2in .1in; border-radius: 16px; --cell-min: 8px; --title-min: 14px; }
+.per2 .bg-head { grid-column: 1; grid-row: 1; height: auto; flex-direction: column; align-items: center; gap: .04in; }
+.per2 .bg-deco { width: .62in; height: .62in; }
+.per2 .bg-deco.r { display: none; }
+.per2 .bg-title { width: 100%; height: 1.45in; flex: none; align-items: center; }
+.per2 .bg-fit { font-size: 30px; white-space: normal; display: block; line-height: 1.05; }
+.per2 .bg-meta { grid-column: 1; grid-row: 2; flex-direction: column; align-items: stretch; height: auto; gap: .1in;
+  font-size: 11px; margin: .08in 0 0; }
+.per2 .bg-name { height: .3in; }
+.per2 .bg-name.has b { font-size: 16px; }
+.per2 .bg-body { grid-column: 2; grid-row: 1 / span 4; min-height: 0; }
+.per2 .bg-card.g5 .bg-body { --lh: 0.46in; }
+.per2 .bg-letters { height: .42in; margin-bottom: .04in; }
+.per2 .bg-letters span { width: .36in; height: .36in; font-size: 18px; }
+.per2 .bg-grid { border-width: 2.5px; border-radius: 10px; }
+.per2 .bg-cell { border-width: 1.5px; }
+.per2 .bg-foot { grid-column: 1; grid-row: 4; align-self: end; height: auto; font-size: 8px; text-align: left; margin: 0; }
+.bg-cut { flex: none; height: 0; border-top: 2px dashed #C9C0B4; margin: .14in -.3in; }
+
+/* ---------------------------------------------------------------- caller pages */
+.bg-ph { flex: none; text-align: center; margin-bottom: .14in; }
+.bg-kick { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--em); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+.bg-ph h2 { margin: 0; font-family: Anton, sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--ink); font-size: 34px; line-height: 1.45; white-space: nowrap; }
+.bg-ph p { margin: .05in auto 0; max-width: 6.6in; font-size: 12.5px; line-height: 1.38; color: #4F4A44; max-height: .62in; overflow: hidden; }
+.bg-pfoot { flex: none; margin-top: .1in; font-size: 9px; color: #8A8379; text-align: center; height: .16in; overflow: hidden; white-space: nowrap; }
+
+.bg-calls { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr);
+  border-top: 2px dashed #C9C0B4; border-left: 2px dashed #C9C0B4; }
+.bg-call { position: relative; border-right: 2px dashed #C9C0B4; border-bottom: 2px dashed #C9C0B4; container-type: size; min-width: 0; min-height: 0; }
+.bg-cin { position: absolute; inset: 9% 8%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; overflow: hidden; border-radius: 12px; }
+.bg-call::before { content: ''; position: absolute; inset: 5%; border: 2px solid var(--line); border-radius: 12px; }
+.bg-ctxt { font-weight: 700; font-size: 13.5cqw; line-height: 1.12; color: #2B2B2B; max-width: 100%; text-wrap: balance; }
+.bg-call.s-phrases .bg-ctxt { font-size: 10.5cqw; font-weight: 500; }
+.bg-call.has-pic .bg-ctxt { font-size: 11cqw; flex: none; margin-top: 3cqh; }
+.bg-cpic { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
+.bg-cpic svg { height: 100%; width: 100%; max-height: 58cqh; }
+.bg-cpic.emo span { font-size: 46cqh; }
+
+.bg-sheet { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(var(--cols), 1fr); grid-template-rows: repeat(var(--rows), 1fr);
+  grid-auto-flow: column; gap: 0 .14in; max-height: 8.2in; }
+.bg-si { display: flex; align-items: center; gap: 7px; min-width: 0; min-height: 0; overflow: hidden; border-bottom: 1px solid #ECE5DA; padding: 1px 2px; }
+.bg-box { flex: none; width: 15px; height: 15px; border: 2px solid var(--ink); border-radius: 50%; }
+.bg-spic { flex: none; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; }
+.bg-spic svg { width: 26px; height: 26px; }
+.bg-spic.emo span { font-size: 20px; }
+.bg-stxt { flex: 1; min-width: 0; font-size: 13.5px; line-height: 1.12; font-weight: 500; color: #2B2B2B; }
+.bg-pats { flex: none; display: flex; align-items: center; justify-content: center; gap: .26in; margin-top: .14in;
+  padding-top: .1in; border-top: 2px solid #ECE5DA; font-size: 11.5px; color: #4F4A44; }
+.bg-pats > b { color: var(--ink); font-size: 13px; }
+.bg-pat { display: flex; align-items: center; gap: 7px; }
+.bg-mini { display: grid; grid-template-columns: repeat(5, 9px); grid-auto-rows: 9px; gap: 1.5px; }
+.bg-mini i { background: #ECE5DA; border-radius: 2px; }
+.bg-mini i.on { background: var(--em); }
+@media print { .bg-page { box-shadow: none !important; margin: 0 !important; } }
+ 
+body { margin: 0; background: #EFE7DA; font-family: 'Ubuntu', 'Segoe UI', Arial, sans-serif; color: #2B2B2B; }
+.ui { max-width: 1000px; margin: 0 auto; padding: 22px 16px 8px; }
+.top { display: flex; align-items: center; gap: 14px; }
+.top img { width: 56px; height: 56px; }
+.top h1 { font-size: 26px; margin: 0; color: var(--ink); }
+.top p { margin: 2px 0 0; color: #6B655E; }
+.panel { background: #fff; border-radius: 16px; padding: 18px; margin-top: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.steps3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+.step { background: #FFF8EE; border-radius: 12px; padding: 10px 12px; font-size: 14px; line-height: 1.35; }
+.step b { color: #D2593A; }
+textarea { width: 100%; box-sizing: border-box; border: 2px solid #D9D1C4; border-radius: 12px; padding: 12px;
+  font: 14px/1.45 ui-monospace, Menlo, Consolas, monospace; resize: vertical; }
+#src { min-height: 170px; }
+textarea:focus, input:focus, select:focus { outline: none; border-color: var(--ink); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+button { border: 0; border-radius: 999px; padding: 12px 20px; font: 600 15px 'Ubuntu', sans-serif; cursor: pointer; }
+.primary { background: var(--ink); color: #fff; } .accent { background: #F07F5E; color: #2B2B2B; } .ghost { background: #FFF8EE; color: var(--ink); }
+select, input[type=text], input[type=number] { padding: 9px 11px; border-radius: 10px; border: 2px solid #D9D1C4; font: 14px 'Ubuntu', sans-serif; box-sizing: border-box; }
+details { margin-top: 12px; } summary { cursor: pointer; font-weight: 700; color: var(--ink); font-size: 15px; }
+.form { display: grid; grid-template-columns: 170px 1fr; gap: 9px 14px; align-items: center; margin-top: 12px; font-size: 14px; }
+.form label { font-weight: 700; color: var(--ink); }
+.form .wide { grid-column: 1 / -1; }
+.msg { margin-top: 10px; font-size: 14px; line-height: 1.45; } .msg.err { color: #B3412A; font-weight: 700; } .msg.ok { color: var(--ink); }
+.msg .warn { display: block; color: #9A5B10; font-weight: 400; }
+.hint { font-size: 13px; color: #6B655E; margin-top: 8px; line-height: 1.4; }
+#preview { padding: 12px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+#preview .bg-page { box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+#preview .bg-doc { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+@media print { body { background: #fff; } .ui { display: none; } #preview, #preview .bg-doc { padding: 0; gap: 0; display: block; }
+  #preview .bg-page { box-shadow: none; } }
+@media (max-width: 720px) { .steps3 { grid-template-columns: 1fr; } .form { grid-template-columns: 1fr; } }
+</style></head>
+<body>
+<div class="ui">
+  <div class="top"><img src="data:image/png;base64,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" alt=""><div><h1>Halloween Bingo Maker</h1>
+    <p>Turns your AI chat's list (or your own words) into printable bingo cards in our design. Every card is different, and every square is on the caller sheet.</p></div></div>
+  <div class="panel">
+    <div class="steps3">
+      <div class="step"><b>1</b> In your AI chat, click <b>Copy</b> on the box with your bingo list. No box? Send the AI: <i>Put the whole bingo list in one code block.</i></div>
+      <div class="step"><b>2</b> Paste it below and click <b>Make my bingo cards</b>. No AI? Pick a ready set, or type your own words in the form.</div>
+      <div class="step"><b>3</b> Check the pages, then click <b>Print / Save as PDF</b>.</div>
+    </div>
+    <textarea id="src" placeholder="Paste here. It starts with:  BINGO: …  STYLE: …  GRID: …"></textarea>
+    <div class="row">
+      <button class="primary" id="make">Make my bingo cards</button>
+      <button class="accent" id="print">Print / Save as PDF</button>
+      <select id="paper"><option value="letter">US Letter paper</option><option value="a4">A4 paper</option></select>
+      <select id="per"><option value="1">1 card per page</option><option value="2">2 cards per page (saves paper)</option></select>
+    </div>
+    <div class="row">
+      <select id="ready"><option value="">Ready sets…</option><option value="little">Halloween Picture Bingo (Ages 3+)</option><option value="words">Halloween Word Bingo (Ages 6+)</option><option value="party">Halloween Party Bingo (Teens & grown-ups)</option></select>
+      <button class="ghost" id="demo">Try an example</button>
+      <button class="ghost" id="mix">Mix new cards</button>
+    </div>
+    <div class="msg" id="msg"></div>
+    <details id="formbox"><summary>Change the details or type your own words (no AI needed)</summary>
+      <div class="form">
+        <label for="f-title">Title on the cards</label><input type="text" id="f-title" maxlength="90" placeholder="Halloween Bingo">
+        <label for="f-style">Kind of bingo</label><select id="f-style"><option value="pictures">Pictures (little ones, emoji or our drawings + a word)</option><option value="words" selected>Words (readers)</option><option value="phrases">Phrases (party bingo, teens and grown-ups)</option></select>
+        <label for="f-grid">Card size</label><select id="f-grid"><option value="5">5 × 5 (24 squares + free centre)</option><option value="4">4 × 4 (16 squares)</option><option value="3">3 × 3 (8 squares + free centre, toddlers)</option></select>
+        <label for="f-free">Free centre square</label><div><input type="text" id="f-free" maxlength="40" placeholder="FREE" style="width:220px"> <label style="font-weight:400"><input type="checkbox" id="f-nofree"> no free square</label></div>
+        <label for="f-cards">How many cards</label><input type="number" id="f-cards" min="1" max="100" value="30" style="width:90px">
+        <label for="f-lang">Card labels</label><select id="f-lang"><option value="en">English</option><option value="de">Deutsch</option><option value="fr">Français</option><option value="es">Español</option></select>
+        <label class="wide" for="f-players">Names to print on the cards (optional, one per line or comma-separated)</label>
+        <textarea class="wide" id="f-players" rows="2"></textarea>
+        <label class="wide" for="f-items">Your words, one per line (pictures: start a line with an emoji, e.g. 🎃 Pumpkin)</label>
+        <textarea class="wide" id="f-items" rows="10"></textarea>
+      </div>
+      <div class="row"><button class="primary" id="make2">Make my bingo cards</button></div>
+    </details>
+    <div class="hint">Printing tip: choose <b>Actual size / 100%</b>. To get a PDF file, pick <b>Save as PDF</b> as the printer.
+      Your words stay on this computer: nothing is uploaded. The same list always makes the same cards, so a reprint matches the caller sheet; <b>Mix new cards</b> makes a new set.
+      Markers: small things (candy, cereal, coins) are a choking hazard for children under 3; little ones use crayons.</div>
+  </div>
+</div>
+<div id="preview"></div>
+<script>window.BG_CONTENT = {"season": "halloween", "default_title": "Halloween Bingo", "brand_line": "Make Together Studio · Halloween Bingo", "theme": {"ink": "#3B2A4A", "em": "#6B3F63", "soft": "#FFF8EE", "line": "#D5C8DE", "free": "#FFF1C9", "letters": ["#C4502F", "#6B3F63", "#B8611E", "#1F5E5B", "#5B4A7A"]}, "deco": ["pumpkin", "ghost"], "icons": {"bat": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><g transform=\"translate(50,52) scale(3.83)\"><path d=\"M0,-1.2 L1.2,-3.4 L1.9,-1.3 C3.6,-3.2 7.4,-4.4 12,-2.6 C10.2,-1.6 9.6,0 9.9,1.9 C8.4,0.9 6.6,1 5.6,2.5 C4.6,1.4 2.9,1.4 1.8,3.2 L0,2 L-1.8,3.2 C-2.9,1.4 -4.6,1.4 -5.6,2.5 C-6.6,1 -8.4,0.9 -9.9,1.9 C-9.6,0 -10.2,-1.6 -12,-2.6 C-7.4,-4.4 -3.6,-3.2 -1.9,-1.3 L-1.2,-3.4 Z\" fill=\"#2B2B2B\"/><ellipse cx=\"-0.7\" cy=\"-0.6\" rx=\"0.4\" ry=\"0.4\" fill=\"#F4C95D\"/><ellipse cx=\"0.7\" cy=\"-0.6\" rx=\"0.4\" ry=\"0.4\" fill=\"#F4C95D\"/></g></svg>", "pumpkin": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><g transform=\"translate(50,92)\"><g transform=\"scale(0.84)\"><g transform=\"translate(-50,-90)\"><path d=\"M47 20 C46 12 49 6 56 3 L59 7 C54 9 52 13 53 20 Z\" fill=\"#1F5E5B\"/><path d=\"M57 11 C65 4 76 6 79 12 C71 15 64 15 57 11 Z\" fill=\"#1F5E5B\" opacity=\"0.85\"/><ellipse cx=\"31\" cy=\"56\" rx=\"26\" ry=\"32\" fill=\"#D9684A\"/><ellipse cx=\"69\" cy=\"56\" rx=\"26\" ry=\"32\" fill=\"#D9684A\"/><ellipse cx=\"39\" cy=\"56\" rx=\"22\" ry=\"34\" fill=\"#F07F5E\"/><ellipse cx=\"61\" cy=\"56\" rx=\"22\" ry=\"34\" fill=\"#F07F5E\"/><ellipse cx=\"50\" cy=\"56\" rx=\"16\" ry=\"35\" fill=\"#F38E6F\"/><path d=\"M33 47 L41 35 L47 49 Z\" fill=\"#2B2B2B\"/><path d=\"M53 49 L59 35 L67 47 Z\" fill=\"#2B2B2B\"/><path d=\"M29 60 Q50 84 71 60 Q64 66 58 65 L56 71 L50 66 L44 71 L42 65 Q36 66 29 60 Z\" fill=\"#2B2B2B\"/></g></g></g></svg>", "ghost": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><path d=\"M24,88 L24,46 C24,22 76,22 76,46 L76,88 L66,80 L58,90 L50,80 L42,90 L34,80 Z\" fill=\"#FFFDF8\" stroke=\"#2B2B2B\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"41\" cy=\"48\" rx=\"4.5\" ry=\"6.5\" fill=\"#2B2B2B\"/><ellipse cx=\"59\" cy=\"48\" rx=\"4.5\" ry=\"6.5\" fill=\"#2B2B2B\"/><ellipse cx=\"50\" cy=\"62\" rx=\"5\" ry=\"4\" fill=\"#2B2B2B\"/></svg>", "moon": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><ellipse cx=\"50\" cy=\"50\" rx=\"36\" ry=\"36\" fill=\"#F4C95D\" stroke=\"#2B2B2B\" stroke-width=\"3\"/><ellipse cx=\"38\" cy=\"40\" rx=\"7\" ry=\"7\" fill=\"#EDB251\" opacity=\"0.6\"/><ellipse cx=\"60\" cy=\"60\" rx=\"9\" ry=\"9\" fill=\"#EDB251\" opacity=\"0.5\"/><ellipse cx=\"62\" cy=\"34\" rx=\"4\" ry=\"4\" fill=\"#EDB251\" opacity=\"0.6\"/></svg>", "star": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><polygon points=\"50,10 60.6,37.4 89.9,39 67.1,57.6 74.7,86 50,70 25.3,86 32.9,57.6 10.1,39 39.4,37.4\" fill=\"#F4C95D\" stroke=\"#2B2B2B\" stroke-width=\"4\" stroke-linejoin=\"round\"/></svg>", "cat": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><path d=\"M30,88 C22,70 26,52 36,46 L30,22 L44,36 C48,35 52,35 56,36 L70,22 L64,46 C74,52 78,70 70,88 Z\" fill=\"#2B2B2B\"/><path d=\"M70,86 C88,84 92,64 84,56\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"42\" cy=\"52\" rx=\"4\" ry=\"5\" fill=\"#F4C95D\"/><ellipse cx=\"58\" cy=\"52\" rx=\"4\" ry=\"5\" fill=\"#F4C95D\"/><polygon points=\"47,60 53,60 50,64\" fill=\"#F07F5E\"/></svg>", "spider": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><polyline points=\"50,4 50,40\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M36,52 Q16.9,26.7 8,52.7\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"4.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M36,56 Q16.1,39.8 8,65.8\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"4.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M36,60 Q16.1,53.3 8,79.3\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"4.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M36,64 Q16.9,65.3 8,91.3\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"4.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M64,52 Q83.1,26.7 92,52.7\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"4.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M64,56 Q83.9,39.8 92,65.8\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"4.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M64,60 Q83.9,53.3 92,79.3\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"4.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M64,64 Q83.1,65.3 92,91.3\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"4.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"50\" cy=\"60\" rx=\"17\" ry=\"19\" fill=\"#2B2B2B\"/><ellipse cx=\"50\" cy=\"40\" rx=\"11\" ry=\"11\" fill=\"#2B2B2B\"/><ellipse cx=\"45\" cy=\"38\" rx=\"3\" ry=\"3\" fill=\"#FFFDF8\"/><ellipse cx=\"55\" cy=\"38\" rx=\"3\" ry=\"3\" fill=\"#FFFDF8\"/></svg>", "candy": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><g transform=\"translate(0,20)\"><path d=\"M30 30 L4 12 L10 30 L4 48 Z\" fill=\"#F07F5E\"/><path d=\"M70 30 L96 12 L90 30 L96 48 Z\" fill=\"#F07F5E\"/><ellipse cx=\"50\" cy=\"30\" rx=\"24\" ry=\"18\" fill=\"#F07F5E\"/><path d=\"M38 16 L46 44 M52 13 L60 45\" stroke=\"#F4C95D\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/></g><path d=\"M30 50 L4 32 L10 50 L4 68 Z M70 50 L96 32 L90 50 L96 68 Z\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"50\" cy=\"50\" rx=\"24\" ry=\"18\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"2.5\"/></svg>", "hat": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><ellipse cx=\"50\" cy=\"80\" rx=\"44\" ry=\"10\" fill=\"#2B2B2B\"/><path d=\"M28,78 L46,12 Q50,6 54,14 L72,78 Z\" fill=\"#2B2B2B\"/><rect x=\"30\" y=\"62\" width=\"40\" height=\"9\" rx=\"0\" fill=\"#F07F5E\"/><g transform=\"translate(52,38) scale(0.70)\"><path d=\"M0,-10 C1,-3 3,-1 10,0 C3,1 1,3 0,10 C-1,3 -3,1 -10,0 C-3,-1 -1,-3 0,-10 Z\" fill=\"#F4C95D\"/></g></svg>", "broom": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><polyline points=\"82,14 40,60\" fill=\"none\" stroke=\"#8E5D3A\" stroke-width=\"7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M40,60 L24,54 L8,82 L14,88 L20,92 L46,76 Z\" fill=\"#E8B655\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"32,57 44,68\" fill=\"none\" stroke=\"#F07F5E\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M18,72 L28,84 M24,64 L36,80\" fill=\"none\" stroke=\"#8E5D3A\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "cauldron": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><ellipse cx=\"50\" cy=\"36\" rx=\"34\" ry=\"9\" fill=\"#2B2B2B\"/><ellipse cx=\"50\" cy=\"35\" rx=\"28\" ry=\"6\" fill=\"#7ED6A8\"/><path d=\"M16,38 C14,74 30,88 50,88 C70,88 86,74 84,38 Z\" fill=\"#2B2B2B\"/><ellipse cx=\"40\" cy=\"30\" rx=\"5\" ry=\"5\" fill=\"#7ED6A8\"/><ellipse cx=\"58\" cy=\"27\" rx=\"4\" ry=\"4\" fill=\"#7ED6A8\"/><rect x=\"26\" y=\"86\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#2B2B2B\"/><rect x=\"66\" y=\"86\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#2B2B2B\"/></svg>", "owl": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><ellipse cx=\"50\" cy=\"58\" rx=\"28\" ry=\"32\" fill=\"#B07A4F\"/><ellipse cx=\"50\" cy=\"66\" rx=\"18\" ry=\"20\" fill=\"#D4B59B\"/><polygon points=\"24,34 30,20 40,30\" fill=\"#B07A4F\"/><polygon points=\"76,34 70,20 60,30\" fill=\"#B07A4F\"/><ellipse cx=\"39\" cy=\"44\" rx=\"10\" ry=\"10\" fill=\"#FFFDF8\" stroke=\"#2B2B2B\" stroke-width=\"2.5\"/><ellipse cx=\"61\" cy=\"44\" rx=\"10\" ry=\"10\" fill=\"#FFFDF8\" stroke=\"#2B2B2B\" stroke-width=\"2.5\"/><ellipse cx=\"39\" cy=\"44\" rx=\"4.5\" ry=\"4.5\" fill=\"#2B2B2B\"/><ellipse cx=\"61\" cy=\"44\" rx=\"4.5\" ry=\"4.5\" fill=\"#2B2B2B\"/><polygon points=\"46,52 54,52 50,60\" fill=\"#F4C95D\" stroke=\"#2B2B2B\" stroke-width=\"2\" stroke-linejoin=\"round\"/></svg>", "web": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><polyline points=\"50,50 94,50\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"50,50 81.1,81.1\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"50,50 50,94\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"50,50 18.9,81.1\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"50,50 6,50\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"50,50 18.9,18.9\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"50,50 50,6\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"50,50 81.1,18.9\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M64,50 Q59.8,54.1 59.9,59.9 Q54.1,59.8 50,64 Q45.9,59.8 40.1,59.9 Q40.2,54.1 36,50 Q40.2,45.9 40.1,40.1 Q45.9,40.2 50,36 Q54.1,40.2 59.9,40.1 Q59.8,45.9 64,50\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M76,50 Q68.2,57.5 68.4,68.4 Q57.5,68.2 50,76 Q42.5,68.2 31.6,68.4 Q31.8,57.5 24,50 Q31.8,42.5 31.6,31.6 Q42.5,31.8 50,24 Q57.5,31.8 68.4,31.6 Q68.2,42.5 76,50\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M88,50 Q76.6,61 76.9,76.9 Q61,76.6 50,88 Q39,76.6 23.1,76.9 Q23.4,61 12,50 Q23.4,39 23.1,23.1 Q39,23.4 50,12 Q61,23.4 76.9,23.1 Q76.6,39 88,50\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "mask": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><path d=\"M10,40 C10,28 40,26 50,36 C60,26 90,28 90,40 C90,62 66,70 50,56 C34,70 10,62 10,40 Z\" fill=\"#6B3F63\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"32\" cy=\"44\" rx=\"9\" ry=\"7\" fill=\"#FFFDF8\"/><ellipse cx=\"68\" cy=\"44\" rx=\"9\" ry=\"7\" fill=\"#FFFDF8\"/><path d=\"M10,40 L2,36 M90,40 L98,36\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "wand": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><polyline points=\"22,84 66,40\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"22,84 32,74\" fill=\"none\" stroke=\"#FFFDF8\" stroke-width=\"8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(72,30) scale(2.60)\"><path d=\"M0,-10 C1,-3 3,-1 10,0 C3,1 1,3 0,10 C-1,3 -3,1 -10,0 C-3,-1 -1,-3 0,-10 Z\" fill=\"#F4C95D\" stroke=\"#2B2B2B\" stroke-width=\"0.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></g><g transform=\"translate(36,30) scale(0.70)\"><path d=\"M0,-10 C1,-3 3,-1 10,0 C3,1 1,3 0,10 C-1,3 -3,1 -10,0 C-3,-1 -1,-3 0,-10 Z\" fill=\"#F4C95D\"/></g><g transform=\"translate(84,62) scale(0.60)\"><path d=\"M0,-10 C1,-3 3,-1 10,0 C3,1 1,3 0,10 C-1,3 -3,1 -10,0 C-3,-1 -1,-3 0,-10 Z\" fill=\"#F4C95D\"/></g></svg>", "apple": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><path d=\"M50,30 C30,18 12,34 16,56 C20,80 38,92 50,84 C62,92 80,80 84,56 C88,34 70,18 50,30 Z\" fill=\"#E25B4B\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M50,30 C50,20 54,12 60,8\" fill=\"none\" stroke=\"#8E5D3A\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M54,20 C64,10 76,14 78,20 C68,24 60,24 54,20 Z\" fill=\"#2F7A63\"/></svg>", "leaf": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><path d=\"M50,90 C20,72 14,40 30,16 C40,30 50,26 50,8 C50,26 60,30 70,16 C86,40 80,72 50,90 Z\" fill=\"#F2994A\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"50,90 50,24\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "lollipop": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><polyline points=\"50,52 50,94\" fill=\"none\" stroke=\"#8E5D3A\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"50\" cy=\"36\" rx=\"26\" ry=\"26\" fill=\"#F07F5E\" stroke=\"#2B2B2B\" stroke-width=\"3\"/><path d=\"M50,36 m-14,0 a14,14 0 1,1 14,14 a8,8 0 1,1 -8,-8\" fill=\"none\" stroke=\"#FFFDF8\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "cookie": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><ellipse cx=\"50\" cy=\"50\" rx=\"38\" ry=\"38\" fill=\"#D9A066\" stroke=\"#2B2B2B\" stroke-width=\"3\"/><ellipse cx=\"38\" cy=\"40\" rx=\"5\" ry=\"5\" fill=\"#8E5D3A\"/><ellipse cx=\"60\" cy=\"34\" rx=\"4.5\" ry=\"4.5\" fill=\"#8E5D3A\"/><ellipse cx=\"62\" cy=\"58\" rx=\"5\" ry=\"5\" fill=\"#8E5D3A\"/><ellipse cx=\"42\" cy=\"64\" rx=\"4\" ry=\"4\" fill=\"#8E5D3A\"/><ellipse cx=\"52\" cy=\"50\" rx=\"3.5\" ry=\"3.5\" fill=\"#8E5D3A\"/></svg>", "acorn": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><path d=\"M28,50 C26,70 38,88 50,94 C62,88 74,70 72,50 Z\" fill=\"#D9A15E\" stroke=\"#2B2B2B\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"40\" cy=\"66\" rx=\"5\" ry=\"10\" fill=\"#EACAA3\"/><path d=\"M16,44 C16,24 32,14 50,14 C68,14 84,24 84,44 C84,50 76,52 50,52 C24,52 16,50 16,44 Z\" fill=\"#7A4A26\"/><clipPath id=\"er-acap\"><path d=\"M16,44 C16,24 32,14 50,14 C68,14 84,24 84,44 C84,50 76,52 50,52 C24,52 16,50 16,44 Z\"/></clipPath><g clip-path=\"url(#er-acap)\"><polyline points=\"26,20 40,50\" fill=\"none\" stroke=\"#9B775A\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"40,20 54,50\" fill=\"none\" stroke=\"#9B775A\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"54,20 68,50\" fill=\"none\" stroke=\"#9B775A\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"68,20 82,50\" fill=\"none\" stroke=\"#9B775A\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"36,20 22,50\" fill=\"none\" stroke=\"#9B775A\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"50,20 36,50\" fill=\"none\" stroke=\"#9B775A\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"64,20 50,50\" fill=\"none\" stroke=\"#9B775A\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"78,20 64,50\" fill=\"none\" stroke=\"#9B775A\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></g><path d=\"M16,44 C16,24 32,14 50,14 C68,14 84,24 84,44 C84,50 76,52 50,52 C24,52 16,50 16,44 Z\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M50,14 C50,8 53,4 59,2\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"4.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "mushroom": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><path d=\"M38,52 L36,86 C36,92 64,92 64,86 L62,52 Z\" fill=\"#FFF8EE\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M10,54 C10,26 30,12 50,12 C70,12 90,26 90,54 C90,58 10,58 10,54 Z\" fill=\"#A65A33\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"34\" cy=\"34\" rx=\"5\" ry=\"5\" fill=\"#CEA38C\"/><ellipse cx=\"58\" cy=\"26\" rx=\"4\" ry=\"4\" fill=\"#CEA38C\"/><ellipse cx=\"70\" cy=\"42\" rx=\"4.5\" ry=\"4.5\" fill=\"#CEA38C\"/></svg>", "candycorn": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs><clipPath id=\"swai-bg-cc\"><path d=\"M50,8 C58,8 84,70 84,80 C84,92 16,92 16,80 C16,70 42,8 50,8 Z\"/></clipPath></defs><g clip-path=\"url(#swai-bg-cc)\"><rect x=\"0\" y=\"0\" width=\"100\" height=\"40\" rx=\"0\" fill=\"#FFFDF8\"/><rect x=\"0\" y=\"40\" width=\"100\" height=\"28\" rx=\"0\" fill=\"#F2994A\"/><rect x=\"0\" y=\"68\" width=\"100\" height=\"40\" rx=\"0\" fill=\"#F4C95D\"/></g><path d=\"M50,8 C58,8 84,70 84,80 C84,92 16,92 16,80 C16,70 42,8 50,8 Z\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "house": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><polygon points=\"18,50 50,16 84,48\" fill=\"#3B2A4A\" stroke=\"#2B2B2B\" stroke-width=\"3.5\" stroke-linejoin=\"round\"/><rect x=\"24\" y=\"46\" width=\"54\" height=\"44\" rx=\"3\" fill=\"#5B4A7A\" stroke=\"#2B2B2B\" stroke-width=\"3.5\"/><rect x=\"60\" y=\"18\" width=\"9\" height=\"18\" rx=\"1\" fill=\"#3B2A4A\" stroke=\"#2B2B2B\" stroke-width=\"3\"/><rect x=\"43\" y=\"66\" width=\"16\" height=\"24\" rx=\"7\" fill=\"#8E5D3A\" stroke=\"#2B2B2B\" stroke-width=\"3\"/><ellipse cx=\"36\" cy=\"60\" rx=\"7\" ry=\"7\" fill=\"#F4C95D\" stroke=\"#2B2B2B\" stroke-width=\"2.5\"/><rect x=\"61\" y=\"54\" width=\"11\" height=\"11\" rx=\"2\" fill=\"#F4C95D\" stroke=\"#2B2B2B\" stroke-width=\"2.5\"/><g transform=\"translate(80,18)\"><g><path d=\"M0,-1.2 L1.2,-3.4 L1.9,-1.3 C3.6,-3.2 7.4,-4.4 12,-2.6 C10.2,-1.6 9.6,0 9.9,1.9 C8.4,0.9 6.6,1 5.6,2.5 C4.6,1.4 2.9,1.4 1.8,3.2 L0,2 L-1.8,3.2 C-2.9,1.4 -4.6,1.4 -5.6,2.5 C-6.6,1 -8.4,0.9 -9.9,1.9 C-9.6,0 -10.2,-1.6 -12,-2.6 C-7.4,-4.4 -3.6,-3.2 -1.9,-1.3 L-1.2,-3.4 Z\" fill=\"#2B2B2B\"/><ellipse cx=\"-0.7\" cy=\"-0.6\" rx=\"0.4\" ry=\"0.4\" fill=\"#F4C95D\"/><ellipse cx=\"0.7\" cy=\"-0.6\" rx=\"0.4\" ry=\"0.4\" fill=\"#F4C95D\"/></g></g></svg>", "potion": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><rect x=\"42\" y=\"10\" width=\"16\" height=\"12\" rx=\"3\" fill=\"#B07A4F\" stroke=\"#2B2B2B\" stroke-width=\"3\"/><rect x=\"44\" y=\"20\" width=\"12\" height=\"14\" rx=\"2\" fill=\"#FFFDF8\" stroke=\"#2B2B2B\" stroke-width=\"3\"/><ellipse cx=\"50\" cy=\"62\" rx=\"30\" ry=\"30\" fill=\"#FFFDF8\" stroke=\"#2B2B2B\" stroke-width=\"3.5\"/><path d=\"M22,64 C30,58 70,58 78,64 C76,80 64,90 50,90 C36,90 24,80 22,64 Z\" fill=\"#7ED6A8\"/><ellipse cx=\"50\" cy=\"62\" rx=\"30\" ry=\"30\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3.5\"/><ellipse cx=\"42\" cy=\"74\" rx=\"4\" ry=\"4\" fill=\"#FFFDF8\" opacity=\"0.8\"/><ellipse cx=\"58\" cy=\"68\" rx=\"3\" ry=\"3\" fill=\"#FFFDF8\" opacity=\"0.8\"/><ellipse cx=\"52\" cy=\"50\" rx=\"2.5\" ry=\"2.5\" fill=\"#FFFDF8\" opacity=\"0.9\"/><g transform=\"translate(74,24) scale(0.70)\"><path d=\"M0,-10 C1,-3 3,-1 10,0 C3,1 1,3 0,10 C-1,3 -3,1 -10,0 C-3,-1 -1,-3 0,-10 Z\" fill=\"#F4C95D\"/></g></svg>", "monster": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><polygon points=\"30,30 26,10 40,24\" fill=\"#F4C95D\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linejoin=\"round\"/><polygon points=\"70,30 74,10 60,24\" fill=\"#F4C95D\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M22,86 C14,70 14,40 30,28 C40,20 60,20 70,28 C86,40 86,70 78,86 L70,80 L62,88 L54,80 L46,88 L38,80 L30,88 Z\" fill=\"#9B6BC4\" stroke=\"#2B2B2B\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"39\" cy=\"48\" rx=\"9\" ry=\"9\" fill=\"#FFFDF8\" stroke=\"#2B2B2B\" stroke-width=\"2.5\"/><ellipse cx=\"61\" cy=\"48\" rx=\"9\" ry=\"9\" fill=\"#FFFDF8\" stroke=\"#2B2B2B\" stroke-width=\"2.5\"/><ellipse cx=\"40\" cy=\"50\" rx=\"4\" ry=\"4\" fill=\"#2B2B2B\"/><ellipse cx=\"60\" cy=\"50\" rx=\"4\" ry=\"4\" fill=\"#2B2B2B\"/><path d=\"M36,64 Q50,76 64,64 Z\" fill=\"#2B2B2B\"/><polygon points=\"42,65 46,65 44,70\" fill=\"#FFFDF8\"/><polygon points=\"54,65 58,65 56,70\" fill=\"#FFFDF8\"/></svg>", "pail": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><path d=\"M24,30 C24,4 76,4 76,30\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"36\" cy=\"30\" rx=\"8\" ry=\"8\" fill=\"#F07F5E\"/><ellipse cx=\"52\" cy=\"26\" rx=\"8\" ry=\"8\" fill=\"#F4C95D\"/><ellipse cx=\"64\" cy=\"31\" rx=\"7\" ry=\"7\" fill=\"#1F5E5B\"/><path d=\"M16,40 C16,30 84,30 84,40 C88,70 74,92 50,92 C26,92 12,70 16,40 Z\" fill=\"#F2994A\" stroke=\"#2B2B2B\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M38,38 C34,58 36,80 42,90 M62,38 C66,58 64,80 58,90\" fill=\"none\" stroke=\"#DE7E35\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"50\" cy=\"36\" rx=\"34\" ry=\"6\" fill=\"#C07E42\"/></svg>", "cupcake": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><path d=\"M24,56 L32,90 L68,90 L76,56 Z\" fill=\"#F07F5E\" stroke=\"#2B2B2B\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M36,58 L40,90 M50,58 L50,90 M64,58 L60,90\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20,58 C14,46 26,36 34,38 C34,22 66,22 66,38 C74,36 86,46 80,58 Z\" fill=\"#DE7E35\" stroke=\"#2B2B2B\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"50\" cy=\"22\" rx=\"7\" ry=\"7\" fill=\"#E25B4B\" stroke=\"#2B2B2B\" stroke-width=\"2.5\"/><ellipse cx=\"38\" cy=\"46\" rx=\"2.5\" ry=\"2.5\" fill=\"#F4C95D\"/><ellipse cx=\"58\" cy=\"42\" rx=\"2.5\" ry=\"2.5\" fill=\"#FFFDF8\"/><ellipse cx=\"66\" cy=\"52\" rx=\"2.5\" ry=\"2.5\" fill=\"#F4C95D\"/></svg>", "mummy": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs><clipPath id=\"swai-bg-mummy\"><path d=\"M22,40 C22,14 78,14 78,40 L78,82 C78,92 22,92 22,82 Z\"/></clipPath></defs><path d=\"M22,40 C22,14 78,14 78,40 L78,82 C78,92 22,92 22,82 Z\" fill=\"#FFFDF8\" stroke=\"#2B2B2B\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g clip-path=\"url(#swai-bg-mummy)\"><polyline points=\"10,26 90,20\" fill=\"none\" stroke=\"#EAE4DA\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"10,38 90,44\" fill=\"none\" stroke=\"#EAE4DA\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"10,68 90,73\" fill=\"none\" stroke=\"#EAE4DA\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"10,80 90,74\" fill=\"none\" stroke=\"#EAE4DA\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"10\" y=\"44\" width=\"80\" height=\"18\" rx=\"0\" fill=\"#2B2B2B\"/></g><path d=\"M22,40 C22,14 78,14 78,40 L78,82 C78,92 22,92 22,82 Z\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><ellipse cx=\"38\" cy=\"53\" rx=\"7\" ry=\"7\" fill=\"#FFFDF8\"/><ellipse cx=\"62\" cy=\"53\" rx=\"7\" ry=\"7\" fill=\"#FFFDF8\"/><ellipse cx=\"39\" cy=\"54\" rx=\"3.5\" ry=\"3.5\" fill=\"#2B2B2B\"/><ellipse cx=\"61\" cy=\"54\" rx=\"3.5\" ry=\"3.5\" fill=\"#2B2B2B\"/><path d=\"M42,72 Q50,78 58,72\" fill=\"none\" stroke=\"#2B2B2B\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "crow": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><path d=\"M18,60 C18,40 36,30 52,32 C64,22 80,26 82,36 L92,40 L82,44 C84,62 72,80 50,80 C34,80 18,74 18,60 Z\" fill=\"#2B2B2B\"/><path d=\"M30,58 C40,52 58,54 64,64 C54,70 40,70 30,58 Z\" fill=\"#5B4A7A\"/><ellipse cx=\"72\" cy=\"36\" rx=\"4\" ry=\"4\" fill=\"#F4C95D\"/><ellipse cx=\"72\" cy=\"36\" rx=\"2\" ry=\"2\" fill=\"#2B2B2B\"/><polyline points=\"44,80 40,92\" fill=\"none\" stroke=\"#F4C95D\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"56,80 58,92\" fill=\"none\" stroke=\"#F4C95D\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "chocolate": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><defs></defs><rect x=\"18\" y=\"22\" width=\"64\" height=\"56\" rx=\"5\" fill=\"#704E36\" stroke=\"#2B2B2B\" stroke-width=\"3.5\"/><rect x=\"18\" y=\"42\" width=\"64\" height=\"36\" rx=\"3\" fill=\"#F07F5E\" stroke=\"#2B2B2B\" stroke-width=\"3.5\"/><polyline points=\"40,22 40,42\" fill=\"none\" stroke=\"#5C4432\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polyline points=\"61,22 61,42\" fill=\"none\" stroke=\"#5C4432\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"30\" y=\"52\" width=\"40\" height=\"16\" rx=\"8\" fill=\"#F4C95D\"/><ellipse cx=\"50\" cy=\"60\" rx=\"4\" ry=\"4\" fill=\"#F07F5E\"/></svg>"}, "icon_label": {"bat": "Bat", "pumpkin": "Pumpkin", "ghost": "Ghost", "moon": "Full moon", "star": "Star", "cat": "Black cat", "spider": "Spider", "candy": "Candy", "hat": "Witch hat", "broom": "Broom", "cauldron": "Cauldron", "owl": "Owl", "web": "Spider web", "mask": "Mask", "wand": "Magic wand", "apple": "Apple", "leaf": "Leaf", "lollipop": "Lollipop", "cookie": "Cookie", "acorn": "Acorn", "mushroom": "Mushroom", "candycorn": "Candy corn", "house": "Haunted house", "potion": "Potion", "monster": "Monster", "pail": "Treat bucket", "cupcake": "Cupcake", "mummy": "Mummy", "crow": "Crow", "chocolate": "Chocolate"}, "icon_names": {"bat": "bat", "bats": "bat", "fledermaus": "bat", "chauve-souris": "bat", "murciélago": "bat", "pumpkin": "pumpkin", "pumpkins": "pumpkin", "jack-o-lantern": "pumpkin", "jack o lantern": "pumpkin", "kürbis": "pumpkin", "citrouille": "pumpkin", "calabaza": "pumpkin", "ghost": "ghost", "ghosts": "ghost", "gespenst": "ghost", "geist": "ghost", "fantôme": "ghost", "fantasma": "ghost", "moon": "moon", "full moon": "moon", "mond": "moon", "vollmond": "moon", "lune": "moon", "pleine lune": "moon", "luna": "moon", "star": "star", "stars": "star", "stern": "star", "étoile": "star", "estrella": "star", "cat": "cat", "black cat": "cat", "katze": "cat", "chat": "cat", "chat noir": "cat", "gato": "cat", "kitty": "cat", "spider": "spider", "spiders": "spider", "spinne": "spider", "araignée": "spider", "araña": "spider", "candy": "candy", "candies": "candy", "sweets": "candy", "bonbon": "candy", "süßigkeiten": "candy", "caramelo": "candy", "dulce": "candy", "hat": "hat", "witch hat": "hat", "witch's hat": "hat", "hexenhut": "hat", "chapeau de sorcière": "hat", "broom": "broom", "broomstick": "broom", "besen": "broom", "hexenbesen": "broom", "balai": "broom", "escoba": "broom", "cauldron": "cauldron", "kessel": "cauldron", "hexenkessel": "cauldron", "chaudron": "cauldron", "caldero": "cauldron", "owl": "owl", "eule": "owl", "hibou": "owl", "chouette": "owl", "búho": "owl", "web": "web", "spider web": "web", "spiderweb": "web", "cobweb": "web", "spinnennetz": "web", "toile d'araignée": "web", "telaraña": "web", "mask": "mask", "maske": "mask", "masque": "mask", "máscara": "mask", "wand": "wand", "magic wand": "wand", "zauberstab": "wand", "baguette magique": "wand", "varita": "wand", "apple": "apple", "caramel apple": "apple", "apfel": "apple", "pomme": "apple", "manzana": "apple", "leaf": "leaf", "leaves": "leaf", "autumn leaf": "leaf", "fall leaf": "leaf", "blatt": "leaf", "feuille": "leaf", "hoja": "leaf", "lollipop": "lollipop", "lolly": "lollipop", "lutscher": "lollipop", "sucette": "lollipop", "piruleta": "lollipop", "cookie": "cookie", "cookies": "cookie", "keks": "cookie", "plätzchen": "cookie", "biscuit": "cookie", "galleta": "cookie", "acorn": "acorn", "eichel": "acorn", "gland": "acorn", "bellota": "acorn", "mushroom": "mushroom", "pilz": "mushroom", "champignon": "mushroom", "seta": "mushroom", "candycorn": "candycorn", "candy corn": "candycorn", "house": "house", "haunted house": "house", "spukhaus": "house", "maison hantée": "house", "casa embrujada": "house", "potion": "potion", "magic potion": "potion", "zaubertrank": "potion", "potion magique": "potion", "poción": "potion", "monster": "monster", "monsters": "monster", "monstre": "monster", "monstruo": "monster", "pail": "pail", "treat bucket": "pail", "candy bucket": "pail", "trick or treat bucket": "pail", "treat bag": "pail", "cupcake": "cupcake", "muffin": "cupcake", "mummy": "mummy", "mumie": "mummy", "momie": "mummy", "momia": "mummy", "crow": "crow", "raven": "crow", "krähe": "crow", "rabe": "crow", "corbeau": "crow", "cuervo": "crow", "chocolate": "chocolate", "chocolate bar": "chocolate", "schokolade": "chocolate", "chocolat": "chocolate"}, "emoji_icon": {"🦇": "bat", "🎃": "pumpkin", "👻": "ghost", "🌕": "moon", "🌙": "moon", "🌝": "moon", "⭐": "star", "🌟": "star", "🐈‍⬛": "cat", "🐈": "cat", "🐱": "cat", "🕷": "spider", "🍬": "candy", "🧙": "hat", "🧙‍♀": "hat", "🧙‍♂": "hat", "🧹": "broom", "🦉": "owl", "🕸": "web", "🎭": "mask", "🪄": "wand", "🍎": "apple", "🍏": "apple", "🍂": "leaf", "🍁": "leaf", "🍭": "lollipop", "🍪": "cookie", "🏚": "house", "🧪": "potion", "👾": "monster", "🧁": "cupcake", "🐦‍⬛": "crow", "🍫": "chocolate", "🌰": "acorn", "🍄": "mushroom"}, "labels": {"en": {"free": "FREE", "card": "Card", "name": "Name", "page": "page", "items": "items", "cards": "cards", "call_title": "Calling cards", "call_hint": "Cut the cards apart and shuffle them. Draw one at a time: read it out (and show the picture), then tick it on the caller sheet.", "sheet_title": "Caller sheet", "sheet_hint": "Tick each square as you call it. When someone shouts BINGO, check their marked squares against your ticks.", "patterns": "Ways to win", "p_line": "Line", "p_corners": "4 corners", "p_x": "X", "p_full": "Full card"}, "de": {"free": "FREI", "card": "Karte", "name": "Name", "page": "Seite", "items": "Begriffe", "cards": "Karten", "call_title": "Ziehkarten", "call_hint": "Schneidet die Karten aus und mischt sie. Zieht eine nach der anderen: vorlesen (und das Bild zeigen), dann auf dem Spielleiter-Blatt abhaken.", "sheet_title": "Spielleiter-Blatt", "sheet_hint": "Hakt jeden Begriff ab, sobald ihr ihn ausruft. Ruft jemand BINGO, vergleicht die markierten Felder mit euren Haken.", "patterns": "So gewinnt man", "p_line": "Reihe", "p_corners": "4 Ecken", "p_x": "X", "p_full": "Volle Karte"}, "fr": {"free": "LIBRE", "card": "Carte", "name": "Prénom", "page": "page", "items": "mots", "cards": "cartes", "call_title": "Cartes à tirer", "call_hint": "Découpez les cartes et mélangez-les. Tirez-en une à la fois : lisez-la à voix haute (et montrez l’image), puis cochez-la sur la feuille de l’animateur.", "sheet_title": "Feuille de l’animateur", "sheet_hint": "Cochez chaque mot dès que vous l’annoncez. Quand quelqu’un crie BINGO, comparez ses cases marquées avec vos coches.", "patterns": "Pour gagner", "p_line": "Ligne", "p_corners": "4 coins", "p_x": "X", "p_full": "Carton plein"}, "es": {"free": "LIBRE", "card": "Cartón", "name": "Nombre", "page": "página", "items": "palabras", "cards": "cartones", "call_title": "Tarjetas para cantar", "call_hint": "Recortar las tarjetas y mezclarlas. Sacar una cada vez: leerla en voz alta (y enseñar el dibujo) y marcarla en la hoja del cantor.", "sheet_title": "Hoja del cantor", "sheet_hint": "Marcar cada casilla al cantarla. Cuando alguien grite ¡BINGO!, comparar sus casillas marcadas con las marcas de esta hoja.", "patterns": "Formas de ganar", "p_line": "Línea", "p_corners": "4 esquinas", "p_x": "X", "p_full": "Cartón lleno"}}, "sets": {"little": {"key": "little", "title": "Halloween Picture Bingo", "short": "Picture bingo", "style": "pictures", "grid": 4, "free": "none", "cards": 30, "seed": 31013, "items": [["pumpkin", "Pumpkin"], ["ghost", "Ghost"], ["bat", "Bat"], ["cat", "Black cat"], ["hat", "Witch hat"], ["broom", "Broom"], ["moon", "Full moon"], ["star", "Star"], ["spider", "Spider"], ["web", "Spider web"], ["owl", "Owl"], ["candy", "Candy"], ["lollipop", "Lollipop"], ["candycorn", "Candy corn"], ["cauldron", "Cauldron"], ["potion", "Potion"], ["wand", "Magic wand"], ["mask", "Mask"], ["house", "Haunted house"], ["monster", "Monster"], ["mummy", "Mummy"], ["apple", "Apple"], ["leaf", "Leaf"], ["pail", "Treat bucket"]], "ages": "Ages 3+", "who": "Little ones", "blurb": "Big pictures, no reading needed. 4 × 4 cards."}, "words": {"key": "words", "title": "Halloween Word Bingo", "short": "Word bingo", "style": "words", "grid": 5, "free": "default", "cards": 30, "seed": 52021, "items": ["Pumpkin", "Ghost", "Bat", "Witch", "Broomstick", "Black cat", "Spider", "Spider web", "Full moon", "Owl", "Candy", "Candy corn", "Costume", "Mask", "Haunted house", "Skeleton", "Mummy", "Monster", "Vampire", "Werewolf", "Cauldron", "Potion", "Magic wand", "Wizard", "Treat bag", "Trick or treat", "Jack-o'-lantern", "Scarecrow", "Boo!", "Spooky", "Lollipop", "Caramel apple", "Corn maze", "Autumn leaves", "Crow", "Flashlight", "Pirate", "Doorbell", "Pumpkin pie", "Night sky"], "ages": "Ages 6+", "who": "Readers", "blurb": "Halloween words for readers. 5 × 5 with a free centre."}, "party": {"key": "party", "title": "Halloween Party Bingo", "short": "Party bingo", "style": "phrases", "grid": 5, "free": "default", "cards": 30, "seed": 73037, "items": ["Cat ears", "A pun costume", "Group selfie", "Someone says “Boo!”", "Homemade costume", "Matching costumes", "Fake spider", "Pumpkin spice drink", "Candy corn debate", "Witch hat", "Sheet ghost costume", "Face paint", "Glow sticks", "Costume contest", "Spooky playlist", "Caramel apples", "Someone forgot a costume", "A superhero", "Fake cobwebs", "Fun-size candy bar", "Mini pumpkin on a desk", "Halloween socks", "Orange and black outfit", "Last-minute costume", "Someone in a cape", "A vampire", "A pirate", "Costume photo shoot", "Pumpkin carving", "A wild wig", "Candy swap", "Spooky snacks", "Costume from last year", "Jack-o'-lantern", "Halloween sweater", "A ghost story", "Best costume vote", "Office plant in costume", "A mad scientist", "Fog machine"], "ages": "Teens & grown-ups", "who": "Party & office", "blurb": "Costumes and party moments. Call it, or spot it at the party."}}};
+/* Make Together Studio bingo engine: one file shared by the printable PDFs (rendered in headless Chrome), the Bingo
+   Maker (the buyer's browser) and node (tests / independent verification).
+
+   Everything that must be exact is done here, never by the AI: the AI only writes a list of words or pictures.
+     BG.parse(text)              the AI's code block -> {cfg, items, errors, warnings}
+     BG.build(C, cfg, items)     -> game {cfg, items, cards, stats, errors, warnings}; every card unique, every item callable
+     BG.render(C, game, opt)     -> HTML pages: caller sheet, calling cards, player cards (Letter or A4, 1 or 2 per page)
+     BG.fit(root)                shrinks text to fit its box (width AND height), soft hyphens, last resort overflow-wrap
+     BG.overflow(root)           QA: every box whose content is wider/taller than the box or sticks out of the page
+   C = the season content (window.BG_CONTENT): labels, theme colours, icons (SVG), emoji -> icon map, ready sets.
+*/
+(function (root) {
+  'use strict';
+  const BG = {};
+  const MAX_ITEMS = 80, MAX_CARDS = 100, MIN_CARDS = 1;
+
+  // ------------------------------------------------------------------ small utils
+  BG.esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  BG.rng = function (seed) {                       // mulberry32: same seed -> same cards, everywhere
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  };
+  BG.hash = function (str) {                       // FNV-1a over code points
+    let h = 2166136261;
+    for (const ch of String(str)) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  };
+  function shuffle(a, rnd) {
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  // French typography: no-break space before : ; ! ? » and after «, so no mark starts a line alone
+  BG.nbsp = s => String(s).replace(/\s+([!?;:»])/g, ' $1').replace(/«\s+/g, '« ');
+  BG.norm = s => String(s).toLowerCase().normalize('NFC').replace(/[\s ]+/g, ' ').replace(/^[\s"'“”«»„.,;:!?-]+|[\s"'“”«»„.,;:!?-]+$/g, '').trim();
+
+  // one emoji = a flag (2 regional indicators), a keycap, or a pictograph with optional variation selector, skin tone and
+  // tag sequence; ZWJ joins several (🐈‍⬛, 👩🏽‍🍳, 🏳️‍🌈). A lone regional indicator is still taken, as before.
+  const EMO_EL = '(?:\\p{Regional_Indicator}{1,2}|[#*0-9]\\uFE0F?\\u20E3|\\p{Extended_Pictographic}[\\uFE0E\\uFE0F]?\\p{Emoji_Modifier}?' +
+    '[\\u{E0020}-\\u{E007E}]*\\u{E007F}?)';
+  const EMOJI_RE = new RegExp('^\\s*(' + EMO_EL + '(?:\\u200D' + EMO_EL + ')*[\\uFE0E\\uFE0F]?)\\s*', 'u');
+  BG.splitEmoji = function (line) {
+    const m = String(line).match(EMOJI_RE);
+    if (!m) return { emoji: '', text: String(line).trim() };
+    return { emoji: m[1], text: String(line).slice(m[0].length).trim() };
+  };
+
+  // ------------------------------------------------------------------ geometry
+  BG.cellsOf = (grid, free) => grid * grid - (free ? 1 : 0);
+  BG.comb = function (n, k) {                      // n choose k, capped (only compared with card counts <= 100)
+    let r = 1;
+    for (let i = 1; i <= k; i++) { r = r * (n - k + i) / i; if (r > 1e6) return 1e6; }
+    return Math.round(r);
+  };
+  BG.centre = grid => (grid % 2 ? (grid * grid - 1) / 2 : -1);
+  BG.lines = function (grid) {                     // rows, columns, both diagonals (positions 0..g*g-1)
+    const L = [];
+    for (let r = 0; r < grid; r++) L.push([...Array(grid)].map((_, c) => r * grid + c));
+    for (let c = 0; c < grid; c++) L.push([...Array(grid)].map((_, r) => r * grid + c));
+    L.push([...Array(grid)].map((_, i) => i * grid + i));
+    L.push([...Array(grid)].map((_, i) => i * grid + (grid - 1 - i)));
+    return L;
+  };
+
+  // ------------------------------------------------------------------ parsing the AI's code block
+  const KEYS = { BINGO: 'title', TITLE: 'title', STYLE: 'style', GRID: 'grid', FREE: 'free', CARDS: 'cards', PLAYERS: 'players',
+    LANGUAGE: 'lang', LANG: 'lang', LABELS: 'labels', ITEMS: 'items' };
+  const STYLES = { picture: 'pictures', pictures: 'pictures', pics: 'pictures', icons: 'pictures', emoji: 'pictures', word: 'words',
+    words: 'words', text: 'words', phrase: 'phrases', phrases: 'phrases', party: 'phrases', sentences: 'phrases' };
+
+  BG.parse = function (text) {
+    const cfg = {}, items = [], errors = [], warnings = [];
+    let mode = 'head';
+    const lines = String(text || '').replace(/\r/g, '').split('\n');
+    for (const raw of lines) {
+      if (/^\s*```/.test(raw)) { if (mode === 'items' && items.length) break; continue; }   // the end of the code block
+      const line = raw.replace(/\*\*/g, '').trim();
+      if (!line) continue;
+      if (/^[-–—_=]{3,}$/.test(line)) { if (mode === 'head' && Object.keys(cfg).length) mode = 'items'; continue; }
+      const m = line.match(/^([A-Za-z]+)\s*:\s*(.*)$/);
+      if (mode === 'head') {
+        if (m && KEYS[m[1].toUpperCase()]) {
+          const key = KEYS[m[1].toUpperCase()], val = m[2].trim();
+          if (key === 'items') { mode = 'items'; if (val) items.push(val); } else cfg[key] = val;
+          continue;
+        }
+        if (Object.keys(cfg).length) { mode = 'items'; items.push(line); }     // items without an ITEMS: line
+        continue;                                                                // text before the block: ignored
+      }
+      if (m && /^ITEMS$/i.test(m[1])) { if (m[2].trim()) items.push(m[2].trim()); continue; }
+      items.push(line);
+    }
+    if (items.length === 1 && (items[0].match(/,/g) || []).length >= 5) items.splice(0, 1, ...items[0].split(',').map(s => s.trim()));
+    const out = { title: (cfg.title || '').slice(0, 90) };
+    const st = BG.norm(cfg.style || '');
+    out.style = STYLES[st] || null;
+    if (cfg.style && !out.style) warnings.push(`STYLE “${cfg.style}” is unknown, so I chose the style myself.`);
+    const gm = String(cfg.grid || '').match(/(\d)/);
+    out.grid = gm ? +gm[1] : null;
+    if (cfg.grid && ![3, 4, 5].includes(out.grid)) { warnings.push('GRID must be 3, 4 or 5, so I chose the size myself.'); out.grid = null; }
+    const fr = (cfg.free || '').trim();
+    if (!fr || /^(yes|ja|oui|si|sí|free|frei|libre|true|centre|center)$/i.test(fr)) out.free = fr ? 'default' : null;
+    else if (/^(no|none|nein|non|false|off|-)$/i.test(fr)) out.free = 'none';
+    else out.free = fr.slice(0, 40);
+    if (cfg.cards) {
+      const n = parseInt(String(cfg.cards).replace(/[^\d]/g, ''), 10);
+      if (n >= MIN_CARDS) out.cards = Math.min(n, MAX_CARDS);
+      if (n > MAX_CARDS) warnings.push(`At most ${MAX_CARDS} cards at a time, so I made ${MAX_CARDS}.`);
+    }
+    out.players = (cfg.players || '').split(/[,;]|\s+(?:and|und|et|y)\s+|\s+&\s+/i).map(s => s.replace(/\(.*?\)/g, '').trim()).filter(Boolean).slice(0, MAX_CARDS);
+    out.lang = (cfg.lang || '').trim().slice(0, 2).toLowerCase();
+    out.labels = !/^(no|none|off|nein|non)$/i.test((cfg.labels || '').trim());
+    const its = items.map(s => s.replace(/^\s*(?:[-*•–]|\d{1,3}[.)])\s+/, '').trim()).filter(s => s && !/^(ITEMS|NOTES?)\s*:?$/i.test(s));
+    return { cfg: out, items: its, errors, warnings, found: Object.keys(cfg).length > 0 || its.length > 0 };
+  };
+
+  // ------------------------------------------------------------------ items: emoji, our drawn icons, duplicates
+  BG.items = function (C, list, style) {
+    const out = [], seen = new Map(), warnings = [], errors = [];
+    const names = C.icon_names || {};
+    for (const line of list) {
+      let { emoji, text } = BG.splitEmoji(line);
+      text = text.replace(/\s+/g, ' ').trim();
+      let icon = '';
+      const pm = text.match(/^\[([a-z-]+)\]\s*(.*)$/i);                  // [cat] Biscuit -> our cat drawing, label Biscuit
+      if (pm && C.icons[pm[1].toLowerCase()]) { icon = pm[1].toLowerCase(); text = pm[2].trim() || C.icon_label[icon] || icon; }
+      if (!icon && emoji) icon = (C.emoji_icon || {})[emoji.replace(/[️︎]/g, '')] || '';
+      // With an emoji, only our drawing's own name counts (Candy cane, Ornament: words with no exact emoji, which the AI
+      // guide says the Maker draws), never a synonym: the AI's 🐶 for a dog named Biscuit beats our cookie drawing.
+      if (!icon && style === 'pictures') {
+        const hit = names[BG.norm(text)] || '';
+        if (hit && (!emoji || BG.norm(C.icon_label[hit] || '') === BG.norm(text))) icon = hit;
+      }
+      if (!text && emoji) text = (icon && C.icon_label[icon]) || '';
+      if (!text) { if (emoji) warnings.push(`An item has a picture but no word (${emoji}); it was left out.`); continue; }
+      const key = BG.norm(text);
+      if (seen.has(key)) { warnings.push(`“${text}” is in the list twice; it is used once.`); continue; }
+      seen.set(key, out.length);
+      out.push({ text: text.slice(0, 80), emoji, icon, long: text.length > 80 });
+    }
+    out.filter(i => i.long).forEach(i => warnings.push(`“${i.text}…” is very long; it was shortened. Short items read best.`));
+    if (out.length > MAX_ITEMS) { warnings.push(`Only the first ${MAX_ITEMS} items are used (you gave ${out.length}).`); out.length = MAX_ITEMS; }
+    if (style === 'pictures') {
+      const bare = out.filter(i => !i.icon && !i.emoji);
+      if (bare.length) warnings.push(`${bare.length} picture item${bare.length > 1 ? 's have' : ' has'} no picture, so ${bare.length > 1 ? 'they show' : 'it shows'} the word only: ${bare.slice(0, 5).map(i => '“' + i.text + '”').join(', ')}${bare.length > 5 ? '…' : ''}.`);
+    }
+    return { items: out, warnings, errors };
+  };
+
+  // ------------------------------------------------------------------ card generation (deterministic, verified)
+  /* n items, k cells per card. Rules, checked for every new card against all earlier cards:
+       1. no item twice on a card;
+       2. the card's item SET is new (when n > k; with n == k every card has every item, so only the layout differs);
+       3. the card's LAYOUT is new;
+       4. no full line (row, column, diagonal) repeats an earlier card's line as a set (strict mode; relaxed only if the
+          list is too short to allow it, which is reported in stats);
+     Items are spread evenly (least-used first, random tie-break), so every item appears on some card and is worth calling. */
+  BG.generate = function (n, grid, free, count, seed) {
+    const k = BG.cellsOf(grid, free), centre = free ? BG.centre(grid) : -1;
+    if (n < k) return { error: `needs at least ${k} items`, cards: [] };
+    const rnd = BG.rng(seed);
+    const use = new Array(n).fill(0);
+    const sets = new Set(), layouts = new Set(), lineSet = new Set();
+    const LINES = BG.lines(grid);
+    const cards = [];
+    let relaxed = 0;
+    const lineKeys = cells => LINES.map(L => L.filter(p => p !== centre).map(p => cells[p]).sort((a, b) => a - b).join(','));
+    for (let c = 0; c < count; c++) {
+      let ok = null;
+      for (let attempt = 0; attempt < 1500 && !ok; attempt++) {
+        const strict = attempt < 600, setsFree = attempt >= 900 && BG.comb(n, k) < count;   // too few possible sets: layouts only
+        const order = [...Array(n).keys()].map(i => [use[i] + rnd() * (attempt < 200 ? 0.95 : 2.5), i]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+        const chosen = shuffle(order.slice(0, k), rnd);
+        const cells = [];
+        let j = 0;
+        for (let p = 0; p < grid * grid; p++) cells.push(p === centre ? -1 : chosen[j++]);
+        const setKey = chosen.slice().sort((a, b) => a - b).join(',');
+        if (n > k && sets.has(setKey) && !setsFree) continue;
+        const layKey = cells.join(',');
+        if (layouts.has(layKey)) continue;
+        const lk = lineKeys(cells);
+        if (new Set(lk).size !== lk.length) continue;
+        if (strict && lk.some(x => lineSet.has(x))) continue;
+        if (!strict) relaxed++;
+        ok = { cells, setKey, layKey, lk };
+      }
+      if (!ok) return { error: `could not make ${count} different cards from ${n} items; add more items or make fewer cards`, cards };
+      sets.add(ok.setKey); layouts.add(ok.layKey); ok.lk.forEach(x => lineSet.add(x));
+      ok.cells.forEach(i => { if (i >= 0) use[i]++; });
+      cards.push(ok.cells);
+    }
+    let maxShared = 0;
+    for (let a = 0; a < cards.length; a++) {
+      const A = new Set(cards[a]);
+      for (let b = a + 1; b < cards.length; b++) {
+        let s = 0; for (const x of cards[b]) if (x >= 0 && A.has(x)) s++;
+        if (s > maxShared) maxShared = s;
+      }
+    }
+    return { cards, stats: { items: n, cells: k, cards: count, relaxedCards: relaxed, maxShared, minUse: Math.min(...use), maxUse: Math.max(...use) } };
+  };
+
+  // ------------------------------------------------------------------ config + game
+  BG.defaults = function (C) {
+    return { title: C.default_title, style: 'words', grid: 5, free: 'default', cards: 30, players: [], lang: 'en', labels: true,
+      perPage: 1, seed: 0, salt: 0 };
+  };
+
+  BG.recommendGrid = function (style, n) {
+    if (style === 'pictures') return n >= 16 ? 4 : 3;
+    return n >= 24 ? 5 : (n >= 16 ? 4 : 3);
+  };
+
+  BG.build = function (C, cfgIn, list, opt) {
+    opt = opt || {};
+    const cfg = BG.defaults(C);
+    Object.entries(cfgIn || {}).forEach(([k, v]) => { if (v != null && v !== '' && !(Array.isArray(v) && !v.length && k !== 'players')) cfg[k] = v; });
+    if (!cfg.title) cfg.title = C.default_title;
+    const errors = [], warnings = [];
+    if (!cfg.style) cfg.style = (list || []).some(s => BG.splitEmoji(s).emoji) ? 'pictures' : 'words';
+    const it = BG.items(C, list || [], cfg.style);
+    warnings.push(...it.warnings);
+    const items = it.items;
+    if (!cfg.grid) cfg.grid = BG.recommendGrid(cfg.style, items.length);
+    const freeOn = cfg.grid % 2 === 1 && cfg.free !== 'none';
+    if (cfg.grid % 2 === 0 && cfg.free && cfg.free !== 'none' && cfg.free !== 'default' && cfgIn && cfgIn.free) warnings.push('A 4 × 4 card has no centre square, so there is no free space.');
+    cfg.freeOn = freeOn;
+    cfg.freeText = freeOn ? (cfg.free && cfg.free !== 'default' ? cfg.free : BG.L(C, cfg.lang).free) : '';
+    const k = BG.cellsOf(cfg.grid, freeOn);
+    cfg.players = (cfg.players || []).filter(Boolean);
+    cfg.cards = Math.max(MIN_CARDS, Math.min(MAX_CARDS, +cfg.cards || 30, 1e9));
+    if (cfg.players.length > cfg.cards) cfg.cards = Math.min(MAX_CARDS, cfg.players.length);
+    if (!C.labels[cfg.lang]) { if (cfg.lang && cfg.lang !== 'en') warnings.push(`Card labels in “${cfg.lang}” aren't built in yet, so they stay in English (your words print as written).`); cfg.lang = 'en'; }
+    if (items.length < k) {
+      const fits = [5, 4, 3].filter(g => BG.cellsOf(g, g % 2 === 1 && cfg.free !== 'none') <= items.length);
+      errors.push(`A ${cfg.grid} × ${cfg.grid} card needs at least ${k} different items; your list has ${items.length}.` +
+        (fits.length ? ` Add ${k - items.length} more, or choose a ${fits[0]} × ${fits[0]} card.` : ' Add more items.'));
+      return { cfg, items, cards: [], stats: null, errors, warnings };
+    }
+    if (items.length < Math.ceil(k * 1.4) && cfg.grid >= 4) warnings.push(`Tip: with ${items.length} items for ${k} squares the cards are very alike, so many players win at once. About ${Math.ceil(k * 1.5)}+ items make a better game.`);
+    const seed = opt.seed != null ? opt.seed : (cfg.seed || BG.hash([cfg.style, cfg.grid, freeOn, cfg.cards, items.map(i => i.text).join('|'), cfg.salt || 0].join('#')));
+    const g = BG.generate(items.length, cfg.grid, freeOn, cfg.cards, seed);
+    if (g.error) { errors.push(`I ${g.error}.`); return { cfg, items, cards: [], stats: null, errors, warnings }; }
+    const cards = g.cards.map((cells, i) => ({ no: i + 1, cells, player: cfg.players[i] || '' }));
+    const game = { cfg, items, cards, stats: Object.assign(g.stats, { seed }), errors, warnings };
+    const bad = BG.check(game);
+    if (bad.length) errors.push('Engine self-check failed: ' + bad.join('; '));
+    return game;
+  };
+
+  /* Self-check (the Python verifier repeats it independently): every card unique, every square an item on the list,
+     no item twice on a card, the free centre in place, every item on at least one card. */
+  BG.check = function (game) {
+    const { cfg, items, cards } = game, bad = [];
+    const k = BG.cellsOf(cfg.grid, cfg.freeOn), centre = cfg.freeOn ? BG.centre(cfg.grid) : -1;
+    const lays = new Set(), sets = new Set(), used = new Set();
+    cards.forEach(c => {
+      if (c.cells.length !== cfg.grid * cfg.grid) bad.push(`card ${c.no}: ${c.cells.length} squares`);
+      const real = c.cells.filter((x, p) => p !== centre);
+      if (centre >= 0 && c.cells[centre] !== -1) bad.push(`card ${c.no}: centre is not free`);
+      if (real.some(x => !(x >= 0 && x < items.length))) bad.push(`card ${c.no}: a square is not on the list`);
+      if (new Set(real).size !== k) bad.push(`card ${c.no}: an item twice`);
+      real.forEach(x => used.add(x));
+      const lk = c.cells.join(','), sk = real.slice().sort((a, b) => a - b).join(',');
+      if (lays.has(lk)) bad.push(`card ${c.no}: same layout as another card`);
+      if (items.length > k && BG.comb(items.length, k) >= cards.length && sets.has(sk)) bad.push(`card ${c.no}: same items as another card`);
+      lays.add(lk); sets.add(sk);
+    });
+    if (cards.length * k >= items.length && used.size !== items.length) bad.push(`${items.length - used.size} items are on no card`);
+    return bad;
+  };
+
+  // ------------------------------------------------------------------ labels
+  BG.L = (C, lang) => Object.assign({}, C.labels.en, C.labels[lang] || {});
+
+  // ------------------------------------------------------------------ rendering
+  function picHTML(C, item, cls) {
+    if (item.icon && C.icons[item.icon]) return `<div class="${cls}"><svg viewBox="0 0 100 100"><use href="#bgi-${item.icon}"/></svg></div>`;
+    if (item.emoji) return `<div class="${cls} emo"><span>${BG.esc(item.emoji)}</span></div>`;
+    return '';
+  }
+  function txt(s, lang) { return BG.esc(lang === 'fr' ? BG.nbsp(s) : s); }
+
+  BG.symbols = function (C, game) {
+    const keys = new Set(['star']);
+    (game ? game.items : []).forEach(i => { if (i.icon) keys.add(i.icon); });
+    (C.deco || []).forEach(k => keys.add(k));
+    const syms = [...keys].filter(k => C.icons[k]).map(k => C.icons[k].replace(/^<svg[^>]*>/, `<symbol id="bgi-${k}" viewBox="0 0 100 100">`).replace(/<\/svg>\s*$/, '</symbol>'));
+    return `<svg class="bg-syms" width="0" height="0" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">${syms.join('')}</svg>`;
+  };
+
+  function cardHTML(C, game, card, L) {
+    const { cfg, items } = game, g = cfg.grid, centre = cfg.freeOn ? BG.centre(g) : -1;
+    const T = C.theme;
+    const letters = g === 5 ? `<div class="bg-letters">${'BINGO'.split('').map((ch, i) => `<span style="background:${T.letters[i % T.letters.length]}">${ch}</span>`).join('')}</div>` : '';
+    const cells = card.cells.map((x, p) => {
+      if (p === centre) {
+        return `<div class="bg-cell free"><div class="bg-in"><div class="bg-star"><svg viewBox="0 0 100 100"><use href="#bgi-star"/></svg></div>` +
+          `<div class="bg-txt bg-freetxt" lang="${cfg.lang}">${txt(cfg.freeText, cfg.lang)}</div></div></div>`;
+      }
+      const it = items[x];
+      const pic = cfg.style === 'pictures' ? picHTML(C, it, 'bg-pic') : '';
+      const showTxt = cfg.style !== 'pictures' || cfg.labels || !pic;
+      return `<div class="bg-cell${pic ? ' has-pic' : ''}${pic && !showTxt ? ' pic-only' : ''}"><div class="bg-in">${pic}` +
+        (showTxt ? `<div class="bg-txt" lang="${cfg.lang}">${txt(it.text, cfg.lang)}</div>` : '') + `</div></div>`;
+    }).join('');
+    const name = card.player ? `<span class="bg-name has"><b>${BG.esc(card.player)}</b></span>` :
+      `<span class="bg-name">${BG.esc(L.name)}: <i></i></span>`;
+    return `<div class="bg-card g${g} s-${cfg.style}" data-card="${card.no}">` +
+      `<div class="bg-head"><div class="bg-deco l">${decoHTML(C, 0)}</div><div class="bg-title"><span class="bg-fit" lang="${cfg.lang}">${txt(cfg.title, cfg.lang)}</span></div><div class="bg-deco r">${decoHTML(C, 1)}</div></div>` +
+      `<div class="bg-meta">${name}<span class="bg-no">${BG.esc(L.card)} ${card.no}</span></div>` +
+      `<div class="bg-body"><div class="bg-sq">${letters}<div class="bg-grid" style="--g:${g}">${cells}</div></div></div>` +
+      `<div class="bg-foot">${BG.esc(C.brand_line)}</div></div>`;
+  }
+  function decoHTML(C, i) {
+    const k = (C.deco || [])[i];
+    return k && C.icons[k] ? `<svg viewBox="0 0 100 100"><use href="#bgi-${k}"/></svg>` : '';
+  }
+
+  function callPages(C, game, L) {
+    const { cfg, items } = game, per = 20, pages = [];
+    for (let s = 0; s < items.length; s += per) {
+      const chunk = items.slice(s, s + per);
+      const cells = chunk.map(it => {
+        const pic = cfg.style === 'pictures' ? picHTML(C, it, 'bg-cpic') : '';
+        return `<div class="bg-call${pic ? ' has-pic' : ''} s-${cfg.style}"><div class="bg-cin">${pic}<div class="bg-ctxt" lang="${cfg.lang}">${txt(it.text, cfg.lang)}</div></div></div>`;
+      }).join('');
+      pages.push(`<section class="bg-page bg-callpage"><div class="bg-ph"><div class="bg-kick">${BG.esc(cfg.title)}</div><h2 lang="${cfg.lang}">${BG.esc(L.call_title)}</h2><p lang="${cfg.lang}">${txt(L.call_hint, cfg.lang)}</p></div>` +
+        `<div class="bg-calls">${cells}</div><div class="bg-pfoot">${BG.esc(L.page)} ${pages.length + 1}/${Math.ceil(items.length / per)} · ${BG.esc(C.brand_line)}</div></section>`);
+    }
+    return pages;
+  }
+
+  function sheetPage(C, game, L) {
+    const { cfg, items } = game, n = items.length;
+    const cols = n <= 24 ? 3 : (n <= 48 ? 4 : 5);
+    const rows = Math.ceil(n / cols);
+    const cells = items.map(it => {
+      const pic = cfg.style === 'pictures' ? picHTML(C, it, 'bg-spic') : '';
+      return `<div class="bg-si"><span class="bg-box"></span>${pic}<span class="bg-stxt" lang="${cfg.lang}">${txt(it.text, cfg.lang)}</span></div>`;
+    }).join('');
+    const pat = (on, nm) => `<div class="bg-pat"><div class="bg-mini">${[...Array(25)].map((_, i) => `<i class="${on.includes(i) ? 'on' : ''}"></i>`).join('')}</div><span lang="${cfg.lang}">${BG.esc(nm)}</span></div>`;
+    const pats = cfg.grid === 5 ? [pat([5, 6, 7, 8, 9], L.p_line), pat([0, 4, 20, 24], L.p_corners), pat([0, 6, 12, 18, 24, 4, 8, 16, 20], L.p_x), pat([...Array(25).keys()], L.p_full)].join('') :
+      [pat([5, 6, 7, 8, 9], L.p_line), pat([0, 4, 20, 24], L.p_corners), pat([...Array(25).keys()], L.p_full)].join('');
+    return `<section class="bg-page bg-sheetpage"><div class="bg-ph"><div class="bg-kick">${BG.esc(cfg.title)}</div><h2 lang="${cfg.lang}">${BG.esc(L.sheet_title)}</h2><p lang="${cfg.lang}">${txt(L.sheet_hint, cfg.lang)}</p></div>` +
+      `<div class="bg-sheet" style="--cols:${cols};--rows:${rows}">${cells}</div>` +
+      `<div class="bg-pats"><b lang="${cfg.lang}">${BG.esc(L.patterns)}</b>${pats}</div>` +
+      `<div class="bg-pfoot">${BG.esc(n)} ${BG.esc(L.items)} · ${BG.esc(game.cards.length)} ${BG.esc(L.cards)} · ${BG.esc(C.brand_line)}</div></section>`;
+  }
+
+  /* opt.parts: which parts to render ('sheet', 'calls', 'cards'); opt.perPage 1 | 2 */
+  BG.render = function (C, game, opt) {
+    opt = opt || {};
+    const L = BG.L(C, game.cfg.lang);
+    const parts = opt.parts || ['sheet', 'calls', 'cards'];
+    const per = +(opt.perPage || game.cfg.perPage || 1) === 2 ? 2 : 1;
+    const out = [];
+    if (parts.includes('sheet')) out.push(sheetPage(C, game, L));
+    if (parts.includes('calls')) out.push(...callPages(C, game, L));
+    if (parts.includes('cards')) {
+      for (let i = 0; i < game.cards.length; i += per) {
+        const cs = game.cards.slice(i, i + per).map(c => cardHTML(C, game, c, L)).join(per === 2 ? '<div class="bg-cut"></div>' : '');
+        out.push(`<section class="bg-page bg-cardpage per${per}">${cs}</section>`);
+      }
+    }
+    return `<div class="bg-doc" style="--ink:${C.theme.ink};--em:${C.theme.em};--soft:${C.theme.soft};--line:${C.theme.line};--free:${C.theme.free}">` +
+      BG.symbols(C, game) + out.join('') + '</div>';
+  };
+
+  // ------------------------------------------------------------------ fitting
+  /* A soft hyphen between syllable-ish chunks (vowel | consonant, or between two consonants), never leaving fewer than
+     3 letters on a side. Only used for a word that is still too wide at a comfortable size. */
+  BG.hyphenate = function (word) {
+    const ch = [...word];
+    if (ch.length < 8) return word;
+    const isV = c => /[aeiouyäöüàâæéèêëîïôœùûÿáíóúåøőű]/i.test(c);
+    const ONSETS = ['schr', 'schl', 'schm', 'schn', 'schw', 'spr', 'str', 'scr', 'chr', 'sch', 'bl', 'br', 'ch', 'cl', 'cr',
+      'dr', 'fl', 'fr', 'gl', 'gn', 'gr', 'kl', 'kn', 'kr', 'ph', 'pl', 'pr', 'qu', 'sp', 'st',
+      'th', 'tr', 'wr', 'ck', 'pf'];
+    const groups = [];
+    for (let j = 0; j < ch.length;) {
+      if (isV(ch[j])) { let k = j; while (k < ch.length && isV(ch[k])) k++; groups.push([j, k]); j = k; } else j++;
+    }
+    const breaks = new Set();
+    for (let g = 0; g + 1 < groups.length; g++) {
+      const a = groups[g][1], b = groups[g + 1][0];
+      if (b - a < 1) continue;
+      const cl = ch.slice(a, b).join('');
+      if (!/^\p{L}+$/u.test(cl)) continue;
+      let pos = b - 1;
+      if (b - a === 1) pos = a;
+      else for (let len = Math.min(4, b - a); len >= 2; len--) { if (ONSETS.includes(cl.slice(cl.length - len).toLowerCase())) { pos = b - len; break; } }
+      if (pos >= 2 && ch.length - pos >= 3) breaks.add(pos);
+    }
+    return ch.map((c, i) => (breaks.has(i) ? '\u00ad' : '') + c).join('');
+  };
+  function hyphenateEl(el) {
+    const walk = n => {
+      if (n.nodeType === 3) n.nodeValue = n.nodeValue.split(/(\s+)/).map(w => (/\s/.test(w) ? w : BG.hyphenate(w))).join('');
+      else n.childNodes.forEach(walk);
+    };
+    walk(el);
+  }
+  function overBox(box, t) {
+    return box.scrollHeight > box.clientHeight + 0.5 || box.scrollWidth > box.clientWidth + 0.5 ||
+      (t && t.scrollWidth > t.clientWidth + 0.5);
+  }
+  function fitText(box, t, min, hyphAt) {
+    if (!box || !t) return;
+    let fs = parseFloat(getComputedStyle(t).fontSize), g = 120, hy = false;
+    while (overBox(box, t) && g-- > 0) {
+      if (!hy && fs <= hyphAt) { hyphenateEl(t); hy = true; continue; }
+      if (fs <= min) break;
+      fs = Math.max(min, fs * 0.95);
+      t.style.fontSize = fs.toFixed(2) + 'px';
+    }
+    if (!hy && overBox(box, t)) { hyphenateEl(t); }
+    if (overBox(box, t)) { t.style.overflowWrap = 'anywhere'; box.dataset.lastResort = '1'; }
+  }
+  function fitLine(el, min) {                      // a one-line title: shrink, then allow a second line
+    if (!el) return;
+    const box = el.parentElement;
+    let fs = parseFloat(getComputedStyle(el).fontSize), g = 80;
+    while (el.scrollWidth > box.clientWidth + 0.5 && fs > min && g--) { fs *= 0.95; el.style.fontSize = fs.toFixed(2) + 'px'; }
+    if (el.scrollWidth > box.clientWidth + 0.5) {
+      el.style.whiteSpace = 'normal'; el.style.display = 'block'; el.style.lineHeight = '1.02';
+      fitText(box, el, min * 0.8, min);
+    }
+  }
+  // An emoji picture never widens or heightens its square: a font without a ZWJ sequence or flag draws it as 2-3 glyphs
+  // side by side, which used to make the label below shrink to its minimum. Like our SVG icons, the emoji fits its box.
+  function fitEmoji(span) {
+    const box = span.parentElement;
+    for (let g = 0; box && g < 4; g++) {
+      const r = span.getBoundingClientRect(), bw = box.clientWidth, bh = box.clientHeight;
+      if (!r.width || !r.height || !bw || !bh) return;
+      const k = Math.min(bw / r.width, bh / r.height);
+      if (k >= 0.999) return;
+      span.style.fontSize = (parseFloat(getComputedStyle(span).fontSize) * k * 0.97).toFixed(2) + 'px';
+    }
+  }
+  BG.fit = function (root) {
+    root = root || document;
+    root.querySelectorAll('.emo > span').forEach(fitEmoji);
+    root.querySelectorAll('.bg-card').forEach(card => {
+      const tmin = parseFloat(getComputedStyle(card).getPropertyValue('--title-min')) || 18, tf = card.querySelector('.bg-fit');
+      if (card.closest('.per2')) { if (tf) fitText(tf.parentElement, tf, tmin, tmin); } else fitLine(tf, tmin);
+      const nm = card.querySelector('.bg-name b');
+      if (nm) fitText(nm.parentElement, nm, 9, 9);
+      const min = parseFloat(getComputedStyle(card).getPropertyValue('--cell-min')) || 10;
+      card.querySelectorAll('.bg-cell .bg-in').forEach(box => {
+        const t = box.querySelector('.bg-txt');
+        if (!t) return;
+        const fs = parseFloat(getComputedStyle(t).fontSize);
+        fitText(box, t, min, Math.max(min, fs * 0.7));
+      });
+    });
+    root.querySelectorAll('.bg-call .bg-cin').forEach(box => {
+      const t = box.querySelector('.bg-ctxt'); const fs = parseFloat(getComputedStyle(t).fontSize);
+      fitText(box, t, 9, fs * 0.7);
+    });
+    root.querySelectorAll('.bg-sheet').forEach(sh => {
+      sh.querySelectorAll('.bg-si').forEach(si => { const t = si.querySelector('.bg-stxt'); fitText(si, t, 7.5, 9); });
+    });
+    root.querySelectorAll('.bg-ph p').forEach(p => { let f = 12.5, g = 20; while (p.scrollHeight > p.clientHeight + 1 && f > 8 && g--) { f *= 0.94; p.style.fontSize = f + 'px'; } });
+  };
+
+  // ------------------------------------------------------------------ QA
+  BG.overflow = function (root) {
+    root = root || document;
+    const out = [], R = e => e.getBoundingClientRect();
+    const chk = (el, what) => {
+      if (el.scrollWidth > el.clientWidth + 1) out.push(`${what} too wide ${el.scrollWidth}>${el.clientWidth}: ${el.textContent.trim().slice(0, 50)}`);
+      if (el.scrollHeight > el.clientHeight + 1) out.push(`${what} too tall ${el.scrollHeight}>${el.clientHeight}: ${el.textContent.trim().slice(0, 50)}`);
+    };
+    root.querySelectorAll('.bg-page').forEach((pg, pi) => {
+      const pr = R(pg);
+      pg.querySelectorAll('.bg-card, .bg-calls, .bg-sheet, .bg-pats, .bg-pfoot, .bg-foot, .bg-ph').forEach(el => {
+        const r = R(el);
+        if (r.bottom > pr.bottom + 0.5 || r.right > pr.right + 0.5 || r.left < pr.left - 0.5 || r.top < pr.top - 0.5) out.push(`page ${pi + 1}: ${el.className} sticks out of the page`);
+      });
+      pg.querySelectorAll('.bg-cell .bg-in').forEach(b => chk(b, `page ${pi + 1} square`));
+      pg.querySelectorAll('.bg-cell .bg-txt').forEach(t => { if (t.scrollWidth > t.clientWidth + 1) out.push(`page ${pi + 1} square text too wide: ${t.textContent.slice(0, 40)}`); });
+      pg.querySelectorAll('.bg-title').forEach(b => chk(b, `page ${pi + 1} title`));
+      pg.querySelectorAll('.bg-name').forEach(b => chk(b, `page ${pi + 1} name`));
+      pg.querySelectorAll('.bg-call .bg-cin').forEach(b => chk(b, `page ${pi + 1} calling card`));
+      pg.querySelectorAll('.bg-si').forEach(b => chk(b, `page ${pi + 1} caller sheet item`));
+      pg.querySelectorAll('.bg-ph p').forEach(b => chk(b, `page ${pi + 1} heading`));
+      pg.querySelectorAll('.bg-ph h2').forEach(b => { if (b.scrollWidth > b.clientWidth + 1) out.push(`page ${pi + 1} heading too wide: ${b.textContent}`); });
+    });
+    return out;
+  };
+  BG.lastResort = root => [...(root || document).querySelectorAll('[data-last-resort]')].map(b => b.textContent.trim().slice(0, 50));
+  BG.minFont = function (root) {
+    let m = 99, at = '';
+    (root || document).querySelectorAll('.bg-txt, .bg-ctxt').forEach(t => { const f = parseFloat(getComputedStyle(t).fontSize); if (f < m) { m = f; at = t.textContent.slice(0, 40); } });
+    return { px: m, text: at };
+  };
+
+  BG.MAX_ITEMS = MAX_ITEMS; BG.MAX_CARDS = MAX_CARDS;
+  root.BG = BG;
+  if (typeof module !== 'undefined') module.exports = BG;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+const C = window.BG_CONTENT, EXAMPLE = "BINGO: Mia & Leo's Halloween Bingo\nSTYLE: pictures\nGRID: 4\nFREE: none\nCARDS: 14\nPLAYERS: Mia, Leo, Grandma, Dad\nLANGUAGE: en\n---\nITEMS:\n🐈‍⬛ Biscuit\n🎃 Grandma's pumpkin\n👻 Ghost\n🦇 Bat\n🧙 Witch hat\n🧹 Broom\n🌕 Full moon\n⭐ Star\n🕷️ Spider\n🕸️ Spider web\n🦉 Owl\n🍬 Candy\n🍭 Lollipop\n🧪 Potion\n🪄 Leo's magic wand\n🎭 Mask\n🏚️ Haunted house\n👾 Monster\n🍎 Apple\n🍂 Leaf\n🍪 Cookie\n🧁 Cupcake\n🍫 Chocolate\n🦊 Fox costume", READY = {"little": "BINGO: Halloween Picture Bingo\nSTYLE: pictures\nGRID: 4\nFREE: none\nCARDS: 30\n---\nITEMS:\n[pumpkin] Pumpkin\n[ghost] Ghost\n[bat] Bat\n[cat] Black cat\n[hat] Witch hat\n[broom] Broom\n[moon] Full moon\n[star] Star\n[spider] Spider\n[web] Spider web\n[owl] Owl\n[candy] Candy\n[lollipop] Lollipop\n[candycorn] Candy corn\n[cauldron] Cauldron\n[potion] Potion\n[wand] Magic wand\n[mask] Mask\n[house] Haunted house\n[monster] Monster\n[mummy] Mummy\n[apple] Apple\n[leaf] Leaf\n[pail] Treat bucket", "words": "BINGO: Halloween Word Bingo\nSTYLE: words\nGRID: 5\nFREE: default\nCARDS: 30\n---\nITEMS:\nPumpkin\nGhost\nBat\nWitch\nBroomstick\nBlack cat\nSpider\nSpider web\nFull moon\nOwl\nCandy\nCandy corn\nCostume\nMask\nHaunted house\nSkeleton\nMummy\nMonster\nVampire\nWerewolf\nCauldron\nPotion\nMagic wand\nWizard\nTreat bag\nTrick or treat\nJack-o'-lantern\nScarecrow\nBoo!\nSpooky\nLollipop\nCaramel apple\nCorn maze\nAutumn leaves\nCrow\nFlashlight\nPirate\nDoorbell\nPumpkin pie\nNight sky", "party": "BINGO: Halloween Party Bingo\nSTYLE: phrases\nGRID: 5\nFREE: default\nCARDS: 30\n---\nITEMS:\nCat ears\nA pun costume\nGroup selfie\nSomeone says “Boo!”\nHomemade costume\nMatching costumes\nFake spider\nPumpkin spice drink\nCandy corn debate\nWitch hat\nSheet ghost costume\nFace paint\nGlow sticks\nCostume contest\nSpooky playlist\nCaramel apples\nSomeone forgot a costume\nA superhero\nFake cobwebs\nFun-size candy bar\nMini pumpkin on a desk\nHalloween socks\nOrange and black outfit\nLast-minute costume\nSomeone in a cape\nA vampire\nA pirate\nCostume photo shoot\nPumpkin carving\nA wild wig\nCandy swap\nSpooky snacks\nCostume from last year\nJack-o'-lantern\nHalloween sweater\nA ghost story\nBest costume vote\nOffice plant in costume\nA mad scientist\nFog machine"};
+const $ = s => document.querySelector(s);
+let salt = 0, lastKey = '';
+
+function fromText(raw) {
+  const p = BG.parse(raw);
+  const c = p.cfg;
+  $('#f-title').value = c.title || '';
+  if (c.style) $('#f-style').value = c.style;
+  $('#f-grid').value = String(c.grid || BG.recommendGrid(c.style || 'words', p.items.length));
+  $('#f-nofree').checked = c.free === 'none';
+  $('#f-free').value = c.free && c.free !== 'none' && c.free !== 'default' ? c.free : '';
+  $('#f-cards').value = c.cards || Math.max(30, (c.players || []).length);
+  $('#f-lang').value = ['en', 'de', 'fr', 'es'].includes(c.lang) ? c.lang : 'en';
+  $('#f-players').value = (c.players || []).join(', ');
+  $('#f-items').value = p.items.join('\n');
+  return p;
+}
+function formCfg() {
+  const free = $('#f-nofree').checked ? 'none' : ($('#f-free').value.trim() || 'default');
+  return { title: $('#f-title').value.trim(), style: $('#f-style').value, grid: +$('#f-grid').value, free,
+    cards: +$('#f-cards').value || 30, lang: $('#f-lang').value, salt,
+    players: $('#f-players').value.split(/[\n,;]/).map(s => s.trim()).filter(Boolean) };
+}
+function make(useText) {
+  const msg = $('#msg'), pv = $('#preview');
+  document.body.removeAttribute('data-ready');
+  let warn = [];
+  const raw = $('#src').value.trim();
+  if (useText && raw) {
+    const p = BG.parse(raw);
+    if (!p.found || !p.items.length) {
+      msg.className = 'msg err';
+      msg.textContent = "I couldn't find a bingo list in the pasted text. Copy the whole box from your AI chat: it has lines like “BINGO:”, “STYLE:” and “ITEMS:”. No box? Send the AI: “" + "Put the whole bingo list in one code block." + "”";
+      pv.innerHTML = ''; return false;
+    }
+    fromText(raw); warn = p.warnings;
+  }
+  const items = $('#f-items').value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (!items.length) { msg.className = 'msg err'; msg.textContent = 'Paste a bingo list above, pick a ready set, or type your words in the form.'; $('#formbox').open = true; pv.innerHTML = ''; return false; }
+  const cfg = formCfg();
+  const key = JSON.stringify([cfg, items]);
+  const game = BG.build(C, cfg, items);
+  if (game.errors.length) {
+    pv.innerHTML = ''; msg.className = 'msg err';
+    msg.textContent = game.errors.join(' ') + ' Change it in the form below (or ask your AI for more items) and click Make my bingo cards again.';
+    $('#formbox').open = true; return false;
+  }
+  const per = +$('#per').value;
+  pv.innerHTML = BG.render(C, game, { perPage: per });
+  const pages = pv.querySelectorAll('.bg-page').length;
+  const host = pv.querySelectorAll('.bg-sheetpage, .bg-callpage').length;
+  const g = game.cfg.grid;
+  msg.className = 'msg ok';
+  msg.innerHTML = `Made <b>${game.cards.length} different bingo cards</b> (${g} × ${g}, ${BG.esc(game.cfg.style)}, ${game.items.length} items). ` +
+    `Pages 1–${host}: for the caller (caller sheet + calling cards). Pages ${host + 1}–${pages}: the player cards. ` +
+    `Every card was checked: no two are the same, and every square is on the caller sheet.`;
+  warn.concat(game.warnings || []).forEach(w => msg.insertAdjacentHTML('beforeend', `<span class="warn">${BG.esc(w)}</span>`));
+  lastKey = key;
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { BG.fit(pv); document.body.setAttribute('data-ready', '1'); });
+  return true;
+}
+function setPaper() {
+  const a4 = $('#paper').value === 'a4';
+  document.body.classList.toggle('a4', a4);
+  $('#pagesize').textContent = a4 ? '@page { size: 210mm 297mm; margin: 0; }' : '@page { size: 8.5in 11in; margin: 0; }';
+  if ($('#preview').innerHTML) make(false);
+}
+$('#make').onclick = () => make(true);
+$('#make2').onclick = () => make(false);
+$('#demo').onclick = () => { $('#src').value = EXAMPLE; salt = 0; make(true); };
+$('#ready').onchange = () => { const k = $('#ready').value; if (!k) return; $('#src').value = READY[k]; salt = 0; make(true); $('#ready').value = ''; };
+$('#mix').onclick = () => { salt += 1; make(false); };
+$('#print').onclick = () => { if (!$('#preview').innerHTML && !make(true)) return; setTimeout(() => window.print(), 400); };
+$('#paper').onchange = setPaper;
+$('#per').onchange = () => { if ($('#preview').innerHTML) make(false); };
+try { const saved = localStorage.getItem('mts-bingo-src-halloween-bingo'); if (saved) $('#src').value = saved; } catch (e) {}
+$('#src').addEventListener('input', () => { try { localStorage.setItem('mts-bingo-src-halloween-bingo', $('#src').value); } catch (e) {} });
+const q = new URLSearchParams(location.search);
+if (q.get('paper') === 'a4') { $('#paper').value = 'a4'; setPaper(); }
+if (q.get('per') === '2') { $('#per').value = '2'; }
+if (q.get('demo')) { $('#src').value = EXAMPLE; make(true); }
+</script>
+<!-- mts-paste-btn -->
+<style>
+  #mts-paste-btn {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    z-index: 9999;
+    background: #1F5E5B;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-family: Ubuntu, sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+  }
+  #mts-paste-btn:hover { background: #174644; }
+  #mts-paste-toast {
+    position: fixed;
+    bottom: 76px;
+    right: 18px;
+    z-index: 9999;
+    background: #333;
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-family: Ubuntu, sans-serif;
+    display: none;
+    pointer-events: none;
+  }
+  @media print { #mts-paste-btn, #mts-paste-toast { display: none !important; } }
+</style>
+<button id="mts-paste-btn" title="Paste AI response from clipboard">
+  📋 Paste AI Response
+</button>
+<div id="mts-paste-toast">✅ Pasted!</div>
+<script>
+(function() {
+  var btn = document.getElementById('mts-paste-btn');
+  var toast = document.getElementById('mts-paste-toast');
+  if (!btn) return;
+
+  // Find the first <textarea> on the page to paste into
+  function getTarget() {
+    return document.querySelector('textarea');
+  }
+
+  btn.addEventListener('click', function() {
+    if (!navigator.clipboard || !navigator.clipboard.readText) {
+      alert('Clipboard API not available. Please paste manually (Ctrl+V / ⌘+V).');
+      return;
+    }
+    navigator.clipboard.readText().then(function(text) {
+      var ta = getTarget();
+      if (ta) {
+        ta.value = text;
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+        ta.dispatchEvent(new Event('change', { bubbles: true }));
+        ta.focus();
+      } else {
+        alert('No text field found on the page.');
+      }
+      toast.style.display = 'block';
+      setTimeout(function() { toast.style.display = 'none'; }, 2000);
+    }).catch(function(err) {
+      alert('Could not read clipboard: ' + err + '\nPlease paste manually (Ctrl+V / ⌘+V).');
+    });
+  });
+})();
+</script>
+
+</body></html>

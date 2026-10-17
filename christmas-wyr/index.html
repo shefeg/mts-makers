@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Make Together Studio Card Maker · Christmas Would You Rather</title>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+<style id="pagesize">@page { size: 8.5in 11in; margin: 0; }</style>
+<style>
+:root { --teal:#1F5E5B; --coral:#F07F5E; --sun:#F4C95D; --cream:#FFF8EE; --ink:#2B2B2B; --muted:#6B655E; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Ubuntu', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; color: var(--ink);
+       background: #EFE7DA; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.ui { max-width: 980px; margin: 0 auto; padding: 24px 16px 8px; }
+.top { display: flex; align-items: center; gap: 14px; }
+.top img { width: 56px; height: 56px; }
+.top h1 { font-size: 26px; margin: 0; color: var(--teal); }
+.top p { margin: 2px 0 0; color: var(--muted); }
+.panel { background: #fff; border-radius: 16px; padding: 18px; margin-top: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+.step { background: var(--cream); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+.step b { color: #D2593A; }
+textarea { width: 100%; min-height: 220px; border: 2px solid #D9D1C4; border-radius: 12px; padding: 12px;
+           font: 14px/1.45 ui-monospace, Menlo, Consolas, monospace; resize: vertical; }
+textarea:focus { outline: none; border-color: var(--teal); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+button { border: 0; border-radius: 999px; padding: 12px 20px; font: 600 15px 'Ubuntu', sans-serif; cursor: pointer; }
+.primary { background: var(--teal); color: #fff; }
+.accent { background: var(--coral); color: var(--ink); }
+.ghost { background: var(--cream); color: var(--teal); }
+select { padding: 10px 12px; border-radius: 10px; border: 2px solid #D9D1C4; font: 14px 'Ubuntu', sans-serif; }
+.msg { margin-top: 10px; font-size: 14px; }
+.msg.err { color: #B3412A; font-weight: 700; } .msg.ok { color: var(--teal); }
+.msg .warn { display: block; margin-top: 6px; color: #B3412A; font-weight: 700; }
+.msg .note { display: block; margin-top: 6px; color: var(--muted); }
+.hint { font-size: 13px; color: var(--muted); margin-top: 8px; }
+#preview { padding: 12px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+/* ---------- printable pages ---------- */
+.page { width: var(--pw); height: var(--ph); padding: var(--pad); background: #fff; position: relative; overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,.12); font-family: 'Ubuntu', 'Noto Color Emoji', sans-serif; }
+body.a4 { --pw: 210mm; --ph: 297mm; --pad: 12mm; --cw: 62mm; --ch: 68.25mm; }
+body:not(.a4) { --pw: 8.5in; --ph: 11in; --pad: 0.5in; --cw: 2.5in; --ch: 2.5in; }
+.grid { display: grid; grid-template-columns: repeat(3, var(--cw)); grid-template-rows: repeat(4, var(--ch)); }
+
+.cut { border: 1px dashed #C9C2B8; padding: var(--cutpad, 0.08in); }
+.cut.empty { border-color: transparent; }
+.card { height: 100%; border: 2.4px solid var(--c); border-radius: 12px; background: #FFFDF8; position: relative;
+        display: flex; flex-direction: column; padding: 0.08in 0.1in 0.05in; overflow: hidden; }
+.card .head { display: flex; justify-content: space-between; align-items: center; gap: 6px; min-height: 0.2in; }
+.card .cat { background: var(--c); color: var(--pc); font-weight: 700; font-size: 6.6pt; letter-spacing: .08em;
+             text-transform: uppercase; padding: 2px 8px; border-radius: 99px; white-space: nowrap; overflow: hidden;
+             text-overflow: ellipsis; max-width: 70%; }
+.card .deck { color: var(--t); font-size: 7pt; font-weight: 700; white-space: nowrap; }
+.card .body { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+              text-align: center; overflow: hidden; padding: 0 2px; font-size: 13pt; }
+.card .ask { font-size: .7em; font-weight: 700; font-style: italic; color: #24624F; letter-spacing: .01em; margin-bottom: .32em;
+             white-space: nowrap; }
+.card .opt { font-weight: 700; line-height: 1.2; color: #2B2B2B; width: 100%; overflow-wrap: normal; hyphens: manual;
+             text-wrap: balance; }
+.card .ab { display: inline-block; width: 1.32em; height: 1.32em; line-height: 1.32em; border-radius: 50%; font-size: .66em;
+            font-weight: 700; color: #FFFFFF; text-align: center; vertical-align: .18em; margin-right: .3em; font-style: normal; }
+.card .opt.a .ab { background: #F07F5E; color: #2B2B2B; }
+.card .opt.b .ab { background: #1F5E5B; }
+.card .or { display: flex; align-items: center; gap: .4em; width: 72%; margin: .28em 0; color: #8A8379; font-size: .66em;
+            font-weight: 700; font-style: italic; text-transform: lowercase; }
+.card .or::before, .card .or::after { content: ""; flex: 1; border-top: 1.4px dashed #D9D1C4; }
+.card .emo { font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif; font-size: 2.1em; line-height: 1.15; margin-bottom: .1em; }
+.card .ttl { font-size: 1.08em; font-weight: 700; color: #1F5E5B; line-height: 1.15; }
+.card .desc { font-size: .8em; line-height: 1.3; margin-top: .25em; color: #3D3A36; text-wrap: balance; }
+.card .txt { font-weight: 700; line-height: 1.25; color: #2B2B2B; text-wrap: balance; }
+.card .foot { display: flex; justify-content: space-between; align-items: center; height: 0.15in; font-size: 5.8pt; color: #9A938A; }
+.card .foot svg { width: 0.11in; height: 0.12in; vertical-align: -2px; margin-right: 3px; }
+.card .line { display: block; border-bottom: 1px solid #D5CEC3; height: 1.3em; width: 100%; }
+.card .pick { font-size: 6.6pt; color: #8A8379; letter-spacing: .02em; white-space: nowrap; }
+.family { --c: #F07F5E; --t: #D2593A; --pc: #FFFFFF; }
+.office { --c: #1F5E5B; --t: #1F5E5B; --pc: #FFFFFF; }
+.bonus { --c: #F4C95D; --t: #9A6B0A; --pc: #2B2B2B; background: #FFF8EE; }
+.blank { --c: #B9B1A5; --t: #8A8379; --pc: #FFFFFF; }
+
+.cover { display: flex; flex-direction: column; background: var(--cream); }
+.cover .brand { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 10pt; }
+.cover .brand img { width: 36px; height: 36px; }
+.cover .sub { color: #D2593A; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: 10pt; margin-top: .45in; }
+.cover h2 { font-size: 30pt; color: var(--teal); margin: .08in 0 .1in; line-height: 1.1; overflow-wrap: break-word; }
+.cover .counts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: .1in; }
+.cover .counts span { border-radius: 99px; padding: 6px 14px; font-weight: 700; font-size: 11pt; color: #fff; }
+.cover .counts .family { background: var(--coral); color: var(--ink); } .cover .counts .office { background: var(--teal); }
+.cover .counts .bonus { background: var(--sun); color: var(--ink); }
+.cover .box { margin-top: .32in; background: #fff; border: 2px solid var(--teal); border-radius: 14px; padding: .18in .24in;
+              font-size: 11.5pt; line-height: 1.55; }
+.cover .box + .box { border-color: var(--coral); margin-top: .22in; }
+.cover .box h3 { margin: 0 0 .06in; color: #D2593A; font-size: 13pt; }
+.cover .box ol, .cover .box ul { margin: 0; padding-left: .26in; }
+.cover .box li { margin: .03in 0; }
+.cover .sample { margin: .3in auto 0; width: var(--cw); height: var(--ch); }
+.cover .sample .cut { height: 100%; }
+.cover .cfoot { position: absolute; bottom: .45in; left: var(--pad); right: var(--pad); font-size: 9pt; color: var(--muted);
+               display: flex; justify-content: space-between; gap: 12px; }
+@media print {
+  body { background: #fff; }
+  .ui { display: none; }
+  #preview { padding: 0; gap: 0; display: block; }
+  .page { box-shadow: none; page-break-after: always; break-after: page; }
+}
+@media (max-width: 700px) { .steps { grid-template-columns: 1fr; } }
+</style></head>
+<body>
+<div class="ui">
+  <div class="top"><img src="data:image/png;base64,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" alt=""><div><h1>Make Together Studio Card Maker</h1>
+    <p>Turn the would you rather questions from your AI chat into printable cards, in our design. Cards in English, German or French.</p></div></div>
+  <div class="panel">
+    <div class="steps">
+      <div class="step"><b>1</b> In your AI chat, click <b>Copy</b> on the box with your cards. No box, or the cards opened in a document window? Send the AI: <i>Put all cards in one code block.</i></div>
+      <div class="step"><b>2</b> Paste it below and click <b>Make my cards</b>.</div>
+      <div class="step"><b>3</b> Check the preview, then click <b>Print / Save as PDF</b>.</div>
+    </div>
+    <textarea id="src" placeholder="Paste your cards here. They start with:  GAME: …  and  CARD | deck: family | category: …  then  A: …  and  B: …"></textarea>
+    <div class="row">
+      <button class="primary" id="make">Make my cards</button>
+      <button class="accent" id="print">Print / Save as PDF</button>
+      <select id="paper"><option value="letter">US Letter paper</option><option value="a4">A4 paper</option></select>
+      <select id="lang" title="The language of the card labels"><option value="auto">Card labels: from the LANG line</option>
+        <option value="en">Card labels: English</option><option value="de">Card labels: Deutsch</option><option value="fr">Card labels: Français</option></select>
+      <button class="ghost" id="demo">Try an example</button>
+    </div>
+    <div class="msg" id="msg"></div>
+    <div class="hint">Printing tip: choose <b>Actual size / 100%</b> scale. To get a PDF file, pick <b>Save as PDF</b> as the printer.
+      Thick paper or cardstock works best. Cut along the dashed lines.<br>For personal use in your home, at your own party or office party, or in one classroom; please don&#39;t resell or share the files.</div>
+  </div>
+</div>
+<div id="preview"></div>
+<script>
+const EXAMPLE = "GAME: The Miller Family Christmas Would You Rather\nLANG: en\n\n---\nCARD | deck: family | category: Grandma Rose\nA: bake Grandma Rose's famous gingerbread\nB: decorate it with way too much icing\n\n---\nCARD | deck: family | category: Pepper\nA: find out where Pepper hides the socks\nB: teach Pepper to fetch the presents\n\n---\nCARD | deck: family | category: Christmas Eve\nA: open one present on Christmas Eve with Leo\nB: wait for Christmas morning with Mia\n\n---\nCARD | deck: family | category: Leo\nA: have a snowball fight with Leo\nB: build the tallest snowman with Leo\n\n---\nCARD | deck: family | category: Mia\nA: let Mia choose the Christmas movie snack\nB: let Mia plan the Christmas morning breakfast\n\n---\nCARD | deck: family | category: Dad\nA: wear Dad's famous reindeer sweater all day\nB: let Dad sing every carol at dinner\n\n---\nCARD | deck: family | category: snow day\nA: go sledding with Grandma Rose\nB: drink hot cocoa with Grandma Rose\n\n---\nCARD | deck: family | category: traditions\nA: put up the tree on December 1st\nB: put it up on Christmas Eve\n\n---\nCARD | deck: family | category: treats\nA: eat a gingerbread cookie as big as Pepper\nB: eat ten tiny gingerbread cookies\n\n---\nCARD | deck: family | category: silly\nA: dress Pepper as a reindeer\nB: dress Pepper as a tiny Santa\n\n---\nCARD | deck: family | category: cozy\nA: read a story under the tree\nB: build a blanket fort with Mia and Leo\n\n---\nCARD | deck: bonus\nExplain why! The best reason wins a gingerbread cookie.";
+const ICON = "data:image/png;base64,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";
+const TREE = "<svg viewBox=\"0 0 20 22\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10 1 L16 9 H13 L18 16 H2 L7 9 H4 Z\" fill=\"#2F7A63\"/><rect x=\"8.5\" y=\"16\" width=\"3\" height=\"4\" rx=\"1\" fill=\"#9C5B32\"/><circle cx=\"10\" cy=\"2\" r=\"1.6\" fill=\"#F4C95D\"/><circle cx=\"8\" cy=\"11\" r=\"1\" fill=\"#F07F5E\"/><circle cx=\"12.5\" cy=\"13.5\" r=\"1\" fill=\"#F4C95D\"/></svg>";
+const BRAND = "Make Together Studio";
+const GAME = "Christmas Would You Rather";
+const I18N = {"en": {"ask": "Would you rather…", "orw": "or", "decks": {"family": "Family", "office": "Office", "bonus": "Bonus", "blank": "Your card"}, "qm": "?", "personalized": "Your personalized questions", "defaultTitle": "Our Christmas Would You Rather", "bonusCard": "Bonus card", "howTitle": "How to play", "rules": ["Shuffle the cards and put the pile face down.", "One player reads the top card aloud: “Would you rather…?”", "Everyone picks A or B. No “both” and no “neither”!", "Go around the circle: everyone says why, in one sentence.", "Pass the pile to the left. Now the next player reads."], "waysTitle": "More ways to play", "ways": ["Take sides: point left for A, right for B.", "Majority wins: guess what most players will pick. Right? 1 point.", "Guess my pick: your partner guesses your answer before you tell."], "cut": "Print at Actual size / 100%. Cut along the dashed lines.", "cards": ["card", "cards"]}, "de": {"ask": "Würdest du lieber …", "orw": "oder", "decks": {"family": "Familie", "office": "Büro", "bonus": "Bonus", "blank": "Deine Karte"}, "qm": "?", "personalized": "Eure persönlichen Fragen", "defaultTitle": "Unser Weihnachts-Würdest-du-lieber", "bonusCard": "Bonuskarte", "howTitle": "So wird gespielt", "rules": ["Mischt die Karten und legt den Stapel verdeckt hin.", "Eine Person liest die oberste Karte laut vor: „Würdest du lieber …?“", "Alle wählen A oder B. „Beides“ oder „keins“ gibt es nicht!", "Reihum sagt jede Person in einem Satz, warum.", "Gebt den Stapel nach links weiter: Jetzt liest die nächste Person vor."], "waysTitle": "Noch mehr Spielideen", "ways": ["Seiten wählen: Zeigt nach links für A, nach rechts für B.", "Mehrheit gewinnt: Wer richtig rät, was die meisten wählen, bekommt 1 Punkt.", "Rate meine Wahl: Das Gegenüber rät die Antwort, bevor sie verraten wird."], "cut": "Mit „Tatsächliche Größe / 100 %“ drucken. An den gestrichelten Linien ausschneiden.", "cards": ["Karte", "Karten"]}, "fr": {"ask": "Tu préfères…", "orw": "ou", "decks": {"family": "Famille", "office": "Bureau", "bonus": "Bonus", "blank": "Ta carte"}, "qm": " ?", "personalized": "Vos questions personnalisées", "defaultTitle": "Notre « Tu préfères » de Noël", "bonusCard": "Carte bonus", "howTitle": "Comment jouer", "rules": ["Mélangez les cartes et posez la pile face cachée.", "Une personne lit la carte du dessus à voix haute : « Tu préfères… ? »", "Tout le monde choisit A ou B. Interdit de répondre « les deux » ou « aucun » !", "Chacun à son tour explique pourquoi, en une phrase.", "Passez la pile à gauche : la personne suivante lit la carte."], "waysTitle": "Encore plus d'idées de jeu", "ways": ["Choisir son camp : montrez la gauche pour A, la droite pour B.", "La majorité gagne : devinez ce que la plupart vont choisir. Juste ? 1 point.", "Devine mon choix : votre partenaire devine votre réponse avant que vous la disiez."], "cut": "Imprimez en « Taille réelle / 100 % ». Découpez le long des pointillés.", "cards": ["carte", "cartes"]}};
+const LANGNAMES = {"en": ["English", "english", "englisch", "anglais", "en-us", "en-gb", "eng"], "de": ["Deutsch", "german", "deutsch", "allemand", "de-de", "ger"], "fr": ["Français", "french", "francais", "français", "französisch", "fr-fr", "fra"]};
+const DECKS = { family: 'F', office: 'O', bonus: 'B' };
+const ORDER = ['family', 'office', 'bonus'];
+const PER_PAGE = 12;
+let LANG = 'en';
+const T = () => I18N[LANG] || I18N.en;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// French spacing: a no-break space before : ; ! ? » and after « (added where it is missing, too)
+const nbsp = s => {
+  s = String(s).replace(/[ \t]+([!?;:»])/g, ' $1').replace(/«[ \t]+/g, '« ');
+  if (LANG === 'fr') s = s.replace(/([^\s ])([!?;:»])/g, '$1 $2').replace(/«(?=[^\s ])/g, '« ');
+  return s;
+};
+const EMOJI = /^\s*((?:\p{Extended_Pictographic}|\p{Regional_Indicator})(?:️|‍(?:\p{Extended_Pictographic}|[♀♂])️?|\p{Emoji_Modifier}|\p{Regional_Indicator})*)\s*/u;
+const KICKER = /^(?:["“„«]\s*)?(?:would you rather|would you prefer|würdest du (?:eher|lieber)|wärst du lieber|hättest du lieber|möchtest du lieber|tu préférerais|tu préfères|tu preferes|préfères-tu|preferes-tu|préférerais-tu|est-ce que tu préfères|est-ce que tu préférerais|vous préférez|préférez-vous)\s*(?:…|\.\.\.|:|,)?\s*/i;
+const ORWORD = /^(?:or|oder|ou|OR|ODER|OU)$/i;
+const SPLIT = [/\s+or\s+/gi, /\s+oder\s+/gi, /\s+ou\s+/gi, /\s*\/\s*/g];
+
+const LANGCODE = {};
+for (const [code, names] of Object.entries(LANGNAMES)) { LANGCODE[code] = code; names.forEach(n => LANGCODE[n.toLowerCase()] = code); }
+function langCode(v) {
+  const s = String(v || '').toLowerCase().replace(/[*_`"'()\[\].]/g, ' ').trim();
+  if (!s) return '';
+  if (LANGCODE[s]) return LANGCODE[s];
+  return LANGCODE[s.split(/[\s,;\/+|]+/)[0]] || 'other';
+}
+
+function guessLang(text) {
+  const words = text.toLowerCase().split(/[^a-zà-ÿœß']+/).filter(Boolean);
+  const STOP = { de: 'der die das ein eine einen einem und mit auf im zu von beim dem den nicht ist sich für bauen essen haben sein machen',
+                 fr: 'le la les un une des du qui et avec sur son sa ses dans pour au aux faire avoir être manger construire',
+                 en: 'the a an and with of in on to your for have be make eat build get' };
+  let best = '', top = 0, second = 0;
+  for (const [code, list] of Object.entries(STOP)) {
+    const set = new Set(list.split(' '));
+    const n = words.filter(w => set.has(w)).length;
+    if (n > top) { second = top; top = n; best = code; } else if (n > second) second = n;
+  }
+  if (/ß/.test(text) && best !== 'fr') return 'de';
+  return top >= 3 && top >= 1.5 * second ? best : '';
+}
+
+function normDeck(v) {
+  const s = String(v || '').toLowerCase().replace(/[*_`"']/g, '').trim();
+  if (!s) return '';
+  if (/^(office|work|team|coworkers?|colleagues?|büro|buero|arbeit|bureau|travail|équipe|equipe|o)\b/.test(s)) return 'office';
+  if (/^(bonus|twist|extra|wild|joker|bonuskarte|b)\b/.test(s)) return 'bonus';
+  if (/^(family|familie|famille|kids?|grown|all|party|friends?|freunde|amis|f)\b/.test(s)) return 'family';
+  return '';
+}
+
+function clean(line) {
+  return line.replace(/\t/g, ' ').replace(/^\s*(?:[-*•>]|\d+[.)])\s+/, '').replace(/\*\*|__|`/g, '').replace(/^#+\s*/, '').trim();
+}
+
+function tidyA(s) {
+  return String(s || '').replace(KICKER, '').replace(/^["“„«]\s*|\s*["”“»]$/g, '').replace(/[\s,;]+(?:or|oder|ou)\s*$/i, '')
+    .replace(/[\s?？,;:.]+$/, '').trim();
+}
+function tidyB(s) {
+  return String(s || '').replace(/^(?:or|oder|ou)\b[\s,:]*/i, '').replace(/^["“„«]\s*|\s*["”“»]$/g, '')
+    .replace(/[\s ]*[?？]+[\s"”»]*$/, '').replace(/[\s.!]+$/, '').trim();
+}
+
+// "Would you rather X or Y?" in one line: split at the "or" that balances the two halves best
+function splitOne(line) {
+  const t = line.replace(KICKER, '');
+  let best = null;
+  for (const re of SPLIT) {
+    re.lastIndex = 0;
+    let m;
+    while ((m = re.exec(t))) {
+      const a = t.slice(0, m.index), b = t.slice(m.index + m[0].length);
+      if (!a.trim() || !b.trim()) continue;
+      const score = Math.abs(a.length - b.length);
+      if (!best || score < best.score) best = { a, b, score };
+    }
+    if (best) break;
+  }
+  return best;
+}
+
+function parse(raw) {
+  const lines = raw.replace(/\r/g, '').split('\n');
+  let title = '', lang = '';
+  const cards = [];
+  const notes = { shortened: false, nodeck: 0, long: 0, numbered: false };
+  let cur = null, ended = false;
+  for (const rawLine of lines) {
+    if (/^\s*```/.test(rawLine)) { if (cur && cur.lines.length) ended = true; continue; }
+    if (/^\s*\|.*\|\s*$/.test(rawLine)) continue;
+    const t = clean(rawLine);
+    let m;
+    if (!cur && (m = t.match(/^(?:GAME|TITLE)\s*:\s*(.+)$/i))) {
+      let h = m[1];
+      const l1 = h.match(/\s*[|·]\s*LANG(?:UAGE)?\s*:\s*([^|·]+)/i);
+      if (l1) { lang = langCode(l1[1]); h = h.replace(l1[0], ''); }
+      title = h.trim(); continue;
+    }
+    if ((m = t.match(/^LANG(?:UAGE)?\s*:\s*(.+)$/i)) && (!cur || !cur.lines.length)) { lang = langCode(m[1]); continue; }
+    if (/^[-–—_=]{3,}$/.test(t)) { if (cur) ended = true; continue; }
+    if ((m = t.match(/^CARD\b\s*#?\s*(\d+)?\s*[.:)]?\s*(?:[|·\-–—]\s*)?(.*)$/i))
+        && (m[1] || !m[2] || /\||\bdeck\b|\bcategor|\blevel\b/i.test(m[2]) || /^\s*CARD\s*[|:#]/i.test(t))) {
+      cur = { num: m[1] ? +m[1] : null, meta: (m[2] || '').replace(/^[|:]\s*/, ''), lines: [], a: '', b: '', deck: '', category: '' };
+      if (cur.num !== null) notes.numbered = true;
+      cards.push(cur); ended = false;
+      continue;
+    }
+    if (!cur) { if (/^(?:…|\.\.\.)|\b(?:cards?\s+\d+\s*[–-]\s*\d+)|and so on|\betc\b/i.test(t)) notes.shortened = true; continue; }
+    if (!t) { if (cur.lines.length) ended = true; continue; }
+    if ((m = t.match(/^deck\s*:\s*(.+)$/i)) && !cur.lines.length) { cur.meta += ' | deck: ' + m[1]; continue; }
+    if ((m = t.match(/^category\s*:\s*(.+)$/i)) && !cur.lines.length) { cur.meta += ' | category: ' + m[1]; continue; }
+    if (/^(?:…|\.\.\.)$/.test(t) || /\bas above\b|\(continue|and so on|\(more cards/i.test(t)) { notes.shortened = true; continue; }
+    if (ended && !/^(?:option\s*)?[AB]\s*[:)\].\-–]/i.test(t) && !ORWORD.test(t)) continue;
+    cur.lines.push(rawLine.replace(/\t/g, ' ').replace(/\*\*|__|`/g, '').trim());
+  }
+  for (const c of cards) {
+    for (const p of c.meta.split(/\s*[|·]\s*/).map(x => x.trim()).filter(Boolean)) {
+      let m;
+      if ((m = p.match(/^(?:deck|level|type)\s*[:=]?\s*(.+)$/i))) c.deck = normDeck(m[1]) || c.deck;
+      else if ((m = p.match(/^(?:category|cat|theme|topic)\s*[:=]?\s*(.+)$/i))) c.category = m[1].trim();
+      else if (!c.deck && normDeck(p)) c.deck = normDeck(p);
+      else if (!c.category && !/:/.test(p)) c.category = p;
+    }
+    if (!c.deck) { notes.nodeck++; c.deck = 'family'; }
+    c.category = c.category.replace(/[*_`]/g, '').slice(0, 30);
+    const L = c.lines.map(x => x.replace(/^\s*(?:[-*•>])\s+/, ''));
+    if (c.deck === 'bonus') {
+      c.text = L.filter(Boolean).slice(0, 3);
+      if (c.text.length) { const m = c.text[0].match(EMOJI); if (m && m[0].length < c.text[0].length) { c.emoji = m[1]; c.text[0] = c.text[0].slice(m[0].length); } }
+      continue;
+    }
+    let a = [], b = [], side = '';
+    for (const x of L) {
+      let m;
+      if ((m = x.match(/^(?:option\s*)?A\s*[:)\].\-–]\s*(.*)$/i))) { side = 'a'; if (m[1]) a.push(m[1]); continue; }
+      if ((m = x.match(/^(?:option\s*)?B\s*[:)\].\-–]\s*(.*)$/i))) { side = 'b'; if (m[1]) b.push(m[1]); continue; }
+      if (ORWORD.test(x.trim())) { side = 'b'; continue; }
+      if (side === 'a') a.push(x); else if (side === 'b') b.push(x); else (a.length ? b : a).push(x);
+    }
+    if (a.length && !b.length) {
+      const one = splitOne(a.join(' '));
+      if (one) { a = [one.a]; b = [one.b]; }
+    }
+    c.a = tidyA(a.join(' ')); c.b = tidyB(b.join(' '));
+    if (c.a.length > 70 || c.b.length > 70) notes.long++;
+  }
+  const empty = cards.map((c, i) => (c.deck === 'bonus' ? c.text.join('').trim() : (c.a || c.b)) ? null : (c.num !== null ? c.num : i + 1)).filter(n => n !== null);
+  const onlyOne = cards.map((c, i) => (c.deck !== 'bonus' && (c.a || c.b) && !(c.a && c.b)) ? (c.num !== null ? c.num : i + 1) : null).filter(n => n !== null);
+  const good = cards.filter(c => c.deck === 'bonus' ? c.text.join('').trim() : (c.a || c.b));
+  const all = good.map(c => c.deck === 'bonus' ? c.text.join(' ') : c.a + ' ' + c.b).join(' ');
+  return { title, cards: good, all: cards, notes, empty, onlyOne, lang, guessed: lang ? '' : guessLang(all) };
+}
+
+function cardHTML(c) {
+  const t = T();
+  const foot = `<div class="foot"><span>${esc(c.id)}</span><span>${TREE}${esc(BRAND)}</span></div>`;
+  if (c.deck === 'bonus') {
+    const emo = c.emoji ? `<div class="emo">${esc(c.emoji)}</div>` : '';
+    return `<div class="cut"><div class="card bonus" lang="${LANG}"><div class="head"><span class="cat">${esc(c.category || t.bonusCard)}</span>` +
+           `<span class="deck">${esc(t.decks.bonus)}</span></div><div class="body">${emo}<div class="txt">${c.text.map(x => esc(nbsp(x))).join('<br>')}</div></div>${foot}</div></div>`;
+  }
+  const line = '<span class="line"></span>';
+  const a = c.a ? esc(nbsp(c.a)) : line;
+  const b = c.b ? esc(nbsp(c.b + t.qm)) : line;
+  return `<div class="cut"><div class="card ${c.deck}" lang="${LANG}"><div class="head"><span class="cat">${esc(c.category || t.decks[c.deck])}</span>` +
+         `<span class="deck">${esc(t.decks[c.deck])}</span></div><div class="body"><div class="ask">${esc(t.ask)}</div>` +
+         `<div class="opt a"><span class="ab">A</span>${a}</div><div class="or">${esc(t.orw)}</div>` +
+         `<div class="opt b"><span class="ab">B</span>${b}</div></div>${foot}</div></div>`;
+}
+
+
+function wyrFit(root) {
+  (root || document).querySelectorAll('.card').forEach(card => {
+    const head = card.querySelector('.head');
+    if (head) {
+      const cat = head.querySelector('.cat'), deck = head.querySelector('.deck, .pick');
+      const base = [cat, deck].map(x => x ? parseFloat(getComputedStyle(x).fontSize) : 0);
+      const tight = () => head.scrollWidth > head.clientWidth + 1 || (cat && cat.scrollWidth > cat.clientWidth + 1);
+      let k = 1, g = 20;
+      if (tight() && cat) cat.style.letterSpacing = '.03em';
+      while (tight() && k > 0.74 && g--) {
+        k -= 0.04;
+        if (cat) cat.style.fontSize = (base[0] * k) + 'px';
+        if (deck) deck.style.fontSize = (base[1] * k) + 'px';
+      }
+      if (tight()) card.dataset.headCut = '1';
+    }
+    const b = card.querySelector('.body');
+    if (!b) return;
+    const parts = [...b.querySelectorAll('.opt, .txt, .ttl, .desc, .ask')];
+    const over = () => b.scrollHeight > b.clientHeight + 1 || b.scrollWidth > b.clientWidth + 1
+      || parts.some(p => p.scrollWidth > p.clientWidth + 1);
+    let size = parseFloat(getComputedStyle(b).fontSize), g = 60;
+    const start = size;
+    while (over() && size > 7.5 && g--) { size -= 0.25; b.style.fontSize = size + 'px'; }
+    if (over()) { parts.forEach(p => p.style.overflowWrap = 'anywhere'); card.dataset.overflow = '1'; }
+    card.dataset.scale = (size / start).toFixed(2);
+  });
+  document.body.dataset.fitted = '1';
+}
+
+
+function render() {
+  const P = parse($('#src').value);
+  const pick = $('#lang').value;
+  LANG = pick !== 'auto' ? pick : (I18N[P.lang] ? P.lang : (P.guessed && I18N[P.guessed] ? P.guessed : 'en'));
+  const t = T();
+  const msg = $('#msg'), pv = $('#preview');
+  const plural = (n, w) => `${n} ${n === 1 ? w[0] : w[1]}`;
+  if (!P.cards.length) {
+    pv.innerHTML = '';
+    msg.className = 'msg err';
+    msg.textContent = P.empty.length
+      ? `Card${P.empty.length > 1 ? 's' : ''} ${P.empty.join(', ')} ${P.empty.length > 1 ? 'have' : 'has'} no text. In your AI chat, send: “Put all cards in one code block.” Then copy the new box and paste it here.`
+      : "I couldn't find any cards. Copy the whole box from your AI chat. It should contain lines like “CARD | deck: family | category: snow day” with “A: …” and “B: …”. No box with a Copy button? Send the AI: “Put all cards in one code block.”";
+    return false;
+  }
+  const cards = P.cards;
+  cards.forEach((c, i) => c.idx = i);
+  cards.sort((x, y) => ORDER.indexOf(x.deck) - ORDER.indexOf(y.deck) || x.idx - y.idx);
+  const counts = { family: 0, office: 0, bonus: 0 };
+  cards.forEach(c => { counts[c.deck]++; c.id = '#' + DECKS[c.deck] + String(counts[c.deck]).padStart(2, '0'); });
+  const chips = ORDER.filter(d => counts[d]).map(d => `<span class="${d}">${counts[d]} × ${esc(t.decks[d])}</span>`).join('');
+  const fx = s => esc(nbsp(s));
+  const sample = cards.find(c => c.deck !== 'bonus' && c.a && c.b);
+  let html = `<section class="page cover" lang="${LANG}"><div class="brand"><img src="${ICON}" alt="">${esc(BRAND)} · ${esc(GAME)}</div>
+    <div class="sub">${fx(t.personalized)}</div><h2>${fx(P.title || t.defaultTitle)}</h2><div class="counts">${chips}</div>
+    <div class="box"><h3>${fx(t.howTitle)}</h3><ol>${t.rules.map(r => `<li>${fx(r)}</li>`).join('')}</ol></div>
+    <div class="box"><h3>${fx(t.waysTitle)}</h3><ul>${t.ways.map(r => `<li>${fx(r)}</li>`).join('')}</ul></div>
+    ${sample ? `<div class="sample">${cardHTML(sample).replace('<div class="cut">', '<div class="cut" style="border-color:transparent">')}</div>` : ''}
+    <div class="cfoot"><span>${fx(t.cut)}</span><span>${esc(BRAND)}</span></div></section>`;
+  for (let i = 0; i < cards.length; i += PER_PAGE) {
+    const chunk = cards.slice(i, i + PER_PAGE).map(cardHTML);
+    while (chunk.length < PER_PAGE) chunk.push('<div class="cut empty"></div>');
+    html += `<section class="page grid">${chunk.join('')}</section>`;
+  }
+  pv.innerHTML = html;
+  const pages = Math.ceil(cards.length / PER_PAGE);
+  const how = pick !== 'auto' ? ' (chosen in the menu)' : P.lang === 'other' ? ' (the LANG line names a language the labels don’t have yet, so English labels; pick one in the menu)'
+    : P.lang ? '' : P.guessed ? ' (guessed from the text; pick another in the menu if needed)' : ' (no LANG line, so English labels)';
+  const langName = (LANGNAMES[LANG] || [LANG])[0];
+  msg.className = 'msg ok';
+  msg.textContent = `Made ${plural(cards.length, ['card', 'cards'])} on ${pages} page${pages === 1 ? '' : 's'} + a title page (` +
+    ORDER.filter(d => counts[d]).map(d => `${counts[d]} ${d}`).join(', ') + `). Card labels: ${langName}${how}. Is that what you asked for? Check them below, then click Print / Save as PDF.`;
+  const problems = [], extra = [];
+  const nums = P.all.map(c => c.num).filter(n => n !== null);
+  if (nums.length) {
+    const have = new Set(nums), missing = [];
+    for (let n = 1; n <= Math.max(...nums); n++) if (!have.has(n)) missing.push(n);
+    if (missing.length) problems.push(`Card${missing.length > 1 ? 's' : ''} ${missing.join(', ')} ${missing.length > 1 ? 'are' : 'is'} missing.`);
+  }
+  if (P.empty.length) problems.push(`Card${P.empty.length > 1 ? 's' : ''} ${P.empty.join(', ')} ${P.empty.length > 1 ? 'have' : 'has'} no text and ${P.empty.length > 1 ? 'were' : 'was'} skipped.`);
+  if (P.onlyOne.length) problems.push(`Card${P.onlyOne.length > 1 ? 's' : ''} ${P.onlyOne.join(', ')} ${P.onlyOne.length > 1 ? 'have' : 'has'} only one answer (we left a line to write the other one).`);
+  if (P.notes.shortened) problems.push('Some cards seem to be missing: the AI shortened the list with “…” or “and so on”.');
+  if (P.notes.nodeck) extra.push(P.notes.nodeck > 1 ? `${P.notes.nodeck} cards had no deck, so we printed them as family cards.` : '1 card had no deck, so we printed it as a family card.');
+  if (problems.length || extra.length) {
+    const w = document.createElement('span');
+    w.className = 'warn';
+    w.textContent = [...problems, ...extra].join(' ') + (problems.length ? ' In your AI chat, send: “Put all cards in one code block.” Then copy the new box and paste it here.' : ' Check those cards in the preview.');
+    msg.appendChild(w);
+  }
+  if (P.notes.long) {
+    const n = document.createElement('span');
+    n.className = 'note';
+    n.textContent = `Tip: ${plural(P.notes.long, ['card has', 'cards have'])} a long answer. Short answers read better; you can ask the AI to shorten ${P.notes.long > 1 ? 'them' : 'it'}.`;
+    msg.appendChild(n);
+  }
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { wyrFit(pv); coverFit(); });
+  return true;
+}
+
+// the title page: a long title shrinks to at most 3 lines; if the page is still too full, the sample card goes
+function coverFit() {
+  const cover = document.querySelector('#preview .cover');
+  if (!cover) return;
+  const h2 = cover.querySelector('h2');
+  let fs = parseFloat(getComputedStyle(h2).fontSize), g = 40;
+  while (h2.getBoundingClientRect().height > fs * 1.1 * 3 + 2 && fs > 18 && g--) { fs -= 1; h2.style.fontSize = fs + 'px'; }
+  const full = () => cover.scrollHeight > cover.clientHeight + 1 ||
+    [...cover.children].some(e => e.getBoundingClientRect().bottom > cover.getBoundingClientRect().bottom - 50 && !e.classList.contains('cfoot'));
+  const sample = cover.querySelector('.sample');
+  if (full() && sample) sample.remove();
+}
+
+function setPaper() {
+  const a4 = $('#paper').value === 'a4';
+  document.body.classList.toggle('a4', a4);
+  $('#pagesize').textContent = a4 ? '@page { size: 210mm 297mm; margin: 0; }' : '@page { size: 8.5in 11in; margin: 0; }';
+  if ($('#preview').innerHTML) render();
+}
+
+$('#make').onclick = render;
+$('#demo').onclick = () => { $('#src').value = EXAMPLE; $('#lang').value = 'auto'; render(); };
+$('#print').onclick = () => { if (!$('#preview').innerHTML && !render()) return; setTimeout(() => window.print(), 300); };
+$('#paper').onchange = setPaper;
+$('#lang').onchange = () => { if ($('#preview').innerHTML) render(); };
+try { const saved = localStorage.getItem('mts-wyr-cards'); if (saved) $('#src').value = saved; } catch (e) {}
+$('#src').addEventListener('input', () => { try { localStorage.setItem('mts-wyr-cards', $('#src').value); } catch (e) {} });
+const q = new URLSearchParams(location.search);
+if (q.get('paper') === 'a4') { $('#paper').value = 'a4'; setPaper(); }
+if (q.get('lang') && I18N[q.get('lang')]) $('#lang').value = q.get('lang');
+if (q.get('demo')) { $('#src').value = EXAMPLE; render(); }
+</script>
+<!-- mts-paste-btn -->
+<style>
+  #mts-paste-btn {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    z-index: 9999;
+    background: #1F5E5B;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-family: Ubuntu, sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+  }
+  #mts-paste-btn:hover { background: #174644; }
+  #mts-paste-toast {
+    position: fixed;
+    bottom: 76px;
+    right: 18px;
+    z-index: 9999;
+    background: #333;
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-family: Ubuntu, sans-serif;
+    display: none;
+    pointer-events: none;
+  }
+  @media print { #mts-paste-btn, #mts-paste-toast { display: none !important; } }
+</style>
+<button id="mts-paste-btn" title="Paste AI response from clipboard">
+  📋 Paste AI Response
+</button>
+<div id="mts-paste-toast">✅ Pasted!</div>
+<script>
+(function() {
+  var btn = document.getElementById('mts-paste-btn');
+  var toast = document.getElementById('mts-paste-toast');
+  if (!btn) return;
+
+  // Find the first <textarea> on the page to paste into
+  function getTarget() {
+    return document.querySelector('textarea');
+  }
+
+  btn.addEventListener('click', function() {
+    if (!navigator.clipboard || !navigator.clipboard.readText) {
+      alert('Clipboard API not available. Please paste manually (Ctrl+V / ⌘+V).');
+      return;
+    }
+    navigator.clipboard.readText().then(function(text) {
+      var ta = getTarget();
+      if (ta) {
+        ta.value = text;
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+        ta.dispatchEvent(new Event('change', { bubbles: true }));
+        ta.focus();
+      } else {
+        alert('No text field found on the page.');
+      }
+      toast.style.display = 'block';
+      setTimeout(function() { toast.style.display = 'none'; }, 2000);
+    }).catch(function(err) {
+      alert('Could not read clipboard: ' + err + '\nPlease paste manually (Ctrl+V / ⌘+V).');
+    });
+  });
+})();
+</script>
+
+</body></html>

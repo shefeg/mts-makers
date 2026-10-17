@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Make Together Studio Card Maker · White Elephant Dice Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+<style id="pagesize">@page { size: 8.5in 11in; margin: 0; }</style>
+<style>
+:root { --teal:#1F5E5B; --coral:#F07F5E; --red:#B0392C; --cream:#FFF8EE; --ink:#2B2B2B; --muted:#6B655E; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Ubuntu', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; color: var(--ink); background: #EFE7DA; }
+.ui { max-width: 980px; margin: 0 auto; padding: 24px 16px 8px; }
+.top { display: flex; align-items: center; gap: 14px; }
+.top img { width: 56px; height: 56px; }
+.top h1 { font-size: 26px; margin: 0; color: var(--teal); }
+.top p { margin: 2px 0 0; color: var(--muted); }
+.panel { background: #fff; border-radius: 16px; padding: 18px; margin-top: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+.step { background: var(--cream); border-radius: 12px; padding: 10px 12px; font-size: 14px; line-height: 1.4; }
+.step b { color: var(--red); }
+textarea { width: 100%; min-height: 230px; border: 2px solid #D9D1C4; border-radius: 12px; padding: 12px;
+           font: 14px/1.45 ui-monospace, Menlo, Consolas, monospace; resize: vertical; }
+textarea:focus { outline: none; border-color: var(--teal); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+button { border: 0; border-radius: 999px; padding: 12px 20px; font: 600 15px 'Ubuntu', sans-serif; cursor: pointer; }
+.primary { background: var(--teal); color: #fff; }
+.accent { background: var(--red); color: #fff; }
+.ghost { background: var(--cream); color: var(--teal); }
+select { padding: 10px 12px; border-radius: 10px; border: 2px solid #D9D1C4; font: 14px 'Ubuntu', sans-serif; }
+label.opt { font-size: 14px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.msg { margin-top: 10px; font-size: 14px; line-height: 1.45; }
+.msg.err { color: #B3412A; font-weight: 700; } .msg.ok { color: var(--teal); }
+.msg .warn { display: block; margin-top: 6px; color: #B3412A; font-weight: 700; }
+.hint { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.45; }
+#preview { padding: 12px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+#preview .page { box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+
+body:not(.a4) { --pw:8.5in; --ph:11in; --pad:0.5in; --cw:2.5in; --ch:2.5in; --mw:3.75in;
+                 --mh:5in; --tw:1.875in; --th:2in; }
+body.a4 { --pw:210mm; --ph:297mm; --pad:12mm; --cw:62mm; --ch:68.25mm; --mw:93mm; --mh:136.5mm;
+           --tw:46.5mm; --th:54.6mm; }
+body.card { --pw:5in; --ph:3.75in; --pad:0in; }
+.page { width: var(--pw); height: var(--ph); padding: var(--pad); background: #fff; position: relative; overflow: hidden;
+         box-sizing: border-box; font-family: 'Ubuntu', 'Noto Color Emoji', sans-serif; color: #2B2B2B;
+         -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page * { box-sizing: border-box; }
+/* ---------------------------------------------------------------- full-page dice chart */
+.we-chart { display: flex; flex-direction: column; --acc: #B0392C; }
+.we-head { flex: none; background: #FFF6EC; border-radius: 16px; border-bottom: 3px solid var(--acc); padding: .16in .24in .14in;
+            margin-bottom: .14in; min-width: 0; }
+.we-kick { font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: 9pt; color: var(--acc);
+            white-space: nowrap; overflow: hidden; }
+.we-title { font-family: Anton, 'Ubuntu', sans-serif; text-transform: uppercase; letter-spacing: .5px; color: #1F5E5B;
+             font-size: 30pt; line-height: 1.08; margin: .03in 0 .04in; overflow-wrap: normal; text-wrap: balance; }
+.we-sub { font-size: 10.5pt; color: #4A4540; line-height: 1.35; }
+.we-chips { display: flex; flex-wrap: wrap; gap: 5px 7px; margin-top: 6px; }
+.we-chips span { font-size: 9.5pt; font-weight: 700; border-radius: 12px; padding: 3px 10px; background: #fff; color: #1F5E5B;
+                  border: 1.5px solid #E6DCCD; max-width: 100%; line-height: 1.3; overflow-wrap: normal; }
+.we-rows { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: .08in; }
+.we-row { flex: 1 1 0; min-height: 0; display: flex; align-items: center; gap: .18in; border: 1.6px solid #EADFD0;
+           border-radius: 14px; padding: .06in .16in; background: #fff; overflow: hidden; }
+.we-row:nth-child(odd) { background: #FFFBF5; }
+.we-die { flex: none; width: .92in; height: .92in; }
+.we-die svg { width: 100%; height: 100%; display: block; }
+.we-txt { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+.we-act { font-weight: 700; color: var(--acc); font-size: 20pt; letter-spacing: .04em; line-height: 1.1; text-transform: uppercase;
+           white-space: nowrap; overflow: hidden; }
+.we-desc { font-size: 13pt; line-height: 1.32; margin-top: 3px; overflow-wrap: normal; hyphens: manual; }
+.we-chart.two .we-rows { gap: .05in; }
+.we-chart.two .we-row { padding: .03in .14in; gap: .14in; border-radius: 10px; }
+.we-chart.two .we-die { width: .56in; height: .56in; }
+.we-chart.two .we-act { font-size: 14pt; }
+.we-chart.two .we-desc { font-size: 11pt; margin-top: 1px; line-height: 1.25; }
+.we-how { flex: none; margin-top: .12in; background: #FFF6EC; border-radius: 12px; padding: .09in .16in; font-size: 10.5pt;
+           line-height: 1.4; color: #3D3A36; }
+.we-how b { color: var(--acc); }
+.we-foot { flex: none; display: flex; justify-content: space-between; align-items: center; font-size: 8.5pt; color: #8A8379;
+            padding-top: .08in; gap: 10px; }
+.we-foot span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.we-foot img { width: 18px; height: 18px; vertical-align: -4px; margin-right: 6px; }
+/* ---------------------------------------------------------------- mini charts (4 per page, and the listing card) */
+.we-minis { display: grid; grid-template-columns: repeat(2, var(--mw)); grid-template-rows: repeat(2, var(--mh)); }
+.we-mcut { border: 1px dashed #C9C0B3; padding: .1in; overflow: hidden; }
+.we-mini { width: 100%; height: 100%; display: flex; flex-direction: column; border: 2px solid var(--acc); border-radius: 14px;
+            padding: .1in .12in .08in; background: #fff; overflow: hidden; --acc: #B0392C; }
+.we-mini .we-head { padding: .06in .1in .05in; margin-bottom: .07in; border-radius: 10px; border-bottom-width: 2px; }
+.we-mini .we-kick { font-size: 6.5pt; }
+.we-mini .we-title { font-size: 15pt; margin: .01in 0 0; }
+.we-mini .we-rows { gap: .045in; }
+.we-mini .we-row { gap: .09in; padding: .02in .07in; border-radius: 8px; border-width: 1.2px; }
+.we-mini .we-die { width: .44in; height: .44in; }
+.we-mini .we-act { font-size: 10.5pt; }
+.we-mini .we-desc { font-size: 8.2pt; line-height: 1.2; margin-top: 0; }
+.we-mini .we-mfoot { flex: none; font-size: 6.5pt; color: #8A8379; text-align: right; padding-top: .04in; white-space: nowrap; overflow: hidden; }
+body.card .page { padding: 0; }
+/* listing card (?paper=card, not in the UI): the mini chart on a wide 5 x 3.75 in card, faces in two columns */
+body.card .we-mini { border-radius: 0; border: 0; padding: .14in .16in .08in; }
+body.card .we-mini .we-head { margin-bottom: .08in; }
+body.card .we-mini .we-title { font-size: 17pt; }
+body.card .we-mini .we-rows { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: .06in .07in; }
+body.card .we-mini .we-row { min-height: 0; }
+body.card .we-mini .we-die { width: .46in; height: .46in; }
+body.card .we-mini .we-act { font-size: 10.5pt; }
+body.card .we-mini .we-desc { font-size: 7.6pt; }
+/* ---------------------------------------------------------------- twist cards (12 per page) */
+.we-cards { display: grid; grid-template-columns: repeat(3, var(--cw)); grid-template-rows: repeat(4, var(--ch)); }
+.cut { border: 1px dashed #C9C0B3; padding: .1in; overflow: hidden; }
+.wc { width: 100%; height: 100%; border: 3px solid var(--acc); border-radius: 14px; background: #FFFDF8; display: flex;
+       flex-direction: column; padding: .08in .1in .06in; overflow: hidden; --acc: #B0392C; }
+.wc-head { flex: none; display: flex; justify-content: space-between; align-items: center; gap: 6px; min-width: 0; }
+.wc-pill { flex: none; display: inline-flex; align-items: center; gap: 4px; background: var(--acc); color: #fff; border-radius: 99px;
+            padding: 2px 8px 2px 4px; font-size: 7.5pt; font-weight: 700; letter-spacing: .08em; max-width: 70%; overflow: hidden;
+            white-space: nowrap; }
+.wc-pill svg { width: 13px; height: 13px; flex: none; }
+.wc-deck { font-size: 7.5pt; font-weight: 700; color: var(--acc); text-transform: uppercase; letter-spacing: .06em;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.wc-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: .04in .02in; overflow: hidden; }
+.wc-title { font-weight: 700; color: #1F5E5B; font-size: 13pt; line-height: 1.12; margin-bottom: .05in; overflow-wrap: normal;
+             text-wrap: balance; max-width: 100%; }
+.wc-text { font-size: 10.6pt; line-height: 1.3; overflow-wrap: normal; text-wrap: pretty; max-width: 100%; }
+.wc-foot { flex: none; display: flex; justify-content: space-between; font-size: 6.5pt; color: #8A8379; gap: 6px; }
+.wc-foot span { white-space: nowrap; overflow: hidden; }
+.wc.blank .wc-title { color: #8A8379; font-weight: 500; font-size: 10pt; }
+.wc.blank .wc-lines { width: 92%; }
+.wc.blank .wc-lines div { border-bottom: 1px solid #D8CFC2; height: .26in; }
+.we-sheethead { display: flex; justify-content: space-between; font-size: 8pt; color: #8A8379; height: 0; overflow: visible;
+                 position: relative; top: -.32in; }
+@media screen { .page + .page { margin-top: 0; } }
+
+@media print {
+  body { background: #fff; }
+  .ui { display: none; }
+  #preview { padding: 0; gap: 0; display: block; }
+  #preview .page { box-shadow: none; page-break-after: always; break-after: page; }
+}
+@media (max-width: 700px) { .steps { grid-template-columns: 1fr; } }
+</style></head>
+<body>
+<div class="ui">
+  <div class="top"><img src="data:image/png;base64,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" alt=""><div><h1>Make Together Studio Card Maker</h1>
+    <p>Turn the dice chart and twist cards from your AI chat into a printable PDF, in our design.</p></div></div>
+  <div class="panel">
+    <div class="steps">
+      <div class="step"><b>1</b> In your AI chat, click <b>Copy</b> on the box with your cards. No box? Send the AI: <i>Put all cards in one code block.</i></div>
+      <div class="step"><b>2</b> Paste it below and click <b>Make my cards</b>.</div>
+      <div class="step"><b>3</b> Check the preview, then click <b>Print / Save as PDF</b>.</div>
+    </div>
+    <textarea id="src" placeholder="Paste your cards here. They start with  GAME: …  and contain lines like  1 | UNWRAP | …  or  TWIST | title | …"></textarea>
+    <div class="row">
+      <button class="primary" id="make">Make my cards</button>
+      <button class="accent" id="print">Print / Save as PDF</button>
+      <select id="paper"><option value="letter">US Letter paper</option><option value="a4">A4 paper</option></select>
+      <label class="opt"><input type="checkbox" id="mini" checked> + 4 mini charts (one per table)</label>
+      <button class="ghost" id="demo">Try an example</button>
+    </div>
+    <div class="msg" id="msg"></div>
+    <div class="hint">Printing tip: choose <b>Actual size / 100%</b> scale. To get a PDF file, pick <b>Save as PDF</b> as the printer.
+      Cardstock works best for the twist cards. Cut along the dashed lines. Cards in German or French? Ask your AI for
+      <i>LANG: de</i> or <i>LANG: fr</i>; the card labels switch too.</div>
+  </div>
+</div>
+<div id="preview"></div>
+<script>
+
+window.WE = (() => {
+  const LABELS = {"en": {"kicker": "White Elephant Dice Game", "chart": "Our Dice Chart", "twist": "TWIST", "custom": "Custom", "family": "Family", "office": "Office", "blank": "Write your own twist", "how": "Round 2: roll, do what the chart says, pass the die. When the timer rings, keep the gift in your hands. Can't do it? Roll again.", "forL": "For", "budget": "Budget", "timer": "Timer", "two": "two dice", "mini": "Mini dice charts · one per table", "cut": "Cut along the dashed lines · print at Actual size / 100%", "cards": "Twist cards"}, "de": {"kicker": "Wichtel-Würfelspiel", "chart": "Unsere Würfeltabelle", "twist": "ÜBERRASCHUNG", "custom": "Eigene", "family": "Familie", "office": "Büro", "blank": "Schreibt eure eigene Überraschung", "how": "Runde 2: Würfelt, tut, was die Tabelle sagt, und gebt den Würfel weiter. Wenn der Timer klingelt, behaltet ihr das Geschenk in euren Händen. Geht nicht? Noch einmal würfeln.", "forL": "Für", "budget": "Budget", "timer": "Timer", "two": "zwei Würfel", "mini": "Mini-Würfeltabellen · eine pro Tisch", "cut": "An den gestrichelten Linien ausschneiden · in Originalgröße (100 %) drucken", "cards": "Überraschungskarten"}, "fr": {"kicker": "Jeu de dés · échange de cadeaux", "chart": "Notre tableau des dés", "twist": "SURPRISE", "custom": "Perso", "family": "Famille", "office": "Bureau", "blank": "Écrivez votre propre surprise", "how": "Manche 2 : lancez le dé, faites ce que dit le tableau, puis passez le dé. Quand le minuteur sonne, gardez le cadeau que vous tenez. Impossible ? Relancez.", "forL": "Pour", "budget": "Budget", "timer": "Minuteur", "two": "deux dés", "mini": "Mini-tableaux · un par table", "cut": "Découpez le long des pointillés · imprimez en taille réelle (100 %)", "cards": "Cartes surprise"}};
+  const ACCENT = {"classic": "#3D5A80", "family": "#B0392C", "office": "#1F5E5B", "two-dice": "#9A6B0A", "custom": "#2F7A63", "blank": "#8A8379"};
+  const BRAND = 'Make Together Studio';
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const lab = lang => LABELS[lang] || LABELS.en;
+  // French typography: a no-break space before : ; ! ? » and after « (so no sign starts a line on its own)
+  const fr = s => String(s).replace(/«\s*/g, '« ').replace(/\s*»/g, ' »').replace(/\s+([!?;:])/g, ' $1')
+                            .replace(/([^\s \d])([!?;])(?=\s|$)/g, '$1 $2');
+  const typo = (s, lang) => lang === 'fr' ? fr(s) : String(s);
+  const PIPS = {1: [[50, 50]], 2: [[28, 28], [72, 72]], 3: [[26, 26], [50, 50], [74, 74]],
+                4: [[28, 28], [72, 28], [28, 72], [72, 72]], 5: [[27, 27], [73, 27], [50, 50], [27, 73], [73, 73]],
+                6: [[29, 25], [71, 25], [29, 50], [71, 50], [29, 75], [71, 75]]};
+  function die(n, acc) {
+    const frame = `<rect x="5" y="5" width="90" height="90" rx="20" fill="#fff" stroke="${acc}" stroke-width="6"/>`;
+    if (n >= 1 && n <= 6)
+      return `<svg viewBox="0 0 100 100">${frame}${PIPS[n].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="9.5" fill="#2B2B2B"/>`).join('')}</svg>`;
+    return `<svg viewBox="0 0 100 100">${frame}<text x="50" y="69" text-anchor="middle" font-family="Anton, Ubuntu, sans-serif" ` +
+           `font-size="${n > 9 ? 50 : 56}" fill="${acc}">${n}</text></svg>`;
+  }
+  const miniDie = acc => `<svg viewBox="0 0 100 100"><rect x="8" y="8" width="84" height="84" rx="20" fill="#fff"/>` +
+    [[30, 30], [70, 30], [50, 50], [30, 70], [70, 70]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="10" fill="${acc}"/>`).join('') + `</svg>`;
+
+  function chips(ch, L) {
+    const out = [];
+    if (ch.forLine) out.push(`<span>${esc(L.forL)}: ${esc(typo(ch.forLine, ch.lang))}</span>`);
+    if (ch.budget) out.push(`<span>${esc(L.budget)}: ${esc(ch.budget)}</span>`);
+    if (ch.timer) out.push(`<span>${esc(L.timer)}: ${esc(ch.timer)}</span>`);
+    return out.length ? `<div class="we-chips">${out.join('')}</div>` : '';
+  }
+  function rows(ch, acc) {
+    return ch.faces.map(f => `<div class="we-row"><div class="we-die">${die(f.n, acc)}</div><div class="we-txt">` +
+      `<div class="we-act">${esc(typo(f.title, ch.lang))}</div><div class="we-desc">${esc(typo(f.text, ch.lang))}</div></div></div>`).join('');
+  }
+  function chartPage(ch, o = {}) {
+    const L = lab(ch.lang), acc = ch.accent || ACCENT[ch.key] || ACCENT.custom;
+    const two = ch.faces.some(f => f.n > 6);
+    const sub = ch.sub ? `<div class="we-sub">${esc(typo(ch.sub, ch.lang))}</div>` : '';
+    const how = ch.how === false ? '' : `<div class="we-how">${esc(typo(ch.how || L.how, ch.lang))}</div>`;
+    return `<section class="page we-chart${two ? ' two' : ''}" style="--acc:${acc}" data-key="${esc(o.key || '')}" lang="${ch.lang || 'en'}">` +
+      `<div class="we-head"><div class="we-kick">${esc(o.kicker || L.kicker)}${two ? ' · ' + esc(L.two) : ''}</div>` +
+      `<div class="we-title">${esc(typo(ch.title || L.chart, ch.lang))}</div>${sub}${chips(ch, L)}</div>` +
+      `<div class="we-rows">${rows(ch, acc)}</div>${how}` +
+      `<div class="we-foot"><span><img src="${o.icon || ''}" alt="">${esc(o.brand || BRAND + ' · ' + L.kicker)}</span><span class="pnum"></span></div></section>`;
+  }
+  function miniCard(ch, o = {}) {
+    const L = lab(ch.lang), acc = ch.accent || ACCENT[ch.key] || ACCENT.custom;
+    return `<div class="we-mini" style="--acc:${acc}" lang="${ch.lang || 'en'}"><div class="we-head"><div class="we-kick">${esc(L.kicker)}</div>` +
+      `<div class="we-title">${esc(typo(ch.title || L.chart, ch.lang))}</div></div><div class="we-rows">${rows(ch, acc)}</div>` +
+      `<div class="we-mfoot">${esc(BRAND)}</div></div>`;
+  }
+  function miniPage(ch, o = {}) {
+    const one = `<div class="we-mcut">${miniCard(ch, o)}</div>`;
+    return `<section class="page we-minipage" data-key="${esc(o.key || '')}"><div class="we-minis">${one.repeat(4)}</div></section>`;
+  }
+  function cardHTML(c, lang) {
+    const L = lab(lang), acc = c.accent || ACCENT[c.deck] || ACCENT.custom;
+    if (c.blank)
+      return `<div class="cut"><div class="wc blank" style="--acc:${ACCENT.blank}"><div class="wc-head"><span class="wc-pill">` +
+        `${miniDie(ACCENT.blank)}${esc(L.twist)}</span><span class="wc-deck"></span></div><div class="wc-body">` +
+        `<div class="wc-title">${esc(L.blank)}</div><div class="wc-lines"><div></div><div></div><div></div><div></div></div></div>` +
+        `<div class="wc-foot"><span></span><span>${esc(BRAND)}</span></div></div></div>`;
+    const deck = c.deckLabel || L[c.deck] || L.custom;
+    return `<div class="cut"><div class="wc" style="--acc:${acc}" lang="${lang || 'en'}"><div class="wc-head"><span class="wc-pill">${miniDie(acc)}` +
+      `${esc(L.twist)}</span><span class="wc-deck">${esc(deck)}</span></div><div class="wc-body">` +
+      (c.title ? `<div class="wc-title">${esc(typo(c.title, lang))}</div>` : '') +
+      `<div class="wc-text">${esc(typo(c.text, lang))}</div></div><div class="wc-foot"><span>${esc(c.id || '')}</span>` +
+      `<span>${esc(BRAND)}</span></div></div></div>`;
+  }
+  function cardPages(cards, o = {}) {
+    const lang = o.lang || 'en', per = 12, out = [];
+    const list = cards.slice();
+    if (o.fillBlank !== false) while (list.length % per) list.push({ blank: true });
+    for (let i = 0; i < list.length; i += per)
+      out.push(`<section class="page we-cardpage" data-key="${esc(i === 0 ? (o.key || '') : '')}"><div class="we-cards">` +
+        list.slice(i, i + per).map(c => cardHTML(c, lang)).join('') + `</div></section>`);
+    return out.join('');
+  }
+
+  // ---------------------------------------------------------------- the AI's code block -> chart + twist cards
+  const clean = l => l.replace(/\t/g, ' ').replace(/^\s*[-*•>]\s+/, '').replace(/^\s*\d+[.)]\s+(?=(?:TWIST|CARD|KARTE|CARTE)\b)/i, '')
+                      .replace(/\*\*|__|`/g, '').replace(/^#+\s*/, '').trim();
+  const DIE_CH = {'⚀': 1, '⚁': 2, '⚂': 3, '⚃': 4, '⚄': 5, '⚅': 6};
+  function splitTitle(rest) {
+    rest = rest.trim();
+    let m = rest.match(/^([^|]{1,60}?)\s*\|\s*(.+)$/);
+    if (m) return [m[1].trim(), m[2].trim()];
+    m = rest.match(/^([A-ZÄÖÜÀÂÇÉÈÊËÎÏÔÛÙŸŒ0-9'’ !&-]{2,40}?)\s*[:—–-]\s+(.+)$/);
+    if (m) return [m[1].trim(), m[2].trim()];
+    m = rest.match(/^(.{2,40}?)\s+[—–]\s+(.+)$/);
+    if (m) return [m[1].trim(), m[2].trim()];
+    return ['', rest];
+  }
+  function parse(raw) {
+    const res = { title: '', lang: '', forLine: '', budget: '', timer: '', chart: [], twists: [],
+                  notes: { shortened: false, emptyTwists: 0, emptyFaces: [], titleOnly: [], dupFaces: [], badLang: '', faceRange: false, ended: false } };
+    let section = '';
+    const lines = String(raw || '').replace(/\r/g, '').split('\n');
+    for (const rawLine of lines) {
+      if (/^\s*```/.test(rawLine)) continue;
+      if (/^\s*\|?\s*:?-{3,}:?\s*\|/.test(rawLine)) continue;            // markdown table rule
+      let t = clean(rawLine.replace(/^\s*\|(.*)\|\s*$/, '$1'));
+      if (!t) continue;
+      let m;
+      if ((m = t.match(/^(?:GAME|TITLE|SPIEL|JEU)\s*:\s*(.+)$/i))) { res.title = m[1].trim(); continue; }
+      if ((m = t.match(/^(?:LANG|LANGUAGE|SPRACHE|LANGUE)\s*:\s*([A-Za-z-]+)/i))) {
+        const v = m[1].toLowerCase().slice(0, 2);
+        res.lang = ({ en: 'en', de: 'de', fr: 'fr', ge: 'de' })[v] || '';
+        if (!res.lang) res.notes.badLang = m[1];
+        continue;
+      }
+      if ((m = t.match(/^(?:FOR|PLAYERS|FÜR|POUR)\s*:\s*(.+)$/i))) { res.forLine = m[1].trim(); continue; }
+      if ((m = t.match(/^BUDGET\s*:\s*(.+)$/i))) { res.budget = m[1].trim(); continue; }
+      if ((m = t.match(/^(?:TIMER|MINUTEUR)\s*:\s*(.+)$/i))) { res.timer = m[1].trim(); continue; }
+      if (/^THE\s*END$/i.test(t)) { res.notes.ended = true; section = ''; continue; }
+      if (/^[-–—_=]{3,}$/.test(t)) { section = ''; continue; }
+      if (/^(?:DICE\s*)?CHART\s*:?\s*$/i.test(t) || /^(?:WÜRFELTABELLE|TABLEAU)\s*:?$/i.test(t)) { section = 'chart'; continue; }
+      if (/^(?:…|\.\.\.)$/.test(t) || /\bas above\b|\(continue|and so on|\(more/i.test(t)) { res.notes.shortened = true; continue; }
+      if ((m = t.match(/^(?:TWIST|CARD|KARTE|CARTE)\s*#?\s*\d*\s*[|:.)\-–—]?\s*(.*)$/i)) && /^(TWIST|CARD|KARTE|CARTE)\b/i.test(t)) {
+        const rest = m[1] || '';
+        let [title, text] = /^[^|]+\|\s*$/.test(rest) ? [rest.replace(/\|\s*$/, '').trim(), ''] : splitTitle(rest.replace(/\|\s*$/, ''));
+        if (/^(?:…|\.\.\.)$/.test(text.trim())) { res.notes.shortened = true; continue; }
+        res.twists.push({ title, text: text.replace(/[|\s]+$/, '') });
+        section = 'twist';
+        continue;
+      }
+      if ((m = t.match(/^(?:(?:ROLL|WURF|DÉ|DE)\s*(?:A\s+)?)?([⚀-⚅]|1[0-2]|[1-9])\s*(?:[|:.)\-–—=]|\s(?=[A-ZÄÖÜÉÈÀ]))\s*(.*)$/i))
+          && (section === 'chart' || /\|/.test(t) || DIE_CH[m[1]])) {
+        const n = DIE_CH[m[1]] || parseInt(m[1], 10);
+        const frest = m[2] || '';
+        const [title, text] = /^[^|]+\|\s*$/.test(frest) ? [frest.replace(/\|\s*$/, '').trim(), ''] : splitTitle(frest.replace(/\|\s*$/, ''));
+        if (res.chart.some(f => f.n === n)) { res.notes.dupFaces.push(n); continue; }
+        res.chart.push({ n, title, text: text.replace(/[|\s]+$/, '') });
+        section = 'chart';
+        continue;
+      }
+      // a card or face the AI wrapped onto the next line: it continues the last one
+      if (section === 'twist' && res.twists.length) { const c = res.twists[res.twists.length - 1]; c.text = (c.text + ' ' + t).trim(); continue; }
+      if (section === 'chart' && res.chart.length) { const f = res.chart[res.chart.length - 1]; f.text = (f.text + ' ' + t).trim(); continue; }
+    }
+    res.notes.emptyFaces = res.chart.filter(f => !(f.title + f.text).trim()).map(f => f.n);
+    res.notes.titleOnly = res.chart.filter(f => f.title.trim() && !f.text.trim()).map(f => f.n);
+    res.chart = res.chart.filter(f => (f.title + f.text).trim());
+    res.chart.forEach(f => { if (!f.title) f.title = f.text.split(/[.!:,]/)[0].split(/\s+/).slice(0, 3).join(' ').toUpperCase(); });
+    res.notes.emptyTwists = res.twists.filter(c => !c.text.trim()).length;
+    res.twists = res.twists.filter(c => c.text.trim());
+    res.chart.sort((a, b) => a.n - b.n);
+    res.lang = res.lang || 'en';
+    return res;
+  }
+  function chartProblems(chart) {
+    if (!chart.length) return [];
+    const nums = chart.map(f => f.n), p = [];
+    const two = Math.max(...nums) > 6;
+    const want = two ? [2,3,4,5,6,7,8,9,10,11,12] : [1,2,3,4,5,6];
+    const missing = want.filter(n => !nums.includes(n));
+    if (missing.length) p.push({ kind: 'missing', faces: missing });
+    if (two && nums.includes(1)) p.push({ kind: 'range' });
+    return p;
+  }
+
+  // ---------------------------------------------------------------- fit + QA
+  function shrink(el, box, min, step = 0.25) {
+    if (!el) return;
+    let fs = parseFloat(getComputedStyle(el).fontSize), g = 0;
+    const over = () => box.scrollHeight > box.clientHeight + 1 || box.scrollWidth > box.clientWidth + 1 ||
+                       el.scrollWidth > el.clientWidth + 1;
+    while (over() && fs > min && g++ < 80) { fs -= step; el.style.fontSize = fs + 'px'; }
+    return over();
+  }
+  function fit(root = document) {
+    root.querySelectorAll('.we-title').forEach(t => shrink(t, t.parentElement, 12));
+    root.querySelectorAll('.wc-pill, .wc-deck, .we-kick').forEach(t => shrink(t, t, 5));
+    root.querySelectorAll('.we-row').forEach(r => {
+      const a = r.querySelector('.we-act'), d = r.querySelector('.we-desc'), box = r.querySelector('.we-txt');
+      if (!a || !d) return;
+      shrink(a, a, 8);
+      let fs = parseFloat(getComputedStyle(d).fontSize), g = 0;
+      while ((box.scrollHeight > box.clientHeight + 1 || d.scrollWidth > d.clientWidth + 1) && fs > 6.5 && g++ < 80) {
+        fs -= 0.25; d.style.fontSize = fs + 'px';
+      }
+      if (box.scrollHeight > box.clientHeight + 1 || d.scrollWidth > d.clientWidth + 1) d.style.overflowWrap = 'anywhere';
+    });
+    root.querySelectorAll('.wc-body').forEach(b => {
+      const t = b.querySelector('.wc-title'), x = b.querySelector('.wc-text');
+      if (!x) return;
+      let fs = parseFloat(getComputedStyle(x).fontSize), ft = t ? parseFloat(getComputedStyle(t).fontSize) : 0, g = 0;
+      const over = () => b.scrollHeight > b.clientHeight + 1 || b.scrollWidth > b.clientWidth + 1 ||
+                         x.scrollWidth > x.clientWidth + 1 || (t && t.scrollWidth > t.clientWidth + 1);
+      while (over() && fs > 6.5 && g++ < 100) {
+        fs -= 0.25; x.style.fontSize = fs + 'px';
+        if (t && ft > fs * 1.12) { ft = Math.max(fs * 1.12, ft - 0.3); t.style.fontSize = ft + 'px'; }
+      }
+      if (over()) { x.style.overflowWrap = 'anywhere'; if (t) t.style.overflowWrap = 'anywhere'; }
+    });
+  }
+  function qa(root = document) {
+    const p = [];
+    const R = e => e.getBoundingClientRect();
+    root.querySelectorAll('section.page').forEach((pg, i) => {
+      const pr = R(pg);
+      pg.querySelectorAll('.we-title, .we-txt, .we-act, .we-desc, .wc-body, .wc-title, .wc-text, .wc-pill, .wc-deck, .we-chips span, .we-kick, .we-how')
+        .forEach(el => {
+          const cs = getComputedStyle(el);
+          if (el.scrollWidth > el.clientWidth + 1) p.push(`page ${i + 1} ${el.className} x ${el.scrollWidth}>${el.clientWidth} "${el.textContent.slice(0, 40)}"`);
+          if (cs.overflow !== 'visible' && el.scrollHeight > el.clientHeight + 1)
+            p.push(`page ${i + 1} ${el.className} y ${el.scrollHeight}>${el.clientHeight} "${el.textContent.slice(0, 40)}"`);
+          if (cs.overflowWrap === 'anywhere') p.push(`page ${i + 1} ${el.className} needed overflow-wrap:anywhere "${el.textContent.slice(0, 40)}"`);
+        });
+      pg.querySelectorAll('.we-row, .wc, .we-head, .we-how').forEach(el => {
+        const r = R(el);
+        if (r.right > pr.right + 1 || r.bottom > pr.bottom + 1) p.push(`page ${i + 1} ${el.className} outside the page`);
+      });
+      // a French sign alone at the start of a line: compare each sign's top with the previous character's top
+      pg.querySelectorAll('[lang="fr"] .we-desc, [lang="fr"] .wc-text, [lang="fr"] .wc-title, [lang="fr"] .we-act').forEach(el => {
+        const tn = el.firstChild;
+        if (!tn || tn.nodeType !== 3) return;
+        const s = tn.textContent;
+        for (let k = 1; k < s.length; k++) {
+          if (!'»!?:;'.includes(s[k])) continue;
+          const r1 = document.createRange(); r1.setStart(tn, k); r1.setEnd(tn, k + 1);
+          const r0 = document.createRange(); r0.setStart(tn, k - 1); r0.setEnd(tn, k);
+          const a = r0.getClientRects()[0], b = r1.getClientRects()[0];
+          if (a && b && b.top > a.top + 2) p.push(`page ${i + 1} "${s[k]}" starts a line: "${s.slice(Math.max(0, k - 20), k + 1)}"`);
+        }
+      });
+    });
+    return [...new Set(p)];
+  }
+  return { parse, chartProblems, chartPage, miniPage, miniCard, cardPages, cardHTML, fit, qa, typo, die, LABELS, ACCENT };
+})();
+
+const EXAMPLE = "GAME: The Novak Family White Elephant\nLANG: en\nFOR: Mom, Dad, Mia, Leo, Nana Rose, Uncle Rob and the cousins · 18 players\nBUDGET: $25\nTIMER: 8 minutes\n---\nCHART\n1 | UNWRAP | Open your gift and show everyone! Already open? Pick someone with a wrapped gift to open theirs.\n2 | PASS LEFT | Everyone passes their gift one seat to the left.\n3 | PASS RIGHT | Everyone passes their gift one seat to the right.\n4 | SOCK SWAP | Pepper's favorite trick: pick two other players. They trade gifts.\n5 | STEAL | Trade your gift for any gift in the circle. No saying no, Uncle Rob!\n6 | TWIST | Draw a twist card, read it aloud and do what it says.\n---\nTWIST | Pancake Panic | Anyone who has ever eaten Dad's famous pancakes: stand up and pass your gift to the next person standing on your left.\nTWIST | Nana's Choice | Nana Rose picks any two players. They trade gifts.\nTWIST | Sock Thief | Pepper strikes again! Everyone passes their gift two seats to the left.\nTWIST | Tree Topper | Who put the star on the tree this year? That player may trade gifts with anyone.\nTWIST | Cousin Chaos | All the cousins: stand up and pass your gift to the next person standing on your left.\nTWIST | Leo's Lock | Leo picks one gift and puts a lock tag on it. Nobody can steal or swap it now.\nTWIST | Snow Day | Everyone with a wrapped gift: shake it, guess what's inside, then all pass one seat right.\nTWIST | Mia Decides | Mia picks two players with wrapped gifts. They both unwrap now.\nTWIST | Uncle Rob's Rule | Uncle Rob trades gifts with the player sitting farthest from him.\nTWIST | Cocoa Break | Everyone who has had hot cocoa today: stand up and pass your gift to the next person standing on your left.\nTWIST | Backwards Day | From now on, the die travels the other way around the circle.\nTWIST | Extra Minute | Mom adds one minute to the timer. Keep rolling!\n---\nTHE END";
+const ICON = "data:image/png;base64,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";
+const $ = s => document.querySelector(s);
+const FIX = ' In your AI chat, send: “Put all cards in one code block.” Then copy the new box and paste it here.';
+const list = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : String(a[0]);
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+function render() {
+  window.WE_DONE = false;
+  const res = WE.parse($('#src').value);
+  const pv = $('#preview'), msg = $('#msg');
+  const L = WE.LABELS[res.lang] || WE.LABELS.en;
+  const problems = [], info = [];
+  if (!res.chart.length && !res.twists.length) {
+    pv.innerHTML = '';
+    msg.className = 'msg err';
+    msg.textContent = "I couldn't find a dice chart or any twist cards. Copy the whole box from your AI chat. It should " +
+      "contain lines like “1 | UNWRAP | …” or “TWIST | title | …”. No box with a Copy button? Send the AI: “Put all cards in one code block.”";
+    window.WE_RESULT = { faces: 0, twists: 0, pages: 0, problems: ['nothing found'] };
+    window.WE_DONE = true;
+    return false;
+  }
+  let html = '';
+  if (res.chart.length) {
+    const cp = WE.chartProblems(res.chart);
+    cp.forEach(p => {
+      if (p.kind === 'missing') problems.push(`Your dice chart has no face ${list(p.faces)}.`);
+      if (p.kind === 'range') problems.push('Your chart mixes one-die faces (1) and two-dice sums (2–12).');
+    });
+    if (res.chart.some(f => f.n > 6)) info.push('Faces above 6: printed as a two-dice chart (2–12).');
+    const chart = { key: 'custom', title: res.title || L.chart, lang: res.lang, forLine: res.forLine, budget: res.budget,
+                    timer: res.timer, faces: res.chart };
+    html += WE.chartPage(chart, { icon: ICON, key: 'chart' });
+    if ($('#mini').checked) html += WE.miniPage(chart, { key: 'mini' });
+    window.WE_CHART = chart;
+  }
+  if (res.notes.emptyFaces.length) problems.push(`Face ${list(res.notes.emptyFaces)} ${res.notes.emptyFaces.length > 1 ? 'have' : 'has'} no text.`);
+  if (res.notes.titleOnly.length) problems.push(`Face ${list(res.notes.titleOnly)} ${res.notes.titleOnly.length > 1 ? 'have' : 'has'} a title but no instruction.`);
+  if (res.notes.dupFaces.length) problems.push(`Face ${list(res.notes.dupFaces)} appears twice; we kept the first one.`);
+  if (res.twists.length) {
+    const cards = res.twists.map((c, i) => ({ title: c.title, text: c.text, deck: 'custom', id: '#C' + String(i + 1).padStart(2, '0') }));
+    html += WE.cardPages(cards, { lang: res.lang, key: 'cards' });
+  }
+  if (res.notes.emptyTwists) problems.push(`${plural(res.notes.emptyTwists, 'twist card has', 'twist cards have')} no text.`);
+  if (res.notes.shortened) problems.push('Some cards look shortened (“…” or “as above”).');
+  if (res.notes.badLang) info.push(`LANG: ${res.notes.badLang} isn't one of en, de, fr, so the card labels are in English.`);
+  pv.innerHTML = html;
+  const pages = pv.querySelectorAll('section.page').length;
+  const what = [];
+  if (res.chart.length) what.push(`a dice chart (${res.chart.length} faces)${$('#mini').checked ? ' + 4 mini charts' : ''}`);
+  if (res.twists.length) what.push(plural(res.twists.length, 'twist card', 'twist cards'));
+  msg.className = 'msg ok';
+  msg.textContent = `Made ${what.join(' and ')} on ${plural(pages, 'page', 'pages')}. Card labels: ${({en: 'English', de: 'German', fr: 'French'})[res.lang]}. ` +
+    'Check them below, then click Print / Save as PDF.' + (res.twists.length % 12 ? ' Empty spots are blank cards for your own twists.' : '');
+  if (problems.length || info.length) {
+    const w = document.createElement('span');
+    w.className = 'warn';
+    w.textContent = [...problems, ...info].join(' ') + (problems.length ? FIX : '');
+    msg.appendChild(w);
+  }
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => {
+    WE.fit(pv);
+    pv.querySelectorAll('section.page').forEach((p, i) => { const n = p.querySelector('.pnum'); if (n) n.textContent = i + 1; });
+    window.WE_RESULT = { faces: res.chart.length, twists: res.twists.length, lang: res.lang, pages, problems, info,
+                         title: res.title, layout: WE.qa(pv) };
+    window.WE_DONE = true;
+  });
+  return true;
+}
+
+function setPaper() {
+  const v = $('#paper').value;
+  document.body.classList.toggle('a4', v === 'a4');
+  $('#pagesize').textContent = v === 'a4' ? '@page { size: 210mm 297mm; margin: 0; }' : '@page { size: 8.5in 11in; margin: 0; }';
+  if ($('#preview').innerHTML) render();
+}
+
+$('#make').onclick = render;
+$('#demo').onclick = () => { $('#src').value = EXAMPLE; render(); };
+$('#print').onclick = () => { if (!$('#preview').innerHTML && !render()) return; setTimeout(() => window.print(), 300); };
+$('#paper').onchange = setPaper;
+$('#mini').onchange = () => { if ($('#preview').innerHTML) render(); };
+try { const saved = localStorage.getItem('mts-white-elephant-cards'); if (saved) $('#src').value = saved; } catch (e) {}
+$('#src').addEventListener('input', () => { try { localStorage.setItem('mts-white-elephant-cards', $('#src').value); } catch (e) {} });
+const q = new URLSearchParams(location.search);
+if (q.get('mini') === '0') $('#mini').checked = false;
+if (q.get('paper') === 'a4') { $('#paper').value = 'a4'; setPaper(); }
+if (q.get('paper') === 'card') {               // listing asset: just the mini chart on its own card-sized page
+  document.body.classList.add('card');
+  $('#pagesize').textContent = '@page { size: 5in 3.75in; margin: 0; }';
+  window.CARD_MODE = true;
+}
+if (q.get('demo')) { $('#src').value = EXAMPLE; render(); }
+function cardMode() {
+  const ch = window.WE_CHART;
+  if (!ch) return;
+  $('#preview').innerHTML = `<section class="page">${WE.miniCard(ch)}</section>`;
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { WE.fit($('#preview')); window.WE_DONE = true; });
+}
+</script>
+<!-- mts-paste-btn -->
+<style>
+  #mts-paste-btn {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    z-index: 9999;
+    background: #1F5E5B;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-family: Ubuntu, sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+  }
+  #mts-paste-btn:hover { background: #174644; }
+  #mts-paste-toast {
+    position: fixed;
+    bottom: 76px;
+    right: 18px;
+    z-index: 9999;
+    background: #333;
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-family: Ubuntu, sans-serif;
+    display: none;
+    pointer-events: none;
+  }
+  @media print { #mts-paste-btn, #mts-paste-toast { display: none !important; } }
+</style>
+<button id="mts-paste-btn" title="Paste AI response from clipboard">
+  📋 Paste AI Response
+</button>
+<div id="mts-paste-toast">✅ Pasted!</div>
+<script>
+(function() {
+  var btn = document.getElementById('mts-paste-btn');
+  var toast = document.getElementById('mts-paste-toast');
+  if (!btn) return;
+
+  // Find the first <textarea> on the page to paste into
+  function getTarget() {
+    return document.querySelector('textarea');
+  }
+
+  btn.addEventListener('click', function() {
+    if (!navigator.clipboard || !navigator.clipboard.readText) {
+      alert('Clipboard API not available. Please paste manually (Ctrl+V / ⌘+V).');
+      return;
+    }
+    navigator.clipboard.readText().then(function(text) {
+      var ta = getTarget();
+      if (ta) {
+        ta.value = text;
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+        ta.dispatchEvent(new Event('change', { bubbles: true }));
+        ta.focus();
+      } else {
+        alert('No text field found on the page.');
+      }
+      toast.style.display = 'block';
+      setTimeout(function() { toast.style.display = 'none'; }, 2000);
+    }).catch(function(err) {
+      alert('Could not read clipboard: ' + err + '\nPlease paste manually (Ctrl+V / ⌘+V).');
+    });
+  });
+})();
+</script>
+
+</body></html>
