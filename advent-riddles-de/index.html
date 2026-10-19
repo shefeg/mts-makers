@@ -179,7 +179,7 @@ const T = {
     },
     hint: 'Hint:',
     coverKicker: 'Printable advent calendar · 3 levels', coverFor: 'for',
-    coverLines: ['24 riddle cards a day for every level', 'Each answer gives one letter', 'The letters spell a secret phrase', 'It leads to a hidden surprise on 24 December'],
+    coverLines: ['24 riddle cards for every level, one a day', 'Each answer gives one letter', 'The letters spell a secret phrase', 'It leads to a hidden surprise on 24 December'],
     howTitle: 'How it works', howKicker: 'For grown-ups · read me first',
     how: [
       ['Print', 'the board and the Secret Phrase sheet once (or one sheet per child), the cards for each child’s level, and the number tags if you use envelopes.'],
@@ -411,7 +411,7 @@ function validate(model, lang) {
   else if (P.length !== 24) {
     errors.push(say(`The secret phrase has ${P.length} letters; it needs exactly 24 (spaces don't count).`,
       `Der Lösungssatz hat ${P.length} Buchstaben; er braucht genau 24 (Leerzeichen zählen nicht).`));
-    fix.push(`The PHRASE "${model.phrase}" has ${P.length} letters. It must have exactly 24 letters (spaces don't count). Change the phrase, then rewrite every day so day N gives letter N.`);
+    fix.push(say(`The PHRASE "${model.phrase}" has ${P.length} letters. It must have exactly 24 letters (spaces don't count). Change the phrase, then rewrite every day so day N gives letter N.`, `Der Satz PHRASE "${model.phrase}" hat ${P.length} Buchstaben. Er braucht genau 24 (Leerzeichen zählen nicht). Ändere den Satz und schreib dann jeden Tag so, dass Tag N Buchstabe N ergibt.`));
   }
   const seen = {};
   for (const d of model.days) seen[d.n] = (seen[d.n] || 0) + 1;
@@ -419,7 +419,7 @@ function validate(model, lang) {
   for (let n = 1; n <= 24; n++) if (!seen[n]) missing.push(n);
   if (missing.length) {
     errors.push(say(`Missing days: ${missing.join(', ')}.`, `Es fehlen Tage: ${missing.join(', ')}.`));
-    fix.push(`Days ${missing.join(', ')} are missing. Write all 24 days.`);
+    fix.push(say(`Days ${missing.join(', ')} are missing. Write all 24 days.`, `Es fehlen die Tage ${missing.join(', ')}. Schreib alle 24 Tage.`));
   }
   const dup = Object.keys(seen).filter((k) => seen[k] > 1);
   if (dup.length) errors.push(say(`Days written twice: ${dup.join(', ')}.`, `Doppelte Tage: ${dup.join(', ')}.`));
@@ -439,12 +439,12 @@ function validate(model, lang) {
     const D = say(`Day ${d.n}`, `Tag ${d.n}`);
     if (P.length === 24 && d.letter && d.letter !== want) {
       errors.push(say(`${D}: the line says letter ${d.letter}, but letter ${d.n} of the phrase is ${want}.`, `${D}: dort steht ${d.letter}, aber Buchstabe ${d.n} des Satzes ist ${want}.`));
-      fix.push(`Day ${d.n}: letter ${d.n} of the phrase is ${want}, not ${d.letter}. Rewrite day ${d.n} for the letter ${want}.`);
+      fix.push(say(`Day ${d.n}: letter ${d.n} of the phrase is ${want}, not ${d.letter}. Rewrite day ${d.n} for the letter ${want}.`, `Tag ${d.n}: Buchstabe ${d.n} des Satzes ist ${want}, nicht ${d.letter}. Schreib Tag ${d.n} für den Buchstaben ${want} neu.`));
     }
     for (const lv of present) {
       if (!d[lv]) {
         errors.push(say(`${D}: the ${lv} riddle is missing.`, `${D}: das Rätsel für ${lv} fehlt.`));
-        fix.push(`Day ${d.n}: add the ${lv}: line.`);
+        fix.push(say(`Day ${d.n}: add the ${lv}: line.`, `Tag ${d.n}: ergänze die Zeile ${lv}:.`));
       }
     }
     if (d.little) {
@@ -453,28 +453,28 @@ function validate(model, lang) {
       if (!L.riddle) errors.push(`${D} (little): ` + say('the riddle text is missing.', 'der Rätseltext fehlt.'));
       if (L.opts.length < 2 || L.opts.length > 4) {
         errors.push(`${D} (little): ` + say(`needs 3 pictures, found ${L.opts.length}.`, `braucht 3 Bilder, gefunden: ${L.opts.length}.`));
-        fix.push(`Day ${d.n} little: give exactly 3 pictures like "| 🦁 lion* | 🐭 mouse | 🐷 pig" (star on the right one).`);
+        fix.push(say(`Day ${d.n} little: give exactly 3 pictures like "| 🦁 lion* | 🐭 mouse | 🐷 pig" (star on the right one).`, `Tag ${d.n} little: gib genau 3 Bilder an, z. B. "| 🦁 Löwe* | 🐭 Maus | 🐷 Schwein" (Stern beim richtigen).`));
       }
       if (good.length !== 1) {
         errors.push(`${D} (little): ` + say(`mark exactly one picture with *, found ${good.length}.`, `genau ein Bild mit * markieren, gefunden: ${good.length}.`));
-        fix.push(`Day ${d.n} little: mark exactly one picture with * (the right answer).`);
+        fix.push(say(`Day ${d.n} little: mark exactly one picture with * (the right answer).`, `Tag ${d.n} little: markiere genau ein Bild mit * (die richtige Lösung).`));
       } else {
         const w = lettersOf(good[0].word);
         if (!w.length) errors.push(`${D} (little): ` + say('the right picture has no word.', 'das richtige Bild hat kein Wort.'));
         else if (w[0] !== want && w[w.length - 1] !== want) {
           errors.push(`${D} (little): ` + say(`"${good[0].word}" doesn't start with ${want}.`, `„${good[0].word}“ beginnt nicht mit ${want}.`));
-          fix.push(`Day ${d.n} little: the right picture's word must START with ${want} ("${good[0].word}" doesn't). Pick another picture.`);
+          fix.push(say(`Day ${d.n} little: the right picture's word must START with ${want} ("${good[0].word}" doesn't). Pick another picture.`, `Tag ${d.n} little: das Wort des richtigen Bildes muss mit ${want} BEGINNEN ("${good[0].word}" tut es nicht). Nimm ein anderes Bild.`));
         }
         for (const o of L.opts) {
           if (!o.ok && lettersOf(o.word)[0] === want) {
             warnings.push(`${D} (little): ` + say(`the wrong picture "${o.word}" also starts with ${want}.`, `das falsche Bild „${o.word}“ beginnt auch mit ${want}.`));
-            fix.push(`Day ${d.n} little: the wrong picture "${o.word}" also starts with ${want}; swap it for one that doesn't.`);
+            fix.push(say(`Day ${d.n} little: the wrong picture "${o.word}" also starts with ${want}; swap it for one that doesn't.`, `Tag ${d.n} little: das falsche Bild "${o.word}" beginnt auch mit ${want}; tausch es gegen eins, das nicht mit ${want} beginnt.`));
           }
           if (!o.emoji) warnings.push(`${D} (little): ` + say(`"${o.word}" has no emoji picture.`, `„${o.word}“ hat kein Emoji-Bild.`));
         }
         if (contains(L.riddle, cleanAnswer(good[0].word))) {
           errors.push(`${D} (little): ` + say('the riddle gives the answer away.', 'das Rätsel verrät die Lösung.'));
-          fix.push(`Day ${d.n} little: the riddle contains the answer "${good[0].word}". Rewrite it without that word.`);
+          fix.push(say(`Day ${d.n} little: the riddle contains the answer "${good[0].word}". Rewrite it without that word.`, `Tag ${d.n} little: das Rätsel enthält die Lösung "${good[0].word}". Schreib es ohne dieses Wort neu.`));
         }
         const key = cleanAnswer(good[0].word);
         if (used.little[key]) warnings.push(`${D} (little): ` + say(`"${good[0].word}" is also day ${used.little[key]}'s answer.`, `„${good[0].word}“ ist auch die Lösung von Tag ${used.little[key]}.`));
@@ -488,33 +488,33 @@ function validate(model, lang) {
       const txt = lv === 'clever' ? C.riddle : C.clue;
       if (!C.answer) {
         errors.push(`${D} (${lv}): ` + say('the answer is missing (after the last |).', 'die Lösung fehlt (nach dem letzten |).'));
-        fix.push(`Day ${d.n} ${lv}: put the answer after the last |.`);
+        fix.push(say(`Day ${d.n} ${lv}: put the answer after the last |.`, `Tag ${d.n} ${lv}: schreib die Lösung hinter das letzte |.`));
         continue;
       }
       const n = lettersOf(C.answer).length;
       if (n > MAX_ANSWER) {
         errors.push(`${D} (${lv}): ` + say(`"${C.answer}" has ${n} letters; ${MAX_ANSWER} at most.`, `„${C.answer}“ hat ${n} Buchstaben; höchstens ${MAX_ANSWER}.`));
-        fix.push(`Day ${d.n} ${lv}: the answer "${C.answer}" is too long (${MAX_ANSWER} letters at most).`);
+        fix.push(say(`Day ${d.n} ${lv}: the answer "${C.answer}" is too long (${MAX_ANSWER} letters at most).`, `Tag ${d.n} ${lv}: die Lösung "${C.answer}" ist zu lang (höchstens ${MAX_ANSWER} Buchstaben).`));
       }
       if (n < 3) warnings.push(`${D} (${lv}): ` + say('a very short answer.', 'eine sehr kurze Lösung.'));
       if (starIndex(C.answer, want) < 0) {
         errors.push(`${D} (${lv}): ` + say(`the answer "${C.answer}" has no letter ${want}.`, `die Lösung „${C.answer}“ enthält kein ${want}.`));
-        fix.push(`Day ${d.n} ${lv}: the answer must contain the letter ${want} ("${C.answer}" doesn't). Write a new riddle.`);
+        fix.push(say(`Day ${d.n} ${lv}: the answer must contain the letter ${want} ("${C.answer}" doesn't). Write a new riddle.`, `Tag ${d.n} ${lv}: die Lösung muss den Buchstaben ${want} enthalten ("${C.answer}" tut es nicht). Schreib ein neues Rätsel.`));
       }
       if (!txt) {
         errors.push(`${D} (${lv}): ` + say('the riddle text is missing.', 'der Rätseltext fehlt.'));
-        fix.push(`Day ${d.n} ${lv}: the riddle/clue text is missing.`);
+        fix.push(say(`Day ${d.n} ${lv}: the riddle/clue text is missing.`, `Tag ${d.n} ${lv}: der Rätsel- oder Hinweistext fehlt.`));
       } else if (contains(txt, C.answer)) {
         errors.push(`${D} (${lv}): ` + say('the riddle gives the answer away.', 'das Rätsel verrät die Lösung.'));
-        fix.push(`Day ${d.n} ${lv}: the text contains the answer "${C.answer}". Rewrite it without that word.`);
+        fix.push(say(`Day ${d.n} ${lv}: the text contains the answer "${C.answer}". Rewrite it without that word.`, `Tag ${d.n} ${lv}: der Text enthält die Lösung "${C.answer}". Schreib ihn ohne dieses Wort neu.`));
       }
       if (lv === 'master') {
         if (!TYPES.includes(C.type)) {
           errors.push(`${D} (master): ` + say(`unknown type "${C.type}".`, `unbekannter Typ „${C.type}“.`));
-          fix.push(`Day ${d.n} master: the type must be one of ${TYPES.join(', ')}.`);
+          fix.push(say(`Day ${d.n} master: the type must be one of ${TYPES.join(', ')}.`, `Tag ${d.n} master: der Typ muss einer von ${TYPES.join(', ')} sein.`));
         } else if (['numbers', 'shift'].includes(C.type) && /[ÄÖÜ]/.test(C.answer)) {
           errors.push(`${D} (master): ` + say('codes work with A–Z only.', 'Codes funktionieren nur mit A–Z (ohne Umlaute).'));
-          fix.push(`Day ${d.n} master: a ${C.type} code needs an answer without Ä, Ö, Ü. Pick another word or type.`);
+          fix.push(say(`Day ${d.n} master: a ${C.type} code needs an answer without Ä, Ö, Ü. Pick another word or type.`, `Tag ${d.n} master: ein ${C.type}-Code braucht eine Lösung ohne Ä, Ö, Ü. Nimm ein anderes Wort oder einen anderen Typ.`));
         } else if (C.type === 'anagram' && n < 4) {
           warnings.push(`${D} (master): ` + say('an anagram needs 4+ letters.', 'Buchstabensalat braucht 4+ Buchstaben.'));
         } else if (C.type === 'vowels' && !/[AEIOUÄÖÜ]/.test(C.answer)) {
@@ -829,7 +829,8 @@ function trackerPage(model, tr, filled) {
   }
   if (row.length) rows.push(row);
   let n = 0;
-  const html = rows.map((r) => `<div class="trow">${r.map((w) => `<div class="tword">${w.split('').map((c) => { n++; return `<div class="tbox"><div class="sq${filled ? ' fill' : ''}">${filled ? esc(c) : ''}</div><div class="dn">${n}</div></div>`; }).join('')}</div>`).join('')}</div>`).join('');
+  const upto = filled === true ? 24 : (+filled || 0);
+  const html = rows.map((r) => `<div class="trow">${r.map((w) => `<div class="tword">${w.split('').map((c) => { n++; const f = n <= upto; return `<div class="tbox"><div class="sq${f ? ' fill' : ''}">${f ? esc(c) : ''}</div><div class="dn">${n}</div></div>`; }).join('')}</div>`).join('')}</div>`).join('');
   const names = (model.players || []).map((p) => p.name).join(', ');
   return `<section class="page"><div class="ribbon"></div><div class="pad">
 <div class="ptitle" style="text-align:center">${esc(tr.trackerTitle)}</div><div class="psub" style="text-align:center">${esc(tr.trackerSub)}</div>
@@ -964,7 +965,26 @@ function overflowReport(rootEl) {
   return bad;
 }
 
-const API = { T, LEVELS, TYPES, MAX_ANSWER, parse, validate, renderBook, encode, starIndex, lettersOf, cleanAnswer, phraseWords, fitAll, overflowReport, STYLE, fontFaceCSS, DOOR_ORDER };
+/* Single pieces for listing images (same renderer as the PDF and the Maker). */
+function piece(model, what, opts) {
+  opts = opts || {};
+  const lang = T[opts.lang] ? opts.lang : (T[model.lang] ? model.lang : 'en');
+  const tr = T[lang];
+  const levels = validate(model, lang).levels;
+  if (what === 'card') { const d = model.days.find((x) => x.n === opts.day); return cardHTML(model, d, opts.level, tr, letterFor(model, d)); }
+  const book = (inner) => `<div class="book ${opts.paper === 'a4' ? 'a4' : 'letter'}" lang="${lang}">${inner}</div>`;
+  if (what === 'cover') return book(coverPage(model, tr, levels));
+  if (what === 'how') return book(howPage(model, tr, levels, { at: {} }));
+  if (what === 'board') return book(boardPage(model, tr));
+  if (what === 'tracker') return book(trackerPage(model, tr, opts.filled || 0));
+  if (what === 'cards') return book(cardPages(model, tr, opts.level)[opts.page || 0]);
+  if (what === 'key') return book(keyPage(model, tr, levels));
+  if (what === 'cert') return book(certPage(model, tr, true));
+  if (what === 'tags') return book(tagPages(tr)[opts.page || 0]);
+  return '';
+}
+
+const API = { piece, T, LEVELS, TYPES, MAX_ANSWER, parse, validate, renderBook, encode, starIndex, lettersOf, cleanAnswer, phraseWords, fitAll, overflowReport, STYLE, fontFaceCSS, DOOR_ORDER };
 if (typeof module !== 'undefined' && module.exports) module.exports = API;
 root.AdventEngine = API;
 })(typeof window !== 'undefined' ? window : globalThis);
