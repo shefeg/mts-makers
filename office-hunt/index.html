@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Make Together Studio Card Maker · Office Christmas Scavenger Hunt</title>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style id="pagesize">@page { size: 8.5in 11in; margin: 0; }</style>
+<style>
+:root { --teal:#0B6B43; --coral:#D7263D; --sun:#F2B807; --cream:#FFF8EE; --ink:#2B2B2B; --muted:#6B655E; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Ubuntu', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; color: var(--ink);
+       background: #E4EFE8; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.ui { max-width: 980px; margin: 0 auto; padding: 24px 16px 8px; }
+.top { display: flex; align-items: center; gap: 14px; }
+.top img { width: 56px; height: 56px; }
+.top h1 { font-size: 26px; margin: 0; color: var(--teal); }
+.top p { margin: 2px 0 0; color: var(--muted); }
+.panel { background: #fff; border-radius: 16px; padding: 18px; margin-top: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+.step { background: var(--cream); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+.step b { color: var(--coral); }
+textarea { width: 100%; min-height: 220px; border: 2px solid #D9D1C4; border-radius: 12px; padding: 12px;
+           font: 14px/1.45 ui-monospace, Menlo, Consolas, monospace; resize: vertical; }
+textarea:focus { outline: none; border-color: var(--teal); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+button { border: 0; border-radius: 999px; padding: 12px 20px; font: 600 15px 'Ubuntu', sans-serif; cursor: pointer; }
+.primary { background: var(--teal); color: #fff; }
+.accent { background: var(--coral); color: #fff; }
+.ghost { background: var(--cream); color: var(--teal); }
+select { padding: 10px 12px; border-radius: 10px; border: 2px solid #D9D1C4; font: 14px 'Ubuntu', sans-serif; }
+.msg { margin-top: 10px; font-size: 14px; }
+.msg.err { color: #B3412A; } .msg.ok { color: var(--teal); }
+.msg .warn { display: block; margin-top: 6px; color: #B3412A; font-weight: 700; }
+.hint { font-size: 13px; color: var(--muted); margin-top: 8px; }
+#preview { padding: 12px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+/* ---------- printable pages ---------- */
+.page { width: var(--pw); height: var(--ph); padding: var(--pad); background: #fff; position: relative; overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+body.a4 { --pw: 210mm; --ph: 297mm; --pad: 12mm; --cw: 93mm; --ch: 68.25mm; }
+body:not(.a4) { --pw: 8.5in; --ph: 11in; --pad: 0.5in; --cw: 3.75in; --ch: 2.5in; }
+.grid { display: grid; grid-template-columns: var(--cw) var(--cw); grid-template-rows: repeat(4, var(--ch)); }
+.cut { border: 1px dashed #C9C2B8; padding: 0.09in; }
+.cut.empty { border-color: transparent; }
+.card { height: 100%; border: 2.2px solid var(--c); border-radius: 12px; background: #FFFDF8; display: flex;
+        flex-direction: column; padding: 0.09in 0.14in 0.06in; }
+.card .head { display: flex; justify-content: space-between; align-items: center; min-height: 0.22in; gap: 6px; }
+.card .pill { background: var(--coral); color: #fff; font-weight: 700; font-size: 7.5pt; letter-spacing: .12em;
+              padding: 2px 9px; border-radius: 99px; white-space: nowrap; }
+.card .where { flex: 1 1 auto; min-width: 0; color: var(--t); font-size: 7.2pt; font-weight: 700; text-align: right; overflow: hidden;
+               white-space: nowrap; text-overflow: ellipsis; }
+.card .body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+              text-align: center; font-size: 11.6pt; line-height: 1.34; overflow: hidden; }
+.card .big { font-size: 15pt; font-weight: 700; color: var(--teal); margin-bottom: 3px; }
+.card .pic { font-size: 34pt; line-height: 1.1; }
+.card .read { font-size: 14pt; font-weight: 700; color: var(--teal); }
+.card .ln { display: block; white-space: nowrap; }
+.card .sec { font-size: .8em; color: #6B655E; border-top: 1px dashed #D9D1C4; margin-top: 4px; padding-top: 3px; width: 100%; }
+.nols .pill, .cover.nols .sub { letter-spacing: 0 !important; }
+.card .ln.wrap { white-space: normal; text-wrap: balance; }
+.card .foot { font-size: 6pt; color: #9A938A; text-align: right; height: 0.14in; }
+.little { --c: #F4C95D; --t: #B07D12; } .clever { --c: #F07F5E; --t: #F07F5E; }
+.master { --c: #0B7A4B; --t: #0B6B43; } .start { --c: #0B7A4B; --t: #0B6B43; } .final { --c: #D7263D; --t: #C21F35; }
+.riddle { --c: #D7263D; --t: #C21F35; } .wordplay { --c: #0B7A4B; --t: #0B6B43; } .code { --c: #F2B807; --t: #8A6200; }
+.decoder { --c: #0B7A4B; --t: #0B6B43; }
+.card .ln.cx { font-family: 'Ubuntu Mono', ui-monospace, Menlo, Consolas, monospace; font-weight: 700; color: var(--teal);
+               letter-spacing: .05em; font-size: 1.16em; line-height: 1.25; white-space: nowrap; }
+.card .ln.cxl { font-size: .8em; color: #6B655E; margin-top: 3px; }
+.card .ln.cx.sp { letter-spacing: .24em; }
+.card .dec { border-collapse: collapse; margin: 2px auto 4px; font-size: .74em; line-height: 1.15; }
+.card .dec td { border: 1px solid #E2DACE; min-width: 1.45em; padding: 1px 2px; text-align: center; }
+.card .dec tr.l td { font-weight: 700; color: var(--teal); background: #FFF8EE; }
+.card .dec tr.n td { font-family: 'Ubuntu Mono', ui-monospace, monospace; }
+.card .dec tr.gap td { border: 0; height: 3px; padding: 0; }
+.card .help { font-size: .72em; line-height: 1.3; color: #4A4540; }
+.cover { display: flex; flex-direction: column; }
+.cover .brand { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 10pt; }
+.cover .brand img { width: 36px; height: 36px; }
+.cover h2 { font-size: 28pt; color: var(--teal); margin: .35in 0 .05in; line-height: 1.1; }
+.cover .sub { color: var(--coral); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: 10pt; }
+.cover table { width: 100%; border-collapse: collapse; margin-top: .3in; font-size: 11pt; }
+.cover th { background: var(--teal); color: #fff; text-align: left; padding: 7px 10px; }
+.cover td { border-bottom: 1px solid #E2DACE; padding: 8px 10px; }
+.cover td:first-child { font-weight: 700; color: var(--teal); white-space: nowrap; width: 1%; }
+.cover td:last-child { width: .5in; }
+.cover .tips { margin-top: .3in; background: var(--cream); border-radius: 12px; padding: .15in .2in; font-size: 10.5pt; line-height: 1.5; }
+.cover .tips b { color: var(--coral); }
+
+#chatout { min-height: 160px; margin-top: 10px; }
+#quick { margin-top: 14px; background: #F3F8F5; border-radius: 12px; padding: 10px 14px; }
+#quick summary { cursor: pointer; font-weight: 700; color: var(--teal); }
+#spots { min-height: 130px; }
+#slides { position: fixed; inset: 0; z-index: 50; background: radial-gradient(circle at 50% 40%, #13894F, #0A4F31 70%);
+          display: flex; flex-direction: column; align-items: center; justify-content: center; }
+#slides[hidden] { display: none; }
+#sl-stage { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+#sl-stage .card { box-shadow: 0 10px 40px rgba(0,0,0,.35); }
+#sl-bar { display: flex; gap: 14px; align-items: center; padding: 14px; color: #fff; font: 700 18px 'Ubuntu', sans-serif; }
+#sl-bar button { background: #fff; color: var(--teal); padding: 10px 18px; }
+@media print { #slides { display: none !important; } }
+.card .pill { flex: none; }
+.card .body { justify-content: safe center; }
+.card .big { text-wrap: balance; }
+.cover td, .cover h2 { overflow-wrap: break-word; }
+.top > div { flex: 1 1 0; min-width: 0; }
+#ui { flex: none; margin-left: auto; align-self: flex-start; padding: 6px 10px; }
+@media print {
+  body { background: #fff; }
+  .ui { display: none; }
+  #preview { padding: 0; gap: 0; display: block; }
+  .page { box-shadow: none; page-break-after: always; break-after: page; }
+}
+@media (max-width: 700px) { .steps { grid-template-columns: 1fr; } }
+</style>
+<!-- mts-assistant-styles -->
+<meta name="robots" content="noindex,nofollow">
+<style id="mts-assistant-styles">
+  .panel > .steps, .panel > .steps3 { display: none !important; }
+  #mts-card {
+    background: #FFF8EE; border: 2px solid #F4C95D; border-radius: 16px;
+    padding: 16px 18px 12px; margin: 0 0 14px; color: #2B2B2B;
+    font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  #mts-card [hidden], #mts-paste-hint[hidden] { display: none !important; }
+  .mts-h { margin: 0 0 10px; font-size: 19px; color: #1F5E5B; }
+  .mts-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .mts-step { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start;
+    background: #fff; border-radius: 12px; padding: 12px; }
+  .mts-num { width: 36px; height: 36px; border-radius: 50%; background: #1F5E5B; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+  .mts-body { min-width: 0; }
+  .mts-text { margin: 6px 0 0; font-size: 17px; line-height: 1.4; }
+  .mts-small { margin: 8px 0 0; font-size: 14px; color: #6B655E; line-height: 1.4; }
+  .mts-btn { display: inline-flex; align-items: center; justify-content: center; text-align: center;
+    min-height: 50px; padding: 12px 22px; border: 0; border-radius: 999px; cursor: pointer;
+    font: 700 16px 'Ubuntu', -apple-system, 'Segoe UI', sans-serif; text-decoration: none;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .mts-btn:active { transform: scale(0.98); }
+  .mts-btn-gpt { background: #1F5E5B; color: #fff; }
+  .mts-btn-paste { background: #F07F5E; color: #fff; }
+  .mts-btn-print { background: #fff; color: #1F5E5B; border: 2px solid #1F5E5B; margin-top: 10px; }
+  .mts-link { background: none; border: 0; padding: 0; font: inherit; color: #1F5E5B; font-weight: 700;
+    text-decoration: underline; cursor: pointer; }
+  #mts-manual textarea { width: 100%; box-sizing: border-box; height: 120px; margin-top: 8px; font-size: 16px;
+    border: 1px solid #E2DACE; border-radius: 10px; padding: 8px; }
+  #mts-paste-hint { margin: 0 0 10px; padding: 12px 14px; border-radius: 12px; background: #FDE8E1;
+    color: #8A2E17; font-size: 16px; font-weight: 700; line-height: 1.4; }
+  .mts-privacy { margin: 10px 2px 0; font-size: 13px; color: #6B655E; }
+  #mts-toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%); width: max-content; max-width: min(92vw, 520px); box-sizing: border-box;
+    background: #2B2B2B; color: #fff; padding: 12px 18px; border-radius: 14px; font-size: 15px; font-weight: 600;
+    line-height: 1.4; text-align: center; box-shadow: 0 4px 18px rgba(0,0,0,.35); z-index: 100000; display: none;
+    font-family: 'Ubuntu', -apple-system, 'Segoe UI', sans-serif; }
+  @media (max-width: 640px) {
+    #mts-card { padding: 14px 12px 10px; margin-left: -6px; margin-right: -6px; }
+    .mts-step { grid-template-columns: 30px 1fr; gap: 10px; padding: 12px 10px; }
+    .mts-num { width: 30px; height: 30px; font-size: 16px; }
+    .mts-btn { display: flex; width: 100%; min-height: 56px; font-size: 17px; padding: 12px 14px; }
+    .mts-text { margin-top: 3px; }
+    #src { font-size: 16px; }
+  }
+  @media print {
+    #mts-card, #mts-toast, #mts-paste-hint { display: none !important; }
+  }
+</style>
+
+</head>
+<body>
+<div class="ui">
+  <div class="top"><img src="data:image/png;base64,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" alt=""><div><h1>Make Together Studio Card Maker</h1>
+    <p id="ui-intro">Turn the cards from your AI chat into a printable PDF, in our design. Works in 4 languages and with bilingual cards.</p></div><select id="ui" title="Language · Sprache · Langue"><option value="en">English</option><option value="de">Deutsch</option><option value="fr">Français</option></select></div>
+  <div class="panel">
+<!-- mts-card -->
+<section id="mts-card" aria-label="How to make your game">
+  <h2 class="mts-h">Make it in 3 steps</h2>
+  <ol class="mts-steps">
+    <li class="mts-step"><span class="mts-num">1</span><div class="mts-body">
+      <a id="mts-gpt" class="mts-btn mts-btn-gpt" href="https://chatgpt.com/?q=You%20are%20my%20office%20Christmas%20scavenger%20hunt%20helper.%20Help%20me%20create%20a%20personalized%2C%20work-safe%20Christmas%20scavenger%20hunt%20for%20my%20team%3A%20clues%20hidden%20around%20our%20office%20(or%20shared%20on%20a%20video%20call)%20that%20lead%20from%20one%20spot%20to%20the%20next%2C%20all%20the%20way%20to%20the%20prize.%20Use%20riddles%2C%20wordplay%20and%20secret%20codes.%0A%0AFirst%2C%20ask%20me%20these%20questions%20one%20at%20a%20time%20and%20wait%20for%20my%20answer%20each%20time%3A%0A1.%20Who%20is%20playing%2C%20and%20in%20which%20language%3F%20(how%20many%20people%2C%20one%20group%20or%202%20to%206%20teams%3B%20in%20the%20office%2C%20remote%20on%20a%20video%20call%2C%20or%20hybrid)%0A2.%20Which%20hiding%20spots%20will%20you%20use%2C%20in%20order%3F%20The%20prize%20will%20be%20at%20the%20last%20spot.%20(For%20teams%3A%20one%20list%20per%20team%2C%20or%20one%20loop%20for%20everyone.%20Remote%3A%20things%20everyone%20has%20at%20their%20desk.)%0A3.%20Any%20team%20names%2C%20office%20traditions%20or%20friendly%20in-jokes%20I%20may%20use%3F%20Only%20first%20names%20of%20people%20who%20are%20happy%20to%20be%20on%20a%20card.%0A4.%20Which%20story%20theme%3F%20(for%20example%3A%20the%20missing%20stapler%2C%20office%20elves%2C%20secret%20agents%2C%20a%20quiz%20show%2C%20or%20no%20theme)%0A5.%20Which%20kinds%20of%20clues%3A%20riddles%20(rhyming%2C%20double%20meanings)%2C%20wordplay%20(scrambled%20letters%20%2B%20a%20cryptic%20definition)%2C%20codes%20(numbers%2C%20shift%2C%20mirror%20or%20backwards)%2C%20or%20a%20mix%3F%0A%0AWork-safe%20rules%3A%20no%20alcohol%2C%20no%20religion%2C%20no%20politics%2C%20no%20romance%20or%20flirting%2C%20no%20jokes%20about%20anyone&#x27;s%20looks%2C%20age%2C%20health%2C%20family%2C%20pay%2C%20performance%2C%20bosses%20or%20HR.%20Never%20use%20personal%20data%20(birthdays%2C%20addresses%2C%20phone%20numbers%2C%20salaries).%20First%20names%20only%2C%20and%20only%20for%20people%20who%20said%20yes.%0A%0ASafety%3A%20hiding%20spots%20must%20be%20indoors%2C%20at%20hand%20height%20and%20in%20shared%20spaces.%20Never%3A%20anything%20hot%20or%20that%20heats%20up%20(kettle%2C%20toaster%2C%20microwave%2C%20inside%20a%20coffee%20machine)%2C%20electrical%20panels%2C%20server%20rooms%2C%20fire%20exits%2C%20fire%20extinguishers%20and%20alarms%2C%20stairs%2C%20lifts%2C%20roofs%2C%20car%20parks%20or%20outside.%20Never%20inside%20a%20working%20printer%20or%20shredder.%20Never%20a%20colleague&#x27;s%20own%20desk%20drawer%2C%20bag%2C%20coat%20pocket%20or%20locker%20without%20their%20OK.%20If%20I%20list%20an%20unsafe%20spot%2C%20suggest%20a%20safe%20one%20nearby.%0A%0AThen%20write%20the%20cards.%20Every%20card%20leads%20to%20the%20NEXT%20spot.%20First%20list%20the%20route%20(card%2C%20hide%20at%2C%20leads%20to)%2C%20then%20write%20each%20clue%20about%20its%20%22leads%20to%22%20spot%2C%20never%20about%20the%20spot%20where%20the%20card%20is%20hidden%3A%0A-%20Card%201%20(START)%3A%20a%202-3%20sentence%20start%20message%20that%20ends%20with%20the%20clue%20for%20spot%201.%0A-%20One%20card%20for%20each%20spot.%20Riddle%3A%204%20rhyming%20lines%20with%20wordplay.%20Wordplay%3A%20one%20line%20%22SCRAMBLE%3A%20%5Bthe%20spot%20in%201-3%20words%5D%22%20and%20one%20cryptic%20line%20that%20defines%20the%20spot.%20Code%3A%20one%20short%20line%20about%20the%20method%20and%20one%20line%20%22CODE%20numbers%3A%20%5Bthe%20spot%20in%201-3%20words%5D%22%20(or%20CODE%20shift%2C%20CODE%20mirror%2C%20CODE%20backwards).%20Write%20the%20spot%20in%20plain%20words%20after%20SCRAMBLE%20and%20CODE%3A%20the%20Card%20Maker%20scrambles%20and%20encodes%20it.%0A-%20A%20last%20card%20(FOUND%20IT)%20with%20a%20short%20%22Prize%20found!%22%20message%2C%20hidden%20with%20the%20prize.%0A-%20Don&#x27;t%20give%20the%20answer%20away%3A%20riddles%20and%20definitions%20never%20say%20the%20name%20of%20the%20spot%20they%20lead%20to.%0A%0APut%20ALL%20cards%2C%20from%20CARD%201%20to%20the%20last%20card%2C%20inside%20ONE%20code%20block%20(teams%3A%20one%20block%20per%20team)%2C%20in%20exactly%20this%20format%20(I%20will%20paste%20it%20into%20the%20Make%20Together%20Studio%20Card%20Maker).%20After%20%22hide%20at%3A%22%20write%20only%20the%20spot%20name.%20Use%20a%20plain%20code%20block%2C%20not%20Canvas%20or%20a%20document%2C%20and%20put%20an%20empty%20line%20before%20every%20---%20line%3A%0AHUNT%3A%20%5Btitle%5D%0ATEAM%3A%20%5Bteam%20name%2C%20only%20for%20team%20races%5D%0A---%0ACARD%201%20%7C%20START%20%7C%20give%20at%20the%20start%20%7C%20leads%20to%3A%20%5Bspot%201%5D%0A%5Bstart%20message%20and%20the%20clue%20for%20spot%201%5D%0A---%0ACARD%202%20%7C%20CLUE%20%7C%20hide%20at%3A%20%5Bspot%201%5D%20%7C%20leads%20to%3A%20%5Bspot%202%5D%20%7C%20level%3A%20%5Briddle%2C%20wordplay%20or%20code%5D%0A%5Bclue%20that%20describes%20spot%202%2C%20not%20spot%201%5D%0A---%0ACARD%20%5Blast%5D%20%7C%20FOUND%20IT%20%7C%20hide%20with%20the%20prize%20at%3A%20%5Blast%20spot%5D%0A%5Bfinal%20message%5D%0A%0AAt%20the%20end%2C%20ask%20me%20if%20I%20want%20any%20card%20easier%2C%20harder%2C%20funnier%20or%20more%20personal.%20If%20I%20change%20anything%2C%20give%20me%20the%20whole%20code%20block%20again." target="_blank" rel="noopener">Copy the AI prompt &amp; open ChatGPT</a>
+      <p class="mts-small">Using Gemini or Claude instead? <button type="button" class="mts-link" id="mts-copy-only">Copy the prompt</button> and paste it there.</p>
+      <div id="mts-manual" hidden><p class="mts-small">Couldn't copy automatically. Tap and hold in this box → Select All → Copy:</p><textarea readonly id="mts-manual-ta"></textarea></div>
+    </div></li>
+    <li class="mts-step"><span class="mts-num">2</span><div class="mts-body">
+      <p class="mts-text">Answer ChatGPT's questions, then tap <b>Copy</b> on its answer.</p>
+      <p class="mts-small">No Copy button? Ask it: <i>Put it all in one code block.</i></p>
+    </div></li>
+    <li class="mts-step"><span class="mts-num">3</span><div class="mts-body">
+      <button type="button" id="mts-paste" class="mts-btn mts-btn-paste">Paste the answer &amp; make my cards</button><br>
+      <button type="button" id="mts-print" class="mts-btn mts-btn-print">Save as PDF / Print</button>
+      <p class="mts-small">iPhone: Print → Share → Save to Files. Android: Print → Save as PDF.</p>
+    </div></li>
+  </ol>
+  <p class="mts-privacy">🔒 Nothing you type leaves your device. Your text is only kept in this browser, so it's still here if you switch apps.</p>
+</section>
+<p id="mts-paste-hint" role="status" hidden>Tap and hold in the box → <b>Paste</b>, then tap <b>Make my cards</b>.</p>
+<!-- /mts-card -->
+
+    <div class="steps">
+      <div class="step" id="ui-s1"><b>1</b> In your AI chat, click <b>Copy</b> on the box with your cards. No box, or cards missing? Send the AI: <i>Put all cards in one code block.</i></div>
+      <div class="step" id="ui-s2"><b>2</b> Paste it below and click <b>Make my cards</b>.</div>
+      <div class="step" id="ui-s3"><b>3</b> Check the preview, then click <b>Print / Save as PDF</b>.</div>
+    </div>
+    <textarea id="src" placeholder="Paste your cards here. They start with:  HUNT: …  LANG: …  and  CARD 1 | START | …"></textarea>
+    <div class="row">
+      <button class="primary" id="make">Make my cards</button>
+      <button class="accent" id="print">Print / Save as PDF</button>
+      <select id="paper"><option value="letter">US Letter paper</option><option value="a4">A4 paper</option></select>
+      <select id="lang" title="The language of the card labels"></select>
+      <button class="ghost" id="demo">Try an example</button>
+      <button class="ghost" id="show">Slideshow (video calls)</button>
+      <button class="ghost" id="chat">Copy as chat messages</button>
+    </div>
+    <div class="msg" id="msg"></div>
+    <textarea id="chatout" readonly hidden></textarea>
+    <details id="quick"><summary id="q-sum">No AI? Make a quick hunt from your own hiding spots</summary>
+      <p class="hint" id="q-hint">Type your hiding spots in order, one per line. The prize waits at the last one. The Card Maker writes code and scramble clues itself (and uses our ready riddle when a spot matches one of our 24 office spots). Teams: every team gets the same spots in its own order and the same prize spot.</p>
+      <textarea id="spots" placeholder="printer&#10;coffee machine&#10;whiteboard&#10;notice board&#10;meeting room"></textarea>
+      <div class="row"><label id="q-teams-l" for="q-teams">Teams:</label> <select id="q-teams"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
+      <button class="primary" id="q-make">Make a quick hunt</button></div>
+    </details>
+    <div class="hint" id="ui-hint">Printing tip: choose <b>Actual size / 100%</b> scale. To get a PDF file, pick <b>Save as PDF</b> as the printer.
+      Thick paper or cardstock works best. Cut along the dashed lines.</div>
+  </div>
+</div>
+<div id="preview"></div>
+<div id="slides" hidden><div id="sl-stage"></div><div id="sl-bar"><button id="sl-prev">◀</button><span id="sl-n"></span><button id="sl-next">▶</button><button id="sl-close">✕</button></div></div>
+<script>
+// Secret codes and letter scrambles for the Office Christmas Scavenger Hunt.
+// The same algorithm as ciphers.py (the printable PDF), so a code means the same thing everywhere; test_ciphers.py
+// checks both against each other. Embedded in the Card Maker as is (no DOM, no globals except the CIPHER object).
+const CIPHER = (() => {
+  const ALPHABETS = {
+    latin: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    greek: 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ',
+    cyrillic: 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ',      // the Ukrainian alphabet (33 letters)
+  };
+  const SPECIAL = { 'Ł': 'L', 'Ø': 'O', 'Æ': 'AE', 'Œ': 'OE', 'Đ': 'D', 'Þ': 'TH', 'ẞ': 'SS' };
+  const isCyr = ch => /[Ѐ-ӿ]/.test(ch);
+  // upper case without accents (German ä ö ü ß -> AE OE UE SS; Cyrillic letters keep their marks: Й Ї)
+  function fold(text, lang) {
+    let s = String(text || '');
+    if (lang === 'de') s = s.replace(/[äÄ]/g, 'AE').replace(/[öÖ]/g, 'OE').replace(/[üÜ]/g, 'UE').replace(/ß/g, 'SS');
+    s = s.replace(/ı/g, 'I').replace(/ς/g, 'Σ').toUpperCase();
+    let out = '';
+    for (const ch of s) {
+      if (isCyr(ch)) { out += ch === 'Ё' ? 'Е' : ch; continue; }
+      if (SPECIAL[ch]) { out += SPECIAL[ch]; continue; }
+      out += ch.normalize('NFD').replace(/[̀-ͯ]/g, '');
+    }
+    return out;
+  }
+  function alphabetFor(text) {
+    if (/[Ѐ-ӿ]/.test(text)) return 'cyrillic';
+    if (/[Ͱ-Ͽ]/.test(text)) return 'greek';
+    return 'latin';
+  }
+  // the words of a spot name: letters and digits only ("Pepper's bed" -> PEPPERS, BED)
+  function words(text, lang) {
+    const f = fold(text, lang);
+    const name = alphabetFor(f);
+    const abc = ALPHABETS[name];
+    const ws = f.split(/[\s\-–—\/]+/).map(w => [...w].filter(c => abc.includes(c) || /[0-9]/.test(c)).join('')).filter(Boolean);
+    return { words: ws, alphabet: name, abc };
+  }
+  function encodeWord(w, method, abc) {
+    const L = [...w];
+    if (method === 'backwards') return L.reverse().join('');
+    if (method === 'numbers') return L.map(c => abc.includes(c) ? String(abc.indexOf(c) + 1) : c).join('·');
+    const n = abc.length;
+    if (method === 'shift') return L.map(c => abc.includes(c) ? abc[(abc.indexOf(c) + 3) % n] : c).join('');
+    if (method === 'mirror') return L.map(c => abc.includes(c) ? abc[n - 1 - abc.indexOf(c)] : c).join('');
+    return w;
+  }
+  const METHODS = ['numbers', 'shift', 'mirror', 'backwards'];
+  function methodOf(s) {
+    const m = String(s || '').toLowerCase();
+    if (/num|zahl|nombre|chiffre|número|numer|numer|αριθ|числ|sayı|cifr/.test(m)) return 'numbers';
+    if (/shift|caesar|cäsar|césar|verschieb|décal|despla|spost|przes|μετατ|зсув|kaydır/.test(m)) return 'shift';
+    if (/mirror|atbash|spiegel|miroir|espejo|specchio|lustr|espelho|καθρ|дзерк|ayna/.test(m)) return 'mirror';
+    if (/back|rück|ruck|envers|revés|reves|rovescio|wspak|trás|tras|ανάπ|задом|ters/.test(m)) return 'backwards';
+    return METHODS.includes(m) ? m : 'numbers';
+  }
+  function encode(text, method, lang) {
+    const w = words(text, lang);
+    return { lines: w.words.map(x => encodeWord(x, method, w.abc)), alphabet: w.alphabet };
+  }
+  // deterministic shuffle: a string hash seeds a small PRNG (mulberry32), the same in Python
+  function hash(s) {
+    let h = 2166136261 >>> 0;
+    for (const ch of s) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619) >>> 0; }
+    return h >>> 0;
+  }
+  function rng(seed) {
+    let a = seed >>> 0;
+    return () => {
+      a = (a + 0x6D2B79F5) >>> 0;
+      let t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1) >>> 0;
+      t = (t ^ (t + Math.imul(t ^ (t >>> 7), t | 61))) >>> 0;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function scrambleWord(w, seed) {
+    const L = [...w];
+    if (L.length < 2 || new Set(L).size < 2) return L.join('');
+    const r = rng(hash(seed + '|' + w));
+    for (let tries = 0; tries < 20; tries++) {
+      const a = L.slice();
+      for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+      if (a.join('') !== w) return a.join('');
+    }
+    return L.slice(1).concat(L[0]).join('');
+  }
+  function scramble(text, lang, seed) {
+    const w = words(text, lang);
+    return { lines: w.words.map(x => [...scrambleWord(x, String(seed || ''))].join(' ')), alphabet: w.alphabet };
+  }
+  return { ALPHABETS, fold, words, encode, encodeWord, scramble, scrambleWord, methodOf, METHODS, hash };
+})();
+const EXAMPLE = "HUNT: The Case of the Missing Stapler\nTEAM: Tinsel\nLANG: en\n\n---\nCARD 1 | START | give at the start | leads to: printer\nTeam Tinsel, the office stapler has vanished and the elves left clues all over the office. Crack every one before the other teams do. Here's your first:\nI swallow paper, then I hand it back,\nwith all your words in tidy rows of black.\n\n---\nCARD 2 | CLUE | hide at: printer | leads to: Sam's desk plant | level: wordplay\nSCRAMBLE: plant\nSam from IT talks to it more than to the servers.\n\n---\nCARD 3 | CLUE | hide at: Sam's desk plant | leads to: coffee machine | level: code\nJammy the printer swapped every letter for a number.\nCODE numbers: coffee\n\n---\nCARD 4 | CLUE | hide at: coffee machine | leads to: whiteboard | level: riddle\nYour great ideas are written all over me,\nthen wiped away as if they'd never be.\nBring markers, not chalk, to plan the year:\nlook by my ledge, your clue is waiting here.\n\n---\nCARD 5 | CLUE | hide at: whiteboard | leads to: notice board | level: code\nThis one came out of the copier in the mirror alphabet.\nCODE mirror: notice board\n\n---\nCARD 6 | CLUE | hide at: notice board | leads to: meeting room | level: code\nThis one was filed backwards.\nCODE backwards: meeting room\n\n---\nCARD 7 | FOUND IT | hide with the prize at: meeting room\nCase closed, Team Tinsel! The stapler is safe and the prize is yours.";
+const I18N = {"en": {"leads": "Leads to", "clue": "CLUE", "start": "START", "found": "FOUND IT", "card": "Card", "give": "give at the start", "hide": "hide at", "presents": "with the prize", "youFound": "Prize found!", "personalized": "Your office scavenger hunt", "defaultTitle": "Our Office Christmas Scavenger Hunt", "where": "Where it goes", "howTitle": "How to set up:", "how": "Cut out the cards and hide each one exactly where it says. Give Card 1 to the players (one start card per team). Every card leads to the next spot, and the last card waits with the prize.", "safetyTitle": "Safety:", "safety": "Shared spaces only, at hand height. Nothing hot, nothing inside a working machine, no stairs, lifts, fire exits, extinguishers, electrical or server rooms, and no colleague's own desk, bag or locker without their OK. Walk, don't run.", "unscramble": "Unscramble the letters:", "decoder": "DECODER", "decoderWhere": "give to the players at the start", "decoderTitle": "Decoder:", "decoderTip": "the Decoder card is printed after the clue cards. Give one to every team with Card 1.", "team": "Team", "help_numbers": "Numbers: 1 = {a}, 2 = {b} …", "help_shift": "Shift: go 3 letters back ({d} = {a}, {a} = {x}).", "help_mirror": "Mirror: {a} = {z}, {b} = {y} …", "help_backwards": "Backwards: read each word from the end."}, "de": {"leads": "Führt zu", "clue": "HINWEIS", "start": "START", "found": "GEFUNDEN!", "card": "Karte", "give": "zum Start übergeben", "hide": "verstecken", "presents": "beim Preis", "youFound": "Preis gefunden!", "personalized": "Eure Büro-Schnitzeljagd", "defaultTitle": "Unsere Weihnachts-Schnitzeljagd im Büro", "where": "Wo sie hinkommt", "howTitle": "So geht's:", "how": "Schneidet die Karten aus und versteckt jede genau dort, wo es steht. Gebt Karte 1 den Spielern (eine Startkarte pro Team). Jede Karte führt zum nächsten Versteck, und die letzte Karte wartet beim Preis.", "safetyTitle": "Sicherheit:", "safety": "Nur Gemeinschaftsräume, auf Handhöhe. Nichts Heißes, nichts in laufenden Geräten, keine Treppen, Aufzüge, Notausgänge, Feuerlöscher, Elektro- oder Serverräume und kein fremder Schreibtisch, keine Tasche und kein Spind ohne Erlaubnis. Gehen, nicht rennen.", "unscramble": "Buchstaben ordnen:", "decoder": "DECODER", "decoderWhere": "zum Start an die Spieler", "decoderTitle": "Decoder:", "decoderTip": "Die Decoder-Karte wird nach den Hinweiskarten gedruckt. Gebt jedem Team eine zusammen mit Karte 1.", "team": "Team", "help_numbers": "Zahlen: 1 = {a}, 2 = {b} …", "help_shift": "Verschiebung: 3 Buchstaben zurück ({d} = {a}, {a} = {x}).", "help_mirror": "Spiegel: {a} = {z}, {b} = {y} …", "help_backwards": "Rückwärts: jedes Wort von hinten lesen."}, "es": {"leads": "Lleva a", "clue": "PISTA", "start": "INICIO", "found": "¡ENCONTRADO!", "card": "Tarjeta", "give": "entregar al inicio", "hide": "esconder", "presents": "junto al premio", "youFound": "¡Premio encontrado!", "personalized": "Vuestra búsqueda del tesoro en la oficina", "defaultTitle": "Nuestra búsqueda del tesoro navideña en la oficina", "where": "Dónde va", "howTitle": "Cómo prepararla:", "how": "Recorta las tarjetas y esconde cada una exactamente donde dice. Entrega la tarjeta 1 a los jugadores (una de inicio por equipo). Cada tarjeta lleva al siguiente escondite y la última espera junto al premio.", "safetyTitle": "Seguridad:", "safety": "Solo espacios comunes, a la altura de la mano. Nada caliente, nada dentro de una máquina encendida, ni escaleras, ascensores, salidas de emergencia, extintores, cuartos eléctricos o de servidores, ni el escritorio, bolso o taquilla de un compañero sin su permiso. Caminad, no corráis.", "unscramble": "Ordena las letras:", "decoder": "DESCIFRADOR", "decoderWhere": "para los jugadores al inicio", "decoderTitle": "Descifrador:", "decoderTip": "la tarjeta Descifrador se imprime después de las pistas. Da una a cada equipo con la tarjeta 1.", "team": "Equipo", "help_numbers": "Números: 1 = {a}, 2 = {b} …", "help_shift": "Desplazamiento: retrocede 3 letras ({d} = {a}, {a} = {x}).", "help_mirror": "Espejo: {a} = {z}, {b} = {y} …", "help_backwards": "Al revés: lee cada palabra desde el final."}, "fr": {"leads": "Mène à", "clue": "INDICE", "start": "DÉPART", "found": "TROUVÉ !", "card": "Carte", "give": "à donner au départ", "hide": "cacher", "presents": "avec le prix", "youFound": "Prix trouvé !", "personalized": "Votre chasse au trésor au bureau", "defaultTitle": "Notre chasse au trésor de Noël au bureau", "where": "Où la cacher", "howTitle": "Préparation :", "how": "Découpez les cartes et cachez chacune exactement à l'endroit indiqué. Donnez la carte 1 aux joueurs (une carte de départ par équipe). Chaque carte mène à la cachette suivante, et la dernière attend avec le prix.", "safetyTitle": "Sécurité :", "safety": "Uniquement des espaces communs, à hauteur de main. Rien de chaud, rien dans une machine en marche, ni escaliers, ascenseurs, sorties de secours, extincteurs, locaux électriques ou serveurs, ni le bureau, le sac ou le casier d'un collègue sans son accord. On marche, on ne court pas.", "unscramble": "Remettez les lettres dans l'ordre :", "decoder": "DÉCODEUR", "decoderWhere": "à donner aux joueurs au départ", "decoderTitle": "Décodeur :", "decoderTip": "la carte Décodeur s'imprime après les cartes indices. Donnez-en une à chaque équipe avec la carte 1.", "team": "Équipe", "help_numbers": "Chiffres : 1 = {a}, 2 = {b}…", "help_shift": "Décalage : reculez de 3 lettres ({d} = {a}, {a} = {x}).", "help_mirror": "Miroir : {a} = {z}, {b} = {y}…", "help_backwards": "À l'envers : lisez chaque mot depuis la fin."}};
+const FONTS = {};
+const RTL = [];
+const LANGNAMES = {"en": ["English", "English"], "de": ["Deutsch", "German"], "es": ["Español", "Spanish"], "fr": ["Français", "French"]};
+const ICON = "data:image/png;base64,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";
+// the Card Maker's own interface (buttons, steps, messages) in English, German or French; the card labels follow LANG
+const APP = {
+  en: { intro: 'Turn the cards from your AI chat into a printable PDF, in our design. Works in 4 languages and with bilingual cards.',
+        s1: '<b>1</b> In your AI chat, click <b>Copy</b> on the box with your cards. No box, or cards missing? Send the AI: <i>Put all cards in one code block.</i>',
+        s2: '<b>2</b> Paste it below and click <b>Make my cards</b>.',
+        s3: '<b>3</b> Check the preview, then click <b>Print / Save as PDF</b>.',
+        ph: 'Paste your cards here. They start with:  HUNT: …  LANG: …  and  CARD 1 | START | …',
+        make: 'Make my cards', print: 'Print / Save as PDF', letter: 'US Letter paper', a4: 'A4 paper', demo: 'Try an example',
+        hint: 'Printing tip: choose <b>Actual size / 100%</b> scale. To get a PDF file, pick <b>Save as PDF</b> as the printer. Thick paper or cardstock works best. Cut along the dashed lines.',
+        auto: 'Card labels: from the LANG line', labels: 'Card labels: ', langTitle: 'The language of the card labels',
+        show: 'Slideshow (video calls)', chat: 'Copy as chat messages', qsum: 'No AI? Make a quick hunt from your own hiding spots', qmake: 'Make a quick hunt', qteams: 'Teams:' },
+  de: { intro: 'Verwandle die Karten aus deinem KI-Chat in ein druckfertiges PDF in unserem Design. Funktioniert in 4 Sprachen und mit zweisprachigen Karten.',
+        s1: '<b>1</b> Klicke in deinem KI-Chat im Kasten mit den Karten auf <b>Copy</b> (Kopieren). Kein Kasten, oder es fehlen Karten? Schreib der KI: <i>Gib alle Karten in einem einzigen Codeblock aus.</i>',
+        s2: '<b>2</b> Füge sie unten ein und klicke auf <b>Karten erstellen</b>.',
+        s3: '<b>3</b> Prüfe die Vorschau und klicke dann auf <b>Drucken / Als PDF speichern</b>.',
+        ph: 'Füge deine Karten hier ein. Sie beginnen mit:  HUNT: …  LANG: …  und  CARD 1 | START | …',
+        make: 'Karten erstellen', print: 'Drucken / Als PDF speichern', letter: 'Papier: US Letter', a4: 'Papier: A4', demo: 'Beispiel ansehen',
+        hint: 'Drucktipp: Wähle <b>Tatsächliche Größe / 100 %</b>. Für eine PDF-Datei wähle <b>Als PDF speichern</b> als Drucker. Am besten auf festem Papier oder Karton drucken. An den gestrichelten Linien ausschneiden.',
+        auto: 'Kartenbeschriftung: aus der LANG-Zeile', labels: 'Kartenbeschriftung: ', langTitle: 'Sprache der Kartenbeschriftung',
+        show: 'Diashow (Videocalls)', chat: 'Als Chat-Nachrichten kopieren', qsum: 'Keine KI? Schnelle Schnitzeljagd aus euren eigenen Verstecken', qmake: 'Schnelle Jagd erstellen', qteams: 'Teams:' },
+  fr: { intro: 'Transformez les cartes de votre chat IA en PDF prêt à imprimer, avec notre design. Fonctionne en 4 langues et avec des cartes bilingues.',
+        s1: '<b>1</b> Dans votre chat IA, cliquez sur <b>Copy</b> (Copier) dans l\'encadré de vos cartes. Pas d\'encadré, ou des cartes manquent ? Écrivez à l\'IA : <i>Mets toutes les cartes dans un seul bloc de code.</i>',
+        s2: '<b>2</b> Collez-les ci-dessous et cliquez sur <b>Créer mes cartes</b>.',
+        s3: '<b>3</b> Vérifiez l\'aperçu, puis cliquez sur <b>Imprimer / Enregistrer en PDF</b>.',
+        ph: 'Collez vos cartes ici. Elles commencent par :  HUNT: …  LANG: …  et  CARD 1 | START | …',
+        make: 'Créer mes cartes', print: 'Imprimer / Enregistrer en PDF', letter: 'Papier US Letter', a4: 'Papier A4', demo: 'Voir un exemple',
+        hint: 'Conseil d\'impression : choisissez <b>Taille réelle / 100 %</b>. Pour obtenir un fichier PDF, choisissez <b>Enregistrer au format PDF</b> comme imprimante. Le papier épais ou cartonné est idéal. Découpez le long des pointillés.',
+        auto: 'Étiquettes des cartes : selon la ligne LANG', labels: 'Étiquettes des cartes : ', langTitle: 'Langue des étiquettes des cartes',
+        show: 'Diaporama (visio)', chat: 'Copier en messages de chat', qsum: 'Sans IA ? Une chasse rapide avec vos propres cachettes', qmake: 'Créer une chasse rapide', qteams: 'Équipes :' },
+};
+const list = n => n.join(', ');
+const MSG = {
+  en: { none: "I couldn't find any cards. Copy the whole box from your AI chat. It should contain lines like “CARD 1 | START | give at the start”. No box with a Copy button? Send the AI: “Put all cards in one code block.”",
+        made: (n, p, labels, how) => `Made ${n} card${n === 1 ? '' : 's'} on ${p} page${p === 1 ? '' : 's'} + a setup page. Card labels: ${labels}${how}. Check them below, then click Print / Save as PDF.`,
+        howMenu: ' (chosen in the menu)', howGuess: ' (guessed from the text; pick another language in the menu if needed)',
+        howNone: ' (no LANG line, so English labels; pick your language in the menu)',
+        missing: n => n.length > 1 ? `Cards ${list(n)} are missing.` : `Card ${n[0]} is missing.`,
+        noFinal: 'The last card (FOUND IT) is missing.',
+        noText: n => n.length > 1 ? `Cards ${list(n)} have no text.` : `Card ${n[0]} has no text.`,
+        fix: ' In your AI chat, send: “Put all cards in one code block.” Then copy the new box and paste it here.',
+        noSecond: k => `${k} card${k > 1 ? 's have' : ' has'} no second language (no +++ part).`,
+        small: n => n.length > 1 ? `Cards ${list(n)} have a lot of text, so they print smaller. For bigger text, ask your AI chat: “Make cards ${list(n)} shorter.”`
+                                  : `Card ${n[0]} has a lot of text, so it prints smaller. For bigger text, ask your AI chat: “Make card ${n[0]} shorter.”`,
+        over: n => n.length > 1 ? `Cards ${list(n)} have too much text to fit. Ask your AI chat: “Make cards ${list(n)} shorter.” Then paste the new box here.`
+                                 : `Card ${n[0]} has too much text to fit. Ask your AI chat: “Make card ${n[0]} shorter.” Then paste the new box here.`,
+        check: ' Check those cards in the preview.' },
+  de: { none: 'Ich habe keine Karten gefunden. Kopiere den ganzen Kasten aus deinem KI-Chat. Er sollte Zeilen wie „CARD 1 | START | give at the start“ enthalten. Kein Kasten mit Copy-Knopf? Schreib der KI: „Gib alle Karten in einem einzigen Codeblock aus.“',
+        made: (n, p, labels, how) => `${n} ${n === 1 ? 'Karte' : 'Karten'} auf ${p} ${p === 1 ? 'Seite' : 'Seiten'} + Vorbereitungsseite erstellt. Kartenbeschriftung: ${labels}${how}. Prüfe sie unten und klicke dann auf „Drucken / Als PDF speichern“.`,
+        howMenu: ' (im Menü gewählt)', howGuess: ' (aus dem Text erkannt; wähle bei Bedarf eine andere Sprache im Menü)',
+        howNone: ' (keine LANG-Zeile, daher englische Beschriftung; wähle deine Sprache im Menü)',
+        missing: n => n.length > 1 ? `Die Karten ${list(n)} fehlen.` : `Karte ${n[0]} fehlt.`,
+        noFinal: 'Die letzte Karte (FOUND IT) fehlt.',
+        noText: n => n.length > 1 ? `Die Karten ${list(n)} haben keinen Text.` : `Karte ${n[0]} hat keinen Text.`,
+        fix: ' Schreib in deinem KI-Chat: „Gib alle Karten in einem einzigen Codeblock aus.“ Kopiere dann den neuen Kasten und füge ihn hier ein.',
+        noSecond: k => k > 1 ? `${k} Karten haben keine zweite Sprache (kein +++-Teil).` : '1 Karte hat keine zweite Sprache (kein +++-Teil).',
+        small: n => n.length > 1 ? `Die Karten ${list(n)} haben viel Text und werden deshalb kleiner gedruckt. Für größere Schrift schreib deinem KI-Chat: „Mach die Karten ${list(n)} kürzer.“`
+                                  : `Karte ${n[0]} hat viel Text und wird deshalb kleiner gedruckt. Für größere Schrift schreib deinem KI-Chat: „Mach Karte ${n[0]} kürzer.“`,
+        over: n => n.length > 1 ? `Die Karten ${list(n)} haben zu viel Text für eine Karte. Schreib deinem KI-Chat: „Mach die Karten ${list(n)} kürzer.“ Füge dann den neuen Kasten hier ein.`
+                                 : `Karte ${n[0]} hat zu viel Text für eine Karte. Schreib deinem KI-Chat: „Mach Karte ${n[0]} kürzer.“ Füge dann den neuen Kasten hier ein.`,
+        check: ' Prüfe diese Karten in der Vorschau.' },
+  fr: { none: "Je n'ai trouvé aucune carte. Copiez tout l'encadré de votre chat IA. Il doit contenir des lignes comme « CARD 1 | START | give at the start ». Pas d'encadré avec un bouton Copy ? Écrivez à l'IA : « Mets toutes les cartes dans un seul bloc de code. »",
+        made: (n, p, labels, how) => `${n} carte${n > 1 ? 's' : ''} sur ${p} page${p > 1 ? 's' : ''} + une page de préparation. Étiquettes : ${labels}${how}. Vérifiez-les ci-dessous, puis cliquez sur « Imprimer / Enregistrer en PDF ».`,
+        howMenu: ' (choisie dans le menu)', howGuess: ' (devinée à partir du texte ; choisissez une autre langue dans le menu si besoin)',
+        howNone: ' (pas de ligne LANG, donc étiquettes en anglais ; choisissez votre langue dans le menu)',
+        missing: n => n.length > 1 ? `Les cartes ${list(n)} manquent.` : `La carte ${n[0]} manque.`,
+        noFinal: 'La dernière carte (FOUND IT) manque.',
+        noText: n => n.length > 1 ? `Les cartes ${list(n)} n'ont pas de texte.` : `La carte ${n[0]} n'a pas de texte.`,
+        fix: ' Dans votre chat IA, écrivez : « Mets toutes les cartes dans un seul bloc de code. » Puis copiez le nouvel encadré et collez-le ici.',
+        noSecond: k => k > 1 ? `${k} cartes n'ont pas de deuxième langue (pas de partie +++).` : "1 carte n'a pas de deuxième langue (pas de partie +++).",
+        small: n => n.length > 1 ? `Les cartes ${list(n)} ont beaucoup de texte : elles sont imprimées plus petit. Pour un texte plus grand, demandez à votre chat IA : « Raccourcis les cartes ${list(n)}. »`
+                                  : `La carte ${n[0]} a beaucoup de texte : elle est imprimée plus petit. Pour un texte plus grand, demandez à votre chat IA : « Raccourcis la carte ${n[0]}. »`,
+        over: n => n.length > 1 ? `Les cartes ${list(n)} ont trop de texte pour tenir sur une carte. Demandez à votre chat IA : « Raccourcis les cartes ${list(n)}. » Puis collez le nouvel encadré ici.`
+                                 : `La carte ${n[0]} a trop de texte pour tenir sur une carte. Demandez à votre chat IA : « Raccourcis la carte ${n[0]}. » Puis collez le nouvel encadré ici.`,
+        check: " Vérifiez ces cartes dans l'aperçu." },
+};
+let UIL = 'en';
+const U = () => APP[UIL];
+const M = () => MSG[UIL];
+// French typography: a no-break space before : ; ! ? » and after «, so they never start a line (harmless in other
+// languages, which don't put a space there)
+const nbsp = s => String(s).replace(/[ \t]+([!?;:»])/g, ' $1').replace(/«[ \t]+/g, '« ');
+const fixFr = s => UIL === 'fr' ? nbsp(s) : s;
+let LANG = 'en', LANG2 = '', TEAM = '';
+const T = () => I18N[LANG] || I18N.en;
+const fontFor = l => FONTS[l] ? `'${FONTS[l]}', 'Ubuntu', sans-serif` : `'Ubuntu', 'Segoe UI', sans-serif`;
+const isRTL = l => RTL.includes(l);
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const colon = () => LANG === 'fr' ? ' : ' : ': ';
+const FINAL_RE = /found\s*it|with the (?:presents?|prize)\b/i;
+const EMOJI = /^\s*((?:\p{Extended_Pictographic}|\p{Regional_Indicator})(?:️|‍(?:\p{Extended_Pictographic}|[♀♂])️?|\p{Emoji_Modifier}|\p{Regional_Indicator})*)\s*/u;
+const LEVELS = { riddle: 'riddle', wordplay: 'wordplay', code: 'code', little: 'riddle', clever: 'riddle', master: 'riddle' };
+let USED = { methods: new Set(), alphabets: new Set() };   // codes on the cards -> the Decoder card
+const MIN_PX = 9.4;      // the smallest card text (7 pt); below SMALL_PX (8.5 pt) the card is named in the message
+const SMALL_PX = 11.3;
+
+// language codes from "de", "DE", "German", "Deutsch", "de-DE", "German + English" ...
+const LANGCODE = {};
+for (const [code, names] of Object.entries(LANGNAMES)) { LANGCODE[code] = code; names.forEach(n => LANGCODE[n.toLowerCase()] = code); }
+function langCode(v) {
+  const s = String(v || '').toLowerCase().replace(/[*_`"'()\[\].]/g, ' ').trim();
+  if (!s) return '';
+  if (LANGCODE[s]) return LANGCODE[s];
+  const first = s.split(/[\s,;\/+|-]+/)[0];
+  return LANGCODE[first] || '';
+}
+
+function guessLang(text) {
+  if (/[Ѐ-ӿ]/.test(text)) return 'uk';
+  if (/[Ͱ-Ͽἀ-῿]/.test(text)) return 'el';
+  if (/[ğışİĞŞ]/.test(text)) return 'tr';
+  if (/[ąęłśźżćńĄĘŁŚŹŻĆŃ]/.test(text)) return 'pl';
+  if (/[ß]/.test(text)) return 'de';
+  if (/[ñ¿¡]/.test(text)) return 'es';
+  if (/[ãõ]/.test(text)) return 'pt';
+  // Latin-script languages without a telltale letter: count common short words (a chat that forgot the LANG line)
+  const words = text.toLowerCase().split(/[^a-zà-ÿœ']+/).filter(Boolean);
+  const STOP = { de: 'der die das ein eine einen und mit auf im zu von beim dem den nicht ist sich du dich dein deine', fr: 'le la les un une des du qui et avec sur son sa ses dans pour au tu ton ta', es: 'el la los las un una que con y del en su por al se tu', it: 'il lo la gli le un una che con e del della di nel per tu', pt: 'o a os as um uma que com e do da no na em por ao', en: 'the a an and with of in on to his her who is you your' };
+  let best = '', top = 0, second = 0;
+  for (const [code, lst] of Object.entries(STOP)) {
+    const set = new Set(lst.split(' '));
+    const n = words.filter(w => set.has(w)).length;
+    if (n > top) { second = top; top = n; best = code; } else if (n > second) second = n;
+  }
+  return top >= 3 && top >= 1.5 * second && best !== 'en' ? best : '';
+}
+
+function parse(raw) {
+  const lines = raw.replace(/\r/g, '').split('\n');
+  let title = '', defLevel = 'riddle', lang = '', lang2 = '', team = '';
+  const cards = [];
+  let cur = null, inFence = false;
+  for (const line of lines) {
+    const t = line.trim().replace(/^\*\*|\*\*$/g, '');
+    if (/^```/.test(t)) { inFence = !inFence; if (cur) cur = null; continue; }   // the block ends: chat text after it is not a card
+    let m;
+    if (cur && cur.final && (/\t/.test(line) || /^\|.*\|$/.test(t))) {
+      const arr = cur.second ? cur.text2 : cur.text;
+      while (arr && arr.length && !/[.!?…)»"”\p{Extended_Pictographic}]\s*$/u.test(arr[arr.length - 1])) arr.pop();
+      break;
+    }
+    if ((m = t.match(/^HUNT\s*:\s*(.+)$/i))) {
+      let h = m[1];
+      const tm = h.match(/\s*[|·]?\s*TEAM\s*:\s*([^|·]+)/i);
+      if (tm) { team = tm[1].trim(); h = h.replace(tm[0], ''); }
+      const l2 = h.match(/\s*[|·]?\s*LANG(?:UAGE)?\s*2\s*:\s*([^|·]+)/i);
+      if (l2) { lang2 = langCode(l2[1]) || lang2; h = h.replace(l2[0], ''); }
+      const l1 = h.match(/\s*[|·]?\s*LANG(?:UAGE)?\s*:\s*([^|·]+)/i);
+      if (l1) { lang = langCode(l1[1]) || lang; h = h.replace(l1[0], ''); }
+      title = h.trim(); continue;
+    }
+    if (!cur && (m = t.match(/^LEVEL\s*:\s*(\w+)/i))) { defLevel = m[1].toLowerCase(); continue; }
+    if (!cur && (m = t.match(/^TEAM\s*:\s*(.+)$/i))) { team = m[1].replace(/^team\s+/i, '').trim(); continue; }
+    if (!cur || (!cur.text.length && !cur.second)) {
+      if ((m = t.match(/^LANG(?:UAGE)?\s*2\s*:\s*(.+)$/i))) { lang2 = langCode(m[1]) || lang2; continue; }
+      if ((m = t.match(/^LANG(?:UAGE)?\s*:\s*(.+)$/i))) {
+        const parts = m[1].split(/\s*[+&\/,]\s*|\s+(?:and|und|et|y|e|i|та|і|και|ve)\s+/i);
+        lang = langCode(parts[0]) || lang;
+        if (parts[1] && !lang2) lang2 = langCode(parts[1]);
+        continue;
+      }
+    }
+    if (/^[-–—_=]{3,}$/.test(t)) continue;
+    if ((m = t.match(/^#*\s*CARD\s*#?\s*(\d+)\s*(?:[|·:\-–—]\s*(.*))?$/i))) {
+      cur = { num: +m[1], meta: (m[2] || ''), text: [], text2: [], second: false, closed: false, final: FINAL_RE.test(m[2] || '') };
+      cards.push(cur);
+      continue;
+    }
+    if (!cur) continue;
+    if (/^\+{3,}$/.test(t)) { cur.second = true; cur.closed = false; continue; }
+    const arr = cur.second ? cur.text2 : cur.text;
+    if (cur.final && !t && arr.length) { cur.closed = true; continue; }    // a blank line ends the final card's text
+    if (cur.closed) continue;
+    arr.push(line.trimEnd());
+  }
+  cards.forEach(c => {
+    const parts = c.meta.split(/\s*[|·]\s*/).map(p => p.trim()).filter(Boolean);
+    c.kind = 'clue'; c.where = ''; c.level = defLevel; c.emoji = '';
+    for (const p of parts) {
+      let m;
+      if (/^start$/i.test(p)) c.kind = 'start';
+      else if (/^found\s*it/i.test(p) || /^final$/i.test(p)) c.kind = 'final';
+      else if (/^clue$/i.test(p)) c.kind = 'clue';
+      else if ((m = p.match(/^level\s*:\s*(\w+)/i))) c.level = m[1].toLowerCase();
+      else if ((m = p.match(/^emoji\s*:\s*(.+)/i))) c.emoji = m[1].trim();
+      else if ((m = p.match(/^leads?\s*to\s*:?\s*(.+)/i))) c.leads = m[1].trim();
+      else if (/^(hide|give)/i.test(p)) c.where = p;
+    }
+    if (c.num === 1 && c.kind === 'clue' && /give/i.test(c.where)) c.kind = 'start';
+    if (FINAL_RE.test(c.where)) c.kind = 'final';
+    c.level = LEVELS[c.level] || (/cod|ciph|chiff|geheim/.test(c.level) ? 'code' : /scram|word|anag/.test(c.level) ? 'wordplay' : 'riddle');
+    const trim = a => { while (a.length && !a[0].trim()) a.shift(); while (a.length && !a[a.length - 1].trim()) a.pop(); return a; };
+    trim(c.text); trim(c.text2);
+    c.spot = c.where.includes(':') ? c.where.slice(c.where.indexOf(':') + 1).trim()
+           : c.where.replace(/^(hide( it)?( with the (presents?|prize))?( at)?|give( it)?( at the start)?)\s*/i, '').trim();
+    if (!c.emoji && c.text.length) {
+      const m = c.text[0].match(EMOJI);
+      if (m && c.kind === 'final' && m[0].length < c.text[0].length) { c.emoji = m[1]; c.text[0] = c.text[0].slice(m[0].length); }
+    }
+    if (c.text2.length) {          // the second language never repeats the emoji (the card shows it once)
+      const m = c.text2[0].match(EMOJI);
+      if (m && m[0].length < c.text2[0].length) { c.text2[0] = c.text2[0].slice(m[0].length); if (!c.emoji && c.kind === 'final') c.emoji = m[1]; }
+    }
+  });
+  const all = cards.map(c => c.text.join(' ')).join(' ');
+  const all2 = cards.map(c => c.text2.join(' ')).join(' ');
+  const guessed = !lang ? guessLang(all + ' ' + title) : '';
+  if (!lang2 && all2.trim()) lang2 = guessLang(all2) || '';
+  return { title, team, cards, lang: (I18N[lang] ? lang : '') || guessed || 'en', langGiven: !!I18N[lang], guessed: !!guessed,
+           lang2: I18N[lang2] ? lang2 : '' };
+}
+
+function guessAlphabet(cards) {
+  return CIPHER.words(cards.map(c => c.text.join(' ')).join(' ') || 'A', LANG).alphabet;
+}
+
+function whereLabel(c) {
+  const t = T();
+  if (c.kind === 'start') return t.give;
+  if (c.kind === 'final') return t.presents + (c.spot ? colon() + c.spot : '');
+  return c.spot ? `${t.hide}${colon()}${c.spot}` : '';
+}
+
+const norm = s => String(s).toLowerCase().replace(/[\s\p{P}\p{S}\p{Extended_Pictographic}]+/gu, '');
+
+function cardHTML(c) {
+  const t = T();
+  const label = c.kind === 'start' ? t.start : c.kind === 'final' ? t.found : t.clue;
+  const cls = c.kind === 'start' ? 'start' : c.kind === 'final' ? 'final' : c.level;
+  const spot = c.spot.replace(/\s*\([^)]*\)/g, '').trim();
+  const whereTxt = c.kind === 'final' ? t.presents : c.kind === 'start' ? t.give : (spot ? `${t.hide}${colon()}${spot}` : '');
+  const where = `${t.card} ${c.num}${whereTxt ? ' · ' + whereTxt : ''}`;
+  // the final card and the prose lines of code / wordplay cards wrap; riddle lines stay whole (they shrink instead)
+  const wrapAll = c.kind === 'final' || (c.kind === 'clue' && (c.level === 'code' || c.level === 'wordplay'));
+  // a line wraps when it is long; on the start card only the message (the first line) counts as prose, so the rhyme
+  // lines of its clue stay whole (they shrink with the card instead)
+  const lim = prose => 60 * (prose ? 0.66 : 1);
+  // "SCRAMBLE: spot" and "CODE method: spot" lines are made here (scrambled / encoded), so every puzzle can be solved
+  const special = (x, l, k) => {
+    let m;
+    if ((m = x.match(/^\s*(?:SCRAMBLE|ANAGRAM)\s*:\s*(.+)$/i))) {
+      const s = CIPHER.scramble(m[1], l, `${c.num}`);
+      // long words: the letters close up (letter-spacing instead of spaces), so the card text stays big
+      return `<span class="ln cxl">${esc(nbsp(T2(l).unscramble))}</span>` + s.lines.map(y => y.replace(/ /g, '').length > 11
+        ? `<span class="ln cx sp">${esc(y.replace(/ /g, ''))}</span>` : `<span class="ln cx">${esc(y)}</span>`).join('');
+    }
+    if ((m = x.match(/^\s*(?:CODE|CIPHER)\s*([^:]*?)\s*:\s*(.+)$/i))) {
+      const meth = CIPHER.methodOf(m[1]);
+      const e = CIPHER.encode(m[2], meth, l);
+      if (meth !== 'backwards') { USED.methods.add(meth); USED.alphabets.add(e.alphabet); }
+      else USED.methods.add(meth);
+      // a long number code is split over two lines; the first ends with "·" so it reads as one word
+      const out = [];
+      e.lines.forEach(y => {
+        const parts = y.split('·');
+        if (meth === 'numbers' && y.length > 22 && parts.length > 3) {
+          const half = Math.ceil(parts.length / 2);
+          out.push(parts.slice(0, half).join('·') + '·', parts.slice(half).join('·'));
+        } else out.push(y);
+      });
+      return out.map(y => `<span class="ln cx">${esc(y)}</span>`).join('');
+    }
+    return null;
+  };
+  const mk = (arr, prose, l) => arr.map((x, k) => special(x, l || LANG, k) ?? `<span class="ln${(wrapAll || x.length > lim(prose && k === 0)) ? ' wrap' : ''}">${esc(nbsp(x)) || '&nbsp;'}</span>`).join('');
+  const lines = mk(c.text, c.kind === 'start');
+  const sec = c.text2.length
+    ? `<div class="sec" lang="${LANG2 || ''}" dir="${isRTL(LANG2) ? 'rtl' : 'ltr'}" style="font-family:${fontFor(LANG2)}">${mk(c.text2, true, LANG2 || LANG)}</div>` : '';
+  let body;
+  if (c.kind === 'final') {
+    // the headline is printed by the Card Maker; a first line that only repeats it is dropped
+    const dup = norm(t.youFound);
+    const txt = c.text.filter((x, k) => !(k === 0 && (norm(x) === dup || /^\s*you found (it|the presents|your presents|the treasure)\s*[!.]?\s*$/i.test(x))));
+    body = `<div class="pic">${esc(c.emoji || '🎁')}</div><div class="big">${esc(nbsp(t.youFound))}</div>` + mk(txt, false) + sec;
+  } else {
+    body = lines + sec;
+  }
+  return `<div class="cut"><div class="card ${cls}${c.text2.length ? ' bi' : ''}" data-num="${c.num}" lang="${LANG}" dir="${isRTL(LANG) ? 'rtl' : 'ltr'}" style="font-family:${fontFor(LANG)}"><div class="head"><span class="pill">${esc(nbsp(label))}</span>` +
+         `<span class="where">${esc(nbsp(where))}</span></div><div class="body">${body}</div>` +
+         `<div class="foot">${TEAM ? esc(nbsp(`${t.team} ${TEAM}`)) + ' · ' : ''}Make Together Studio</div></div></div>`;
+}
+
+const T2 = l => I18N[l] || I18N.en;
+// the Decoder card: the alphabet of the codes on the cards, with numbers and mirror letters, and how to crack each code
+let DECTXT = [];
+function decoderHTML(alpha) {
+  const t = T();
+  const abc = [...CIPHER.ALPHABETS[alpha]], n = abc.length, half = Math.ceil(n / 2);
+  const rows = [];
+  for (const part of [abc.slice(0, half), abc.slice(half)]) {
+    const idx = part.map(ch => abc.indexOf(ch));
+    if (rows.length) rows.push(`<tr class="gap"><td colspan="${half}"></td></tr>`);
+    rows.push('<tr class="l">' + part.map(ch => `<td>${ch}</td>`).join('') + '</tr>');
+    if (USED.methods.has('numbers')) rows.push('<tr class="n">' + idx.map(i => `<td>${i + 1}</td>`).join('') + '</tr>');
+    if (USED.methods.has('mirror')) rows.push('<tr class="n">' + idx.map(i => `<td>${abc[n - 1 - i]}</td>`).join('') + '</tr>');
+  }
+  const fill = s => s.replaceAll('{a}', abc[0]).replaceAll('{b}', abc[1]).replaceAll('{d}', abc[3]).replaceAll('{x}', abc[n - 3]).replaceAll('{y}', abc[n - 2]).replaceAll('{z}', abc[n - 1]);
+  const help = ['numbers', 'shift', 'mirror', 'backwards'].filter(m => USED.methods.has(m))
+    .map(m => `<div>${esc(nbsp(fill(t['help_' + m])))}</div>`).join('');
+  {
+    const txt = [t.decoder + (TEAM ? ` · ${t.team} ${TEAM}` : '')];
+    if (USED.methods.has('numbers')) txt.push(abc.map((ch, i) => `${ch}=${i + 1}`).join(' '));
+    if (USED.methods.has('mirror')) txt.push(abc.map((ch, i) => `${ch}=${abc[n - 1 - i]}`).join(' '));
+    ['numbers', 'shift', 'mirror', 'backwards'].filter(m => USED.methods.has(m)).forEach(m => txt.push(fill(t['help_' + m])));
+    DECTXT.push(txt.join('\n'));
+  }
+  return `<div class="cut"><div class="card decoder" data-num="0" lang="${LANG}" style="font-family:${fontFor(LANG)}"><div class="head">` +
+         `<span class="pill">${esc(t.decoder)}</span><span class="where">${esc(nbsp(t.decoderWhere))}</span></div>` +
+         `<div class="body"><table class="dec">${rows.join('')}</table><div class="help">${help}</div></div>` +
+         `<div class="foot">${TEAM ? esc(nbsp(`${t.team} ${TEAM}`)) + ' · ' : ''}Make Together Studio</div></div></div>`;
+}
+
+function fit() {
+  const small = [], over = [];
+  document.querySelectorAll('.page.grid .card').forEach(card => {
+    // the label row: the pill never shrinks; the "where" label shrinks a little, then wraps to a second line
+    const w = card.querySelector('.where');
+    if (w) {
+      w.style.textOverflow = 'clip';
+      const rg = document.createRange();
+      const tooLong = () => { rg.selectNodeContents(w); return rg.getBoundingClientRect().width > w.clientWidth - 1; };
+      const base = parseFloat(getComputedStyle(w).fontSize);
+      let fs = base, g = 12;
+      while (tooLong() && fs > base * 0.8 && g--) { fs -= 0.3; w.style.fontSize = fs + 'px'; }
+      if (tooLong()) { w.style.whiteSpace = 'normal'; w.style.lineHeight = '1.15'; w.style.overflowWrap = 'anywhere'; }
+    }
+    // the card text: shrink everything together while any line or word is too wide or the text is too tall
+    const b = card.querySelector('.body');
+    const els = [...b.querySelectorAll('.ln, .sec, .big, .read, .pic, .dec, .help')];
+    const base = parseFloat(getComputedStyle(b).fontSize);
+    let size = base, guard = 80;
+    const wide = () => b.scrollWidth > b.clientWidth + 1 || els.some(l => l.scrollWidth > l.clientWidth + 1 || l.scrollWidth > b.clientWidth + 1);
+    const tall = () => {        // also catches text pushed above the body (a centred column overflows both ways)
+      if (b.scrollHeight > b.clientHeight + 1) return true;
+      const br = b.getBoundingClientRect(), kids = [...b.children].map(k => k.getBoundingClientRect());
+      return kids.length > 0 && (Math.min(...kids.map(k => k.top)) < br.top - 1 || Math.max(...kids.map(k => k.bottom)) > br.bottom + 1);
+    };
+    const apply = () => {
+      b.style.fontSize = size + 'px';
+      b.querySelectorAll('.read, .big').forEach(x => x.style.fontSize = (size * 1.15) + 'px');
+      b.querySelectorAll('.pic').forEach(x => x.style.fontSize = Math.max(size * 2.2, 18) + 'px');
+    };
+    while ((tall() || wide()) && size > MIN_PX && guard--) { size = Math.max(MIN_PX, size - 0.25); apply(); }
+    if (wide()) {         // last resort: a single word wider than the card (a very long compound) may break anywhere
+      b.querySelectorAll('.ln:not(.cx)').forEach(l => { l.classList.add('wrap'); l.style.overflowWrap = 'anywhere'; });
+      while (tall() && size > MIN_PX && guard--) { size = Math.max(MIN_PX, size - 0.25); apply(); }
+      card.dataset.broke = '1';
+    }
+    card.dataset.scale = (size / base).toFixed(2);
+    if (tall() || wide()) { card.dataset.overflow = '1'; b.style.justifyContent = 'flex-start'; over.push(+card.dataset.num); }
+    else if (size < SMALL_PX - 0.01) small.push(+card.dataset.num);
+  });
+  const msg = $('#msg');
+  const notes = [];
+  if (over.length) notes.push(M().over(over));
+  if (small.length) notes.push(M().small(small));
+  if (notes.length && msg && msg.className.includes('ok')) {
+    const w = document.createElement('span');
+    w.className = 'warn';
+    w.textContent = fixFr(notes.join(' '));
+    msg.appendChild(w);
+  }
+  document.body.dataset.fitted = '1';
+}
+
+// several teams in one paste: every "HUNT:" line starts a new block (one per team)
+function splitBlocks(raw) {
+  const lines = raw.replace(/\r/g, '').split('\n');
+  const idx = [];
+  lines.forEach((l, i) => { if (/^\s*[#*]*\s*HUNT\s*:/i.test(l)) idx.push(i); });
+  if (idx.length < 2) return [raw];
+  return idx.map((s0, k) => lines.slice(s0, k + 1 < idx.length ? idx[k + 1] : lines.length).join('\n'));
+}
+
+function renderBlock(parsed, pick) {
+  const { title, cards } = parsed;
+  TEAM = parsed.team;
+  USED = { methods: new Set(), alphabets: new Set() };
+  LANG = pick !== 'auto' && I18N[pick] ? pick : parsed.lang;
+  LANG2 = parsed.lang2;
+  const t = T();
+  cards.sort((a, b) => a.num - b.num);
+  const hasLeads = cards.some(c => c.leads);
+  const rows = cards.map(c => `<tr><td>${esc(t.card)} ${c.num}</td><td>${esc(nbsp(whereLabel(c)))}</td>` +
+    (hasLeads ? `<td>${esc(nbsp(c.leads || '—'))}</td>` : '') + `<td>☐</td></tr>`).join('');
+  const name = esc(nbsp(title || t.defaultTitle));
+  const dir = isRTL(LANG) ? 'rtl' : 'ltr';
+  let html = `<section class="page cover" lang="${LANG}" dir="${dir}" style="font-family:${fontFor(LANG)}"><div class="brand" dir="ltr"><img src="${ICON}" alt="">Make Together Studio · Office Christmas Scavenger Hunt</div>
+    <div class="sub" style="margin-top:.4in">${esc(nbsp(t.personalized))}${TEAM ? ' · ' + esc(nbsp(`${t.team} ${TEAM}`)) : ''}</div><h2>${name}</h2>
+    <table><tr><th>${esc(t.card)}</th><th>${esc(t.where)}</th>${hasLeads ? `<th>${esc(t.leads)}</th>` : ''}<th>✓</th></tr>${rows}</table>
+    <div class="tips"><b>${esc(nbsp(t.howTitle))}</b> ${esc(nbsp(t.how))}<br>__DECTIP__<b>${esc(nbsp(t.safetyTitle))}</b> ${esc(nbsp(t.safety))}</div></section>`;
+  const all = cards.map(cardHTML);                 // builds the cards first: that is when the codes are counted
+  [...USED.alphabets].forEach(a => all.push(decoderHTML(a)));
+  if (!USED.alphabets.size && USED.methods.has('backwards')) all.push(decoderHTML(guessAlphabet(cards)));
+  const decoders = all.length - cards.length;
+  html = html.replace('__DECTIP__', decoders ? `<b>${esc(nbsp(t.decoderTitle))}</b> ${esc(nbsp(t.decoderTip))}<br>` : '');
+  for (let i = 0; i < all.length; i += 8) {
+    const chunk = all.slice(i, i + 8);
+    while (chunk.length < 8) chunk.push('<div class="cut empty"></div>');
+    html += `<section class="page grid" data-team="${esc(TEAM || '')}">${chunk.join('')}</section>`;
+  }
+  const nums = new Set(cards.map(c => c.num));
+  const missing = [];
+  for (let n = 1; n <= Math.max(...nums); n++) if (!nums.has(n)) missing.push(n);
+  const problems = [];
+  if (missing.length) problems.push(M().missing(missing));
+  if (!cards.some(c => c.kind === 'final')) problems.push(M().noFinal);
+  const empty = cards.filter(c => !c.text.join('').trim() && !c.text2.join('').trim()).map(c => c.num);
+  if (empty.length) problems.push(M().noText(empty));
+  const extra = [];
+  const bi = cards.filter(c => c.text2.length).length;
+  if (bi && bi < cards.length) extra.push(M().noSecond(cards.length - bi));
+  const who = TEAM ? `${t.team} ${TEAM}: ` : '';
+  return { html, n: cards.length, decoders, pages: Math.ceil((cards.length + decoders) / 8), problems: problems.map(x => who + x),
+           extra: extra.map(x => who + x), lang: LANG, lang2: LANG2, parsed };
+}
+
+function render() {
+  document.body.dataset.fitted = '';
+  DECTXT = [];
+  const pick = $('#lang').value;
+  const blocks = splitBlocks($('#src').value).map(b => parse(b)).filter(p => p.cards.length);
+  const msg = $('#msg');
+  const pv = $('#preview');
+  $('#chatout').hidden = true;
+  if (!blocks.length) {
+    pv.innerHTML = '';
+    msg.className = 'msg err';
+    msg.textContent = fixFr(M().none);
+    document.body.dataset.fitted = '1';
+    return false;
+  }
+  const done = blocks.map(p => renderBlock(p, pick));
+  pv.innerHTML = done.map(d => d.html).join('');
+  msg.className = 'msg ok';
+  const first = done[0];
+  const langName = c => (LANGNAMES[c] || [c])[0];
+  const how = pick !== 'auto' ? M().howMenu : first.parsed.langGiven ? '' : first.parsed.guessed ? M().howGuess : M().howNone;
+  const n = done.reduce((a, d) => a + d.n, 0), pages = done.reduce((a, d) => a + d.pages, 0);
+  LANG = first.lang;
+  let text = M().made(n, pages, langName(first.lang) + (first.lang2 ? ' + ' + langName(first.lang2) : ''), how);
+  if (done.length > 1) {
+    const k = done.length, mm = { en: [`${k} teams: `, / \+ a setup page/, ` + ${k} setup pages`], de: [`${k} Teams: `, /\+ Vorbereitungsseite/, `+ ${k} Vorbereitungsseiten`],
+                                 fr: [`${k} équipes : `, /\+ une page de préparation/, `+ ${k} pages de préparation`] }[UIL] || [`${k} × `, /$^/, ''];
+    text = mm[0] + text.replace(mm[1], mm[2]);
+  }
+  msg.textContent = fixFr(text);
+  const problems = done.flatMap(d => d.problems), extra = done.flatMap(d => d.extra);
+  if (problems.length || extra.length) {
+    const w = document.createElement('span');
+    w.className = 'warn';
+    w.textContent = fixFr([...problems, ...extra].join(' ') + (problems.length ? M().fix : M().check));
+    msg.appendChild(w);
+  }
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(fit);
+  return true;
+}
+
+// ---------- Slideshow for video calls: one big card at a time (the Decoder right after each START card)
+let SLIDES = [], SI = 0;
+function openSlides() {
+  if (!$('#preview').innerHTML && !render()) return;
+  const go = () => {
+    SLIDES = [];
+    document.querySelectorAll('#preview .page.grid').forEach(pg => {
+      const cs = [...pg.querySelectorAll('.card')];
+      const dec = cs.filter(c => c.classList.contains('decoder')), rest = cs.filter(c => !c.classList.contains('decoder'));
+      rest.forEach(c => { SLIDES.push(c); if (c.classList.contains('start')) dec.forEach(d => SLIDES.push(d)); });
+      if (!rest.some(c => c.classList.contains('start'))) dec.forEach(d => SLIDES.push(d));
+    });
+    SI = 0; $('#slides').hidden = false; showSlide();
+  };
+  document.body.dataset.fitted === '1' ? go() : setTimeout(go, 400);
+}
+function showSlide() {
+  const st = $('#sl-stage');
+  st.innerHTML = '';
+  if (!SLIDES.length) return;
+  const c = SLIDES[SI].cloneNode(true);
+  const r = SLIDES[SI].getBoundingClientRect();
+  c.style.width = r.width + 'px'; c.style.height = r.height + 'px'; c.style.flex = 'none';
+  const k = Math.min(window.innerWidth * 0.92 / r.width, (window.innerHeight - 90) * 0.92 / r.height);
+  c.style.transform = `scale(${k})`;
+  st.appendChild(c);
+  $('#sl-n').textContent = `${SI + 1} / ${SLIDES.length}`;
+}
+function moveSlide(d) { SI = Math.max(0, Math.min(SLIDES.length - 1, SI + d)); showSlide(); }
+
+// ---------- Copy as chat messages: every card as plain text, codes and scrambles already made
+function chatMessages() {
+  if (!$('#preview').innerHTML && !render()) return;
+  const out = [];
+  let d = 0;
+  document.querySelectorAll('#preview .page.grid').forEach(pg => {
+    pg.querySelectorAll('.card').forEach(c => {
+      if (c.classList.contains('decoder')) { out.push(DECTXT[d++] || ''); return; }
+      const pill = c.querySelector('.pill').innerText.trim();
+      const num = c.dataset.num;
+      const team = pg.dataset.team ? ` · ${T().team} ${pg.dataset.team}` : '';
+      const parts = [];
+      [...c.querySelectorAll('.body > *')].forEach(e => {
+        const x = e.innerText.trim(); if (!x) return;
+        const prev = parts[parts.length - 1];
+        if (e.classList.contains('cx') && prev && prev.cx) prev.t += '  /  ' + x; else parts.push({ t: x, cx: e.classList.contains('cx') });
+      });
+      const body = parts.map(x => x.t).join('\n');
+      out.push(`${pill} · ${T().card} ${num}${team}\n${body}`);
+    });
+  });
+  const txt = out.join('\n\n');
+  const ta = $('#chatout');
+  ta.value = txt; ta.hidden = false;
+  const ok = () => { $('#msg').className = 'msg ok'; $('#msg').textContent = `${out.length} messages copied. Paste one at a time into your team chat (they are also in the box below). The answer key stays on your printed setup page.`; };
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(ok, () => { ta.select(); ok(); }); else { ta.select(); ok(); }
+}
+
+// ---------- Quick hunt without AI: your spots -> code / wordplay cards (+ our ready riddle when a spot matches)
+const READY = [{"keys": ["printer", "copier", "photocopier"], "riddle": ["I swallow paper, then I hand it back", "with all your words in tidy rows of black.", "I jam the day you're running late, it's true:", "look by my side and you will find your clue."], "define": "The machine that jams when you're in a hurry."}, {"keys": ["coffee machine", "coffee maker", "espresso machine"], "riddle": ["I grind and I gurgle, I hiss and I steam;", "I'm the first stop for every sleepy team.", "Don't touch my hot spout, just look by my side:", "your clue waits where the mugs and sugar hide."], "define": "Where Monday mornings are rescued, one cup at a time."}, {"keys": ["fridge", "refrigerator"], "riddle": ["I keep the lunches labelled, cold and neat;", "the milk inside me isn't yours to eat.", "My light goes out the moment I'm shut tight:", "your clue is on my door, chilled just right."], "define": "A cold case full of labelled lunches."}, {"keys": ["plant", "office plant"], "riddle": ["I never go to meetings, never take a call;", "I sip a little water, standing by the wall.", "I'm green all year and grow without a sound:", "look by my pot, your clue is near the ground."], "define": "A green colleague who never misses a day."}, {"keys": ["whiteboard"], "riddle": ["Your great ideas are written all over me,", "then wiped away as if they'd never be.", "Bring markers, not chalk, to plan the year:", "look by my ledge, your clue is waiting here."], "define": "Where big plans are drawn, then wiped away."}, {"keys": ["mailroom", "mail room", "mail trays", "pigeonholes", "post room"], "riddle": ["The post arrives and stops with me a while,", "then off it goes to desks in single file.", "Each pigeonhole is labelled, every tray:", "search all my slots, your clue is on its way."], "define": "Letters land here before they reach their desks."}, {"keys": ["supply cabinet", "supplies cupboard", "stationery cupboard"], "riddle": ["Need paper clips, a folder or some tape?", "Then open me, I'm always in good shape.", "My shelves hold sticky notes and pens to share:", "look on a shelf, your clue is waiting there."], "define": "A cupboard of pens, tape and sticky notes."}, {"keys": ["conference room", "meeting room", "boardroom"], "riddle": ["A long table, chairs, a screen upon the wall,", "I'm booked all day for calls both big and small.", "Each Monday someone asks, 'Can you all hear?'", "look under my table, your clue is near."], "define": "Where the chairs spin and the calls run long."}, {"keys": ["boss mug", "boss s mug", "manager s mug"], "riddle": ["Each morning I'm filled to the brim, and then", "I go off to meetings and come back again.", "I sit on the desk of the one who leads the way:", "lift me up gently, your clue's under me today."], "define": "It holds the first coffee of the one in charge."}, {"keys": ["water cooler", "water dispenser"], "riddle": ["I bubble and glug when you fill up your cup;", "the chats by my side keep the whole office up.", "I'm chilled all year round, with a bottle on top:", "look down by my base for your very next stop."], "define": "Where colleagues stop for a sip and a chat."}, {"keys": ["reception", "reception desk", "front desk"], "riddle": ["I greet every guest with a smile at the door,", "I sign for the parcels and visitors galore.", "I'm the first stop you see when you walk in:", "look by my bell, that's where clues begin."], "define": "The first hello every visitor gets."}, {"keys": ["coat rack", "coat stand", "coat hooks"], "riddle": ["I stand by the entrance, my hooks open wide;", "I wear all your jackets but never go outside.", "In winter I'm crowded, in summer I'm bare:", "look under a scarf, your clue's hanging there."], "define": "It wears your jacket all day but never goes out."}, {"keys": ["notice board", "bulletin board", "noticeboard"], "riddle": ["I'm covered in flyers, reminders and pins,", "from fire drill dates to the bake-off wins.", "Everyone passes, but few stop to read:", "look under a pin for the clue that you need."], "define": "Where the news is pinned up for everyone."}, {"keys": ["recycling bin", "recycling"], "riddle": ["Old drafts and boxes come to me to rest,", "then start a second life, which I like best.", "I'm full of old paper, but none goes to waste:", "look on my side, your clue is neatly placed."], "define": "Where old paper starts a second life."}, {"keys": ["kitchen cupboard", "cupboard"], "riddle": ["Behind my doors the cups are stacked in rows,", "with odd spoons and a lid that nobody knows.", "I'm closed and tidy, tucked against the wall:", "open my door, your clue's beside them all."], "define": "Behind its doors, odd spoons and stacked cups."}, {"keys": ["filing cabinet"], "riddle": ["My drawers are deep and labelled A to Z;", "each folder knows exactly where to be.", "I'm made of metal, stacked with papers and piles:", "check my top drawer and you'll be all smiles."], "define": "Drawers of folders, sorted A to Z."}, {"keys": ["stapler"], "riddle": ["I bite down hard, but I don't have a tooth;", "I hold your pages together, that's the truth.", "Press on my head and I go clack, clack, clack:", "look underneath me, your clue's at my back."], "define": "It holds the pages together with one bite."}, {"keys": ["christmas tree", "tree"], "riddle": ["I'm dressed up in tinsel, in baubles and light;", "the office looks cosier with me in sight.", "I come for December and leave in the new year:", "look under my branches, your clue is near."], "define": "It gets dressed up for the office party too."}, {"keys": ["umbrella stand"], "riddle": ["On rainy days I'm busy, on dry days I'm bare;", "I catch every drip by the door with care.", "Things with long handles lean in me all day:", "look down inside, your clue is tucked away."], "define": "Where wet things drip until it is home time."}, {"keys": ["snack drawer", "snack cupboard"], "riddle": ["I'm stocked with crisps and biscuits to share;", "by Friday, there's nothing much left in there.", "Pull me open when you need a little bite:", "your clue is in there, all sweet and bright."], "define": "Where the biscuits vanish before ten."}, {"keys": ["sofa", "couch"], "riddle": ["I've arms but no hands, and I'm soft as can be;", "at lunch break the whole team comes over to me.", "Coins, crumbs and pens slip between my seams:", "lift up a cushion, it's closer than it seems."], "define": "Soft seats for lunch breaks and long phone calls."}, {"keys": ["bookshelf", "bookcase"], "riddle": ["I hold a hundred spines but haven't one bone;", "I carry many leaves but no roots of my own.", "Some manuals, some novels, some binders too:", "search between the covers to find your clue."], "define": "Where the manuals stand in line, unread."}, {"keys": ["calendar", "wall calendar"], "riddle": ["I'm full of dates, but I've never been out;", "I show every deadline the team talks about.", "Count down to the holidays, square by square:", "lift up this month, your clue is right there."], "define": "Twelve pages that count down to the holidays."}, {"keys": ["lost and found", "lost property"], "riddle": ["One glove, a scarf, a charger, someone's keys:", "I keep the things you leave behind with ease.", "I wait for owners who forgot their stuff:", "dig through my box, it's in there, sure enough."], "define": "Where odd gloves wait for their owners."}];
+const QTEAMS = ["Tinsel", "Gingerbread", "Snowball", "Candy Cane", "Reindeer", "North Star"];
+const QMETHODS = ['numbers', 'backwards', 'mirror', 'shift'];
+function readyFor(spot) {
+  const s = ' ' + spot.toLowerCase().replace(/[^a-z ]/g, ' ') + ' ';
+  return READY.find(r => r.keys.some(k => s.includes(' ' + k + ' '))) || null;
+}
+function quickBlock(spots, team) {
+  const out = [`HUNT: Our Office Christmas Scavenger Hunt`];
+  if (team) out.push(`TEAM: ${team}`);
+  out.push('LANG: en', '');
+  const clue = (spot, k) => {
+    const r = readyFor(spot);
+    const short = CIPHER.words(spot, 'en').words.length <= 2 && CIPHER.words(spot, 'en').words.join('').length <= 14;
+    const kind = r && k % 3 === 0 ? 'riddle' : (k % 3 === 1 && short) ? 'wordplay' : 'code';
+    if (kind === 'riddle') return ['riddle', r.riddle.join('\n')];
+    if (kind === 'wordplay') return ['wordplay', `SCRAMBLE: ${spot}\n${r ? r.define : 'Your next stop, in a jumble.'}`];
+    const m = QMETHODS[k % 4];
+    return ['code', `${{"numbers": "The office elves swapped every letter for a number.", "shift": "Someone pressed shift: every letter moved 3 steps forward.", "mirror": "This one came out of the copier in the mirror alphabet.", "backwards": "This one was filed backwards."}[m]}\nCODE ${m}: ${spot}`];
+  };
+  const [k0, c0] = clue(spots[0], 2);
+  out.push('---', `CARD 1 | START | give at the start | leads to: ${spots[0]}`,
+           `${team ? 'Team ' + team + ', a' : 'A'} prize is hidden somewhere in this office. Solve each clue to find the next. Here's your first one:`, c0, '');
+  for (let i = 1; i < spots.length; i++) {
+    const [kind, txt] = clue(spots[i], i);
+    out.push('---', `CARD ${i + 1} | CLUE | hide at: ${spots[i - 1]} | leads to: ${spots[i]} | level: ${kind}`, txt, '');
+  }
+  out.push('---', `CARD ${spots.length + 1} | FOUND IT | hide with the prize at: ${spots[spots.length - 1]}`, "You cracked every riddle, code and scramble. Season's greetings, puzzle champions!");
+  return out.join('\n');
+}
+function quickHunt() {
+  const spots = $('#spots').value.split('\n').map(x => x.trim()).filter(Boolean);
+  if (spots.length < 2) { $('#msg').className = 'msg err'; $('#msg').textContent = 'Type at least 2 hiding spots, one per line (the prize waits at the last one).'; return; }
+  const teams = +$('#q-teams').value || 1;
+  const head = spots.slice(0, -1), last = spots[spots.length - 1];
+  const blocks = [];
+  for (let t = 0; t < teams; t++) {
+    const order = head.slice(t % head.length).concat(head.slice(0, t % head.length)).concat([last]);
+    blocks.push(quickBlock(order, teams > 1 ? QTEAMS[t] : ''));
+  }
+  $('#src').value = blocks.join('\n\n');
+  try { localStorage.setItem('mts-office-hunt', $('#src').value); } catch (e) {}
+  $('#lang').value = 'auto';
+  render();
+}
+
+function setPaper() {
+  const a4 = $('#paper').value === 'a4';
+  document.body.classList.toggle('a4', a4);
+  $('#pagesize').textContent = a4 ? '@page { size: 210mm 297mm; margin: 0; }' : '@page { size: 8.5in 11in; margin: 0; }';
+  if ($('#preview').innerHTML) render();
+}
+
+function applyUI() {
+  const u = U(), keep = $('#lang').value || 'auto';
+  document.documentElement.lang = UIL;
+  $('#ui').value = UIL;
+  $('#ui-intro').textContent = fixFr(u.intro);
+  ['s1', 's2', 's3'].forEach(k => { $('#ui-' + k).innerHTML = fixFr(u[k]); });
+  $('#src').placeholder = fixFr(u.ph);
+  $('#make').textContent = u.make; $('#print').textContent = u.print; $('#demo').textContent = u.demo;
+  $('#show').textContent = u.show; $('#chat').textContent = u.chat; $('#q-sum').textContent = fixFr(u.qsum); $('#q-make').textContent = u.qmake; $('#q-teams-l').textContent = fixFr(u.qteams);
+  $('#paper').options[0].textContent = u.letter; $('#paper').options[1].textContent = u.a4;
+  $('#ui-hint').innerHTML = fixFr(u.hint);
+  $('#lang').title = u.langTitle;
+  $('#lang').innerHTML = `<option value="auto">${esc(fixFr(u.auto))}</option>` +
+    Object.entries(LANGNAMES).map(([c, n]) => `<option value="${c}">${esc(fixFr(u.labels))}${esc(n[0])}</option>`).join('');
+  $('#lang').value = keep;
+}
+function pickUI() {
+  const q = new URLSearchParams(location.search).get('ui');
+  if (q && APP[q]) return q;
+  try { const s = localStorage.getItem('mts-hunt-ui'); if (s && APP[s]) return s; } catch (e) {}
+  const nav = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
+  const two = String(nav).slice(0, 2).toLowerCase();
+  return APP[two] ? two : 'en';
+}
+UIL = pickUI();
+applyUI();
+$('#ui').onchange = () => {
+  UIL = APP[$('#ui').value] ? $('#ui').value : 'en';
+  try { localStorage.setItem('mts-hunt-ui', UIL); } catch (e) {}
+  applyUI();
+  if ($('#preview').innerHTML) render();
+};
+$('#make').onclick = render;
+$('#show').onclick = openSlides;
+$('#chat').onclick = chatMessages;
+$('#q-make').onclick = quickHunt;
+$('#sl-prev').onclick = () => moveSlide(-1);
+$('#sl-next').onclick = () => moveSlide(1);
+$('#sl-close').onclick = () => { $('#slides').hidden = true; };
+document.addEventListener('keydown', e => {
+  if ($('#slides').hidden) return;
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { moveSlide(1); e.preventDefault(); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { moveSlide(-1); e.preventDefault(); }
+  if (e.key === 'Escape') $('#slides').hidden = true;
+});
+window.addEventListener('resize', () => { if (!$('#slides').hidden) showSlide(); });
+$('#demo').onclick = () => { $('#src').value = EXAMPLE; $('#lang').value = 'auto'; render(); };
+$('#print').onclick = () => { if (!$('#preview').innerHTML && !render()) return; setTimeout(() => window.print(), 300); };
+$('#paper').onchange = setPaper;
+$('#lang').onchange = () => { if ($('#preview').innerHTML) render(); };
+try { const saved = localStorage.getItem('mts-office-hunt'); if (saved) $('#src').value = saved; } catch (e) {}
+$('#src').addEventListener('input', () => { try { localStorage.setItem('mts-office-hunt', $('#src').value); } catch (e) {} });
+const q = new URLSearchParams(location.search);
+if (q.get('paper') === 'a4') { $('#paper').value = 'a4'; setPaper(); }
+if (q.get('lang') && I18N[q.get('lang')]) $('#lang').value = q.get('lang');
+if (q.get('demo')) { $('#src').value = EXAMPLE; render(); }
+</script>
+<!-- mts-assistant-js -->
+<div id="mts-toast" role="status" aria-live="polite"></div>
+<script id="mts-assistant-js">
+(function () {
+  var PROMPT = "You are my office Christmas scavenger hunt helper. Help me create a personalized, work-safe Christmas scavenger hunt for my team: clues hidden around our office (or shared on a video call) that lead from one spot to the next, all the way to the prize. Use riddles, wordplay and secret codes.\n\nFirst, ask me these questions one at a time and wait for my answer each time:\n1. Who is playing, and in which language? (how many people, one group or 2 to 6 teams; in the office, remote on a video call, or hybrid)\n2. Which hiding spots will you use, in order? The prize will be at the last spot. (For teams: one list per team, or one loop for everyone. Remote: things everyone has at their desk.)\n3. Any team names, office traditions or friendly in-jokes I may use? Only first names of people who are happy to be on a card.\n4. Which story theme? (for example: the missing stapler, office elves, secret agents, a quiz show, or no theme)\n5. Which kinds of clues: riddles (rhyming, double meanings), wordplay (scrambled letters + a cryptic definition), codes (numbers, shift, mirror or backwards), or a mix?\n\nWork-safe rules: no alcohol, no religion, no politics, no romance or flirting, no jokes about anyone's looks, age, health, family, pay, performance, bosses or HR. Never use personal data (birthdays, addresses, phone numbers, salaries). First names only, and only for people who said yes.\n\nSafety: hiding spots must be indoors, at hand height and in shared spaces. Never: anything hot or that heats up (kettle, toaster, microwave, inside a coffee machine), electrical panels, server rooms, fire exits, fire extinguishers and alarms, stairs, lifts, roofs, car parks or outside. Never inside a working printer or shredder. Never a colleague's own desk drawer, bag, coat pocket or locker without their OK. If I list an unsafe spot, suggest a safe one nearby.\n\nThen write the cards. Every card leads to the NEXT spot. First list the route (card, hide at, leads to), then write each clue about its \"leads to\" spot, never about the spot where the card is hidden:\n- Card 1 (START): a 2-3 sentence start message that ends with the clue for spot 1.\n- One card for each spot. Riddle: 4 rhyming lines with wordplay. Wordplay: one line \"SCRAMBLE: [the spot in 1-3 words]\" and one cryptic line that defines the spot. Code: one short line about the method and one line \"CODE numbers: [the spot in 1-3 words]\" (or CODE shift, CODE mirror, CODE backwards). Write the spot in plain words after SCRAMBLE and CODE: the Card Maker scrambles and encodes it.\n- A last card (FOUND IT) with a short \"Prize found!\" message, hidden with the prize.\n- Don't give the answer away: riddles and definitions never say the name of the spot they lead to.\n\nPut ALL cards, from CARD 1 to the last card, inside ONE code block (teams: one block per team), in exactly this format (I will paste it into the Make Together Studio Card Maker). After \"hide at:\" write only the spot name. Use a plain code block, not Canvas or a document, and put an empty line before every --- line:\nHUNT: [title]\nTEAM: [team name, only for team races]\n---\nCARD 1 | START | give at the start | leads to: [spot 1]\n[start message and the clue for spot 1]\n---\nCARD 2 | CLUE | hide at: [spot 1] | leads to: [spot 2] | level: [riddle, wordplay or code]\n[clue that describes spot 2, not spot 1]\n---\nCARD [last] | FOUND IT | hide with the prize at: [last spot]\n[final message]\n\nAt the end, ask me if I want any card easier, harder, funnier or more personal. If I change anything, give me the whole code block again.";
+  var PREFILLED = true;
+  var $id = function (i) { return document.getElementById(i); };
+  var toastEl = $id('mts-toast'), toastTimer;
+  function toast(msg, ms) {
+    toastEl.textContent = msg;
+    toastEl.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.style.display = 'none'; }, ms || 6000);
+  }
+  function legacyCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px;';
+    document.body.appendChild(ta);
+    ta.select();
+    try { ta.setSelectionRange(0, text.length); } catch (e) {}
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function showManual() {
+    $id('mts-manual-ta').value = PROMPT;
+    $id('mts-manual').hidden = false;
+  }
+  // Runs synchronously inside the tap handler so browsers treat it as user-initiated.
+  function copyPrompt(okMsg) {
+    var done = function (ok) {
+      if (ok) toast(okMsg, 7000);
+      else { showManual(); toast(PREFILLED ? 'The prompt is in ChatGPT. If not, copy it from the box under step 1.' : 'Copy the prompt from the box under step 1.', 7000); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(PROMPT).then(function () { done(true); }, function () { done(legacyCopy(PROMPT)); });
+    } else {
+      done(legacyCopy(PROMPT));
+    }
+  }
+  $id('mts-gpt').addEventListener('click', function () {
+    copyPrompt("Prompt copied. If it isn't already in ChatGPT, tap the message box → Paste.");
+  });
+  $id('mts-copy-only').addEventListener('click', function () {
+    copyPrompt('Prompt copied. Paste it into Gemini or Claude.');
+  });
+
+  var src = $id('src'), make = $id('make'), hint = $id('mts-paste-hint'), armed = false;
+  function makeNow() {
+    hint.hidden = true;
+    make.click();
+    var msg = $id('msg');
+    if (msg && msg.scrollIntoView) msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    toast('Check the preview below, then tap Save as PDF / Print.', 5000);
+  }
+  function askManualPaste() {
+    armed = true;
+    hint.hidden = false;
+    src.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    try { src.focus({ preventScroll: true }); } catch (e) { src.focus(); }
+  }
+  src.addEventListener('paste', function () {
+    if (!armed) return;
+    armed = false;
+    setTimeout(function () { if (src.value.trim()) makeNow(); }, 60);
+  });
+  $id('mts-paste').addEventListener('click', function () {
+    if (!navigator.clipboard || !navigator.clipboard.readText) { askManualPaste(); return; }
+    navigator.clipboard.readText().then(function (text) {
+      if (!text || !text.trim()) { askManualPaste(); return; }
+      if (text.trim() === PROMPT.trim()) { toast("That's still the prompt. In ChatGPT, tap Copy on its answer first.", 7000); return; }
+      src.value = text;
+      src.dispatchEvent(new Event('input', { bubbles: true }));
+      makeNow();
+    }, askManualPaste);
+  });
+  $id('mts-print').addEventListener('click', function () { $id('print').click(); });
+})();
+</script>
+<!-- /mts-assistant-js -->
+</body></html>
