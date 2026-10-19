@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#FF4F9A">
+<title>Hear Santa! · Make Together Studio</title>
+<link rel="preload" href="santa.mp3" as="audio" type="audio/mpeg">
+<style>
+@font-face { font-family: Title; src: url(title.woff2) format('woff2'); font-display: swap; }
+@font-face { font-family: Body; src: url(body.woff2) format('woff2'); font-weight: 400 900; font-display: swap; }
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { font-family: Body, -apple-system, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+.wrap { position: relative; max-width: 560px; margin: 0 auto; padding: 0 16px 28px; }
+main { position: relative; padding-top: 118px; }
+.card { position: relative; padding: 26px 20px 22px; text-align: center; }
+.kicker { text-transform: uppercase; margin: 0; }
+h1 { margin: 8px 0 18px; font-weight: 400; }
+.play { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 76px; border: 0;
+  border-radius: 999px; font-size: 22px; font-weight: 800; cursor: pointer; touch-action: manipulation; }
+.play:active { transform: translateY(3px); }
+.play svg { width: 30px; height: 30px; flex: 0 0 30px; }
+.bar { height: 10px; border-radius: 99px; margin: 18px 4px 6px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; border-radius: 99px; }
+.time { font-size: 13px; opacity: .7; text-align: right; margin: 0 4px; font-variant-numeric: tabular-nums; }
+.subs { text-align: left; margin: 16px 2px 0; }
+.subs span { border-radius: 6px; padding: 1px 2px; transition: background .25s, color .25s; }
+.hint { font-size: 14px; opacity: .75; margin: 12px 0 0; }
+.foot { text-align: center; font-size: 12px; margin-top: 18px; opacity: .8; }
+@media (min-width: 600px) { main { padding-top: 150px; } }
+@media (prefers-reduced-motion: reduce) { .subs span { transition: none; } }
+
+body { background: #FFF0F6 radial-gradient(#FFFFFF 22%, rgba(255,255,255,0) 23%) 0 0 / 34px 34px; color: #4A1942; }
+.garland { height: 150px; background: url(garland.webp) no-repeat center top / 760px auto; -webkit-mask-image: linear-gradient(#000 70%, transparent); mask-image: linear-gradient(#000 70%, transparent); }
+.santa { width: 120px; height: 120px; margin: -64px auto 0; background: url(santa.webp) no-repeat center / contain; position: relative; }
+.card { background: #FFFFFF; border-radius: 30px; box-shadow: 0 0 0 6px #FFC4DE, 0 10px 30px rgba(255,79,154,.25); }
+.kicker { font: 900 12px/1.2 Body, sans-serif; letter-spacing: .16em; color: #FF4F9A; }
+h1 { font: 400 clamp(44px, 13vw, 64px)/1.05 Title, cursive; color: #FF4F9A; -webkit-text-stroke: 2.5px #4A1942; paint-order: stroke fill; }
+.play { background: #FF4F9A; color: #FFFFFF; box-shadow: 0 6px 0 #C2306F, 0 10px 24px rgba(255,79,154,.4); font-family: Title, sans-serif; letter-spacing: .02em; }
+.bar { background: #FFE1EE; } .bar i { background: repeating-linear-gradient(45deg,#FF4F9A 0 8px,#FFFFFF 8px 12px,#3CCFB0 12px 20px,#FFFFFF 20px 24px); }
+.subs { font: 800 18px/1.5 Body, sans-serif; } .subs span.on { background: #D8F7EF; color: #4A1942; }
+.foot { color: #4A1942; }
+</style></head>
+<body><div class="garland" aria-hidden="true"></div><div class="wrap"><div class="santa" aria-hidden="true"></div>
+<main style="padding-top:0"><section class="card">
+<p class="kicker">From the North Pole</p>
+<h1>Hear Santa!</h1>
+<button type="button" class="play" id="play" aria-label="Play Santa's message"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span id="lab">Play Santa’s message</span></button>
+<div class="bar" aria-hidden="true"><i id="bar"></i></div><div class="time" id="t">0:00</div>
+<audio id="a" src="santa.mp3" preload="auto"></audio>
+<p class="subs" aria-label="The words of the message"><span data-a="0.000" data-b="0.030">Ho ho ho!</span> <span data-a="0.030" data-b="0.107">Hello, my sweet friend!</span> <span data-a="0.107" data-b="0.278">It&#x27;s Santa, calling from my candy-striped workshop.</span> <span data-a="0.278" data-b="0.488">The elves told me all about your year, and I&#x27;m so proud of you!</span> <span data-a="0.488" data-b="0.679">Keep being kind, and hop into bed early on Christmas Eve.</span> <span data-a="0.679" data-b="0.913">Comet the reindeer keeps nibbling candy canes, so I&#x27;d better be quick!</span> <span data-a="0.913" data-b="1.000">Ho ho ho, Merry Christmas!</span></p>
+<p class="hint">🔊 Turn the sound up, then tap Play.</p>
+</section>
+<p class="foot">Make Together Studio · Merry Christmas!</p></main></div>
+<script>
+(function () {
+  var a = document.getElementById('a'), b = document.getElementById('play'), lab = document.getElementById('lab'),
+      bar = document.getElementById('bar'), t = document.getElementById('t'), subs = [].slice.call(document.querySelectorAll('.subs span'));
+  var PLAY = "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z\"/></svg>", PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>',
+      AGAIN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg>';
+  var INTRO = 1.0, OUTRO = 1.8;
+  function set(icon, text) { b.innerHTML = icon + '<span id="lab">' + text + '</span>'; }
+  function fmt(s) { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); }
+  b.addEventListener('click', function () {
+    if (a.paused) { var p = a.play(); if (p && p.catch) p.catch(function () { set(PLAY, 'Tap again to play'); }); }
+    else a.pause();
+  });
+  a.addEventListener('play', function () { set(PAUSE, 'Pause'); });
+  a.addEventListener('pause', function () { if (!a.ended) set(PLAY, 'Play Santa\u2019s message'); });
+  a.addEventListener('ended', function () { set(AGAIN, 'Play it again'); subs.forEach(function (s) { s.classList.remove('on'); }); });
+  a.addEventListener('timeupdate', function () {
+    var d = a.duration || 0;
+    bar.style.width = (d ? 100 * a.currentTime / d : 0) + '%';
+    t.textContent = fmt(a.currentTime) + ' / ' + fmt(d);
+    var span = Math.max(1, d - INTRO - OUTRO), f = (a.currentTime - INTRO) / span;
+    subs.forEach(function (s) { var on = f >= +s.dataset.a && f < +s.dataset.b; s.classList.toggle('on', on && !a.paused); });
+  });
+  a.addEventListener('loadedmetadata', function () { t.textContent = '0:00 / ' + fmt(a.duration); });
+})();
+</script>
+</body></html>
