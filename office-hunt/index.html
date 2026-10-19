@@ -594,7 +594,7 @@ function cardHTML(c) {
     // the headline is printed by the Card Maker; a first line that only repeats it is dropped
     const dup = norm(t.youFound);
     const txt = c.text.filter((x, k) => !(k === 0 && (norm(x) === dup || /^\s*you found (it|the presents|your presents|the treasure)\s*[!.]?\s*$/i.test(x))));
-    body = `<div class="pic">${esc(c.emoji || '🎁')}</div><div class="big">${esc(nbsp(t.youFound))}</div>` + mk(txt, false) + sec;
+    body = `<div class="pic">${esc(c.emoji || '🏆')}</div><div class="big">${esc(nbsp(t.youFound))}</div>` + mk(txt, false) + sec;
   } else {
     body = lines + sec;
   }
