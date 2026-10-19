@@ -261,191 +261,87 @@ details { margin-top: 12px; } summary { cursor: pointer; font-weight: 700; color
 @media (max-width: 720px) { .steps3, .players { grid-template-columns: 1fr; } .form { grid-template-columns: 1fr; } }
 </style>
 <!-- mts-assistant-styles -->
+<meta name="robots" content="noindex,nofollow">
 <style id="mts-assistant-styles">
-  #mts-bar {
-    position: sticky;
-    top: 0;
-    z-index: 99999;
-    background: #1F5E5B;
-    color: #fff;
-    padding: 10px 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  .panel > .steps, .panel > .steps3 { display: none !important; }
+  #mts-card {
+    background: #FFF8EE; border: 2px solid #F4C95D; border-radius: 16px;
+    padding: 16px 18px 12px; margin: 0 0 14px; color: #2B2B2B;
     font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
-  .mts-bar-inner {
-    max-width: 980px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  .mts-bar-title {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    color: #F4C95D;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .mts-bar-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .mts-btn {
-    border: none;
-    border-radius: 999px;
-    padding: 8px 16px;
-    font-size: 13.5px;
-    font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: transform 0.1s, background 0.15s;
-    font-family: inherit;
-    text-decoration: none;
-  }
-  .mts-btn:active { transform: scale(0.97); }
-  .mts-btn-chatgpt {
-    background: #ffffff;
-    color: #1F5E5B;
-  }
-  .mts-btn-chatgpt:hover { background: #FFF8EE; }
-  .mts-btn-paste {
-    background: #F07F5E;
-    color: #ffffff;
-  }
-  .mts-btn-paste:hover { background: #e06c4b; }
-  #mts-toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #2B2B2B;
-    color: #fff;
-    padding: 10px 22px;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
-    z-index: 100000;
-    display: none;
-    pointer-events: none;
-    text-align: center;
-    max-width: 90vw;
-    line-height: 1.4;
+  #mts-card [hidden], #mts-paste-hint[hidden] { display: none !important; }
+  .mts-h { margin: 0 0 10px; font-size: 19px; color: #1F5E5B; }
+  .mts-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .mts-step { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start;
+    background: #fff; border-radius: 12px; padding: 12px; }
+  .mts-num { width: 36px; height: 36px; border-radius: 50%; background: #1F5E5B; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+  .mts-body { min-width: 0; }
+  .mts-text { margin: 6px 0 0; font-size: 17px; line-height: 1.4; }
+  .mts-small { margin: 8px 0 0; font-size: 14px; color: #6B655E; line-height: 1.4; }
+  .mts-btn { display: inline-flex; align-items: center; justify-content: center; text-align: center;
+    min-height: 50px; padding: 12px 22px; border: 0; border-radius: 999px; cursor: pointer;
+    font: 700 16px 'Ubuntu', -apple-system, 'Segoe UI', sans-serif; text-decoration: none;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .mts-btn:active { transform: scale(0.98); }
+  .mts-btn-gpt { background: #1F5E5B; color: #fff; }
+  .mts-btn-paste { background: #F07F5E; color: #fff; }
+  .mts-btn-print { background: #fff; color: #1F5E5B; border: 2px solid #1F5E5B; margin-top: 10px; }
+  .mts-link { background: none; border: 0; padding: 0; font: inherit; color: #1F5E5B; font-weight: 700;
+    text-decoration: underline; cursor: pointer; }
+  #mts-manual textarea { width: 100%; box-sizing: border-box; height: 120px; margin-top: 8px; font-size: 16px;
+    border: 1px solid #E2DACE; border-radius: 10px; padding: 8px; }
+  #mts-paste-hint { margin: 0 0 10px; padding: 12px 14px; border-radius: 12px; background: #FDE8E1;
+    color: #8A2E17; font-size: 16px; font-weight: 700; line-height: 1.4; }
+  .mts-privacy { margin: 10px 2px 0; font-size: 13px; color: #6B655E; }
+  #mts-toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%); width: max-content; max-width: min(92vw, 520px); box-sizing: border-box;
+    background: #2B2B2B; color: #fff; padding: 12px 18px; border-radius: 14px; font-size: 15px; font-weight: 600;
+    line-height: 1.4; text-align: center; box-shadow: 0 4px 18px rgba(0,0,0,.35); z-index: 100000; display: none;
+    font-family: 'Ubuntu', -apple-system, 'Segoe UI', sans-serif; }
+  @media (max-width: 640px) {
+    #mts-card { padding: 14px 12px 10px; margin-left: -6px; margin-right: -6px; }
+    .mts-step { grid-template-columns: 30px 1fr; gap: 10px; padding: 12px 10px; }
+    .mts-num { width: 30px; height: 30px; font-size: 16px; }
+    .mts-btn { display: flex; width: 100%; min-height: 56px; font-size: 17px; padding: 12px 14px; }
+    .mts-text { margin-top: 3px; }
+    #src { font-size: 16px; }
   }
   @media print {
-    #mts-bar, #mts-toast, #mts-assistant-styles { display: none !important; }
-  }
-  @media (max-width: 640px) {
-    #mts-bar { padding: 8px 12px; }
-    .mts-bar-inner { flex-direction: column; align-items: stretch; gap: 6px; }
-    .mts-bar-title { justify-content: center; font-size: 12px; }
-    .mts-bar-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .mts-btn { justify-content: center; padding: 9px 8px; font-size: 12px; }
+    #mts-card, #mts-toast, #mts-paste-hint { display: none !important; }
   }
 </style>
 
 </head>
 <body>
-<!-- mts-assistant-bar -->
-<div id="mts-bar">
-  <div class="mts-bar-inner">
-    <div class="mts-bar-title">✨ Step 1 &amp; 2 Quick AI Helper</div>
-    <div class="mts-bar-actions">
-      <button id="mts-chatgpt-btn" class="mts-btn mts-btn-chatgpt" title="Copy Prompt & Open ChatGPT">
-        🤖 1. Copy Prompt &amp; Open ChatGPT
-      </button>
-      <button id="mts-paste-btn" class="mts-btn mts-btn-paste" title="Paste AI response into the maker">
-        📋 2. Paste AI Response
-      </button>
-    </div>
-  </div>
-</div>
-<div id="mts-toast"></div>
-
-<script id="mts-assistant-js">
-(function() {
-  var PROMPT = "You are my Halloween escape room helper. I bought the Make Together Studio \"Halloween Escape Room\" (8 printable puzzles, 3 levels). Help me personalize it. You write the story and the setup; the Escape Room Maker builds the puzzles, so never invent puzzles or answers.\n\nThe fixed story: Willow, the friendly witch, cast a spell that locked the Halloween treats inside her Moon Chest. Only the magic word opens it. Each puzzle gives one letter of the magic word. Nobody is ever locked in; there are no real locks.\n\nAsk me these questions ONE at a time and wait for each answer. I'm welcome to answer in my own language:\n1. Who is playing? (names and ages)\n2. How long and how hard? Offer: 6 puzzles (about 30-40 min), 7 (about 40-50) or 8 (about 45-60). Levels: little (ages 5-7, with a grown-up), clever (8-11), master (12+ and adults). Mixed ages: give each puzzle its own level.\n3. The magic word: it must have exactly as many letters as there are puzzles. Offer: 6 letters POTION, SPOOKY, WIZARD, GOBLIN; 7 letters PUMPKIN, COSTUME, MOONLIT; 8 letters CAULDRON, MOONBEAM, NIGHTOWL; or our own word (a name works if it has the right number of letters).\n4. Where will the treats be, and do we play at the table (I hand over each envelope) or around the house (envelopes hidden in safe spots)?\n5. A team name, and any fun details for the story (pets, costumes, family jokes).\n\nSafety: envelopes and treats only indoors, at child height, in safe places. Never the oven, stove, microwave, dryer, dishwasher, fireplace, heaters, candles, a lit jack-o'-lantern, high shelves, water, or anything outside (porch, yard, garden, balcony, garage, car). Never a door or window to a balcony, terrace or garden, even from inside. The front door only on the inside, with the door closed. No real locks, and nobody is ever locked in a room. If I list an unsafe spot, move it and tell me.\n\nThen give a short summary and ask \"Shall I write your escape room?\" When I say yes, write:\n- STORY: 80-140 words for a grown-up to read aloud. Friendly-spooky, never scary or gory. Mention Willow, the Moon Chest, the magic word (but never the word itself), the number of puzzles, the timer and the players by name. No brands, film or TV characters, and no song lyrics.\n- FINAL MESSAGE: 25-60 words, warm and happy.\n- ENVELOPES: only for the around-the-house version; envelope 1 is handed to the team at the start.\n\nPut EVERYTHING inside ONE plain code block (three backticks), in exactly this format, so I can paste it into the Escape Room Maker. Never use Canvas, a document or a \"writing block\". Keep the English keywords:\nESCAPE ROOM: [title]\nTEAM: [team name]\nPLAYERS: [Name (age), Name (age)]\nLEVEL: [little, clever, master or mixed]\nLEVELS: [only for mixed: one level per puzzle, comma-separated]\nPUZZLES: [6, 7 or 8]\nMAGIC WORD: [the word]\nTIMER: [minutes]\nHOST: [who runs the game]\nTREATS AT: [safe spot]\n---\nSTORY:\n[story]\n---\nFINAL MESSAGE:\n[final message]\n---\nENVELOPES:\n1: hand it to the team at the start\n2: [safe spot]\nFINAL: [who keeps the final envelope]\n\nBefore you answer, check: the magic word has exactly as many letters as puzzles and is not in the story or the team name; LEVELS has one entry per puzzle; every spot is safe and indoors. At the end, ask if I want any changes. If I change anything, give me the whole code block again.\n\nMAKE THE STORY FUNNIER OR SHORTER:\nRewrite the STORY in the code block: [funnier / shorter / with our dog Pepper in it]. Keep Willow, the Moon Chest, the magic word and the format. Give me the whole code block again.\n\nSIBLINGS OF DIFFERENT AGES:\nMy kids are [5] and [11]. Make it a mixed game: give each of the 8 puzzles the level that fits, so both can help. Use LEVEL: mixed and a LEVELS line with one level per puzzle.\n\nA SHORTER GAME:\nWe only have about 30 minutes. Make it 6 puzzles and pick a 6-letter magic word. Update PUZZLES, MAGIC WORD and TIMER.\n\nA PARTY FOR 6-10 KIDS:\nIt's a Halloween party for [8] kids aged [7-9]. Split them into two teams with their own team names and write one code block per team, so I can print two copies with the Escape Room Maker.\n\nTHE STORY IN ANOTHER LANGUAGE:\nWrite the STORY and the FINAL MESSAGE in [German / French / Spanish], naturally, not word for word. Keep the keywords (STORY, FINAL MESSAGE, TEAM...) in English. The puzzles stay in English.";
-  var toastEl = document.getElementById('mts-toast');
-
-  function showToast(msg, duration) {
-    if (!toastEl) return;
-    toastEl.textContent = msg;
-    toastEl.style.display = 'block';
-    setTimeout(function() { toastEl.style.display = 'none'; }, duration || 3200);
-  }
-
-  // 1. Copy Prompt & Open ChatGPT
-  var gptBtn = document.getElementById('mts-chatgpt-btn');
-  if (gptBtn) {
-    gptBtn.addEventListener('click', function() {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(PROMPT).then(function() {
-          showToast('✅ Prompt copied! Opening ChatGPT... Just paste into chat!');
-          setTimeout(function() {
-            window.open('https://chatgpt.com', '_blank');
-          }, 600);
-        }).catch(function() {
-          window.open('https://chatgpt.com', '_blank');
-        });
-      } else {
-        window.open('https://chatgpt.com', '_blank');
-      }
-    });
-  }
-
-  // 2. Paste from clipboard & trigger maker
-  var pasteBtn = document.getElementById('mts-paste-btn');
-  if (pasteBtn) {
-    pasteBtn.addEventListener('click', function() {
-      if (!navigator.clipboard || !navigator.clipboard.readText) {
-        alert('Clipboard API not available. Please paste manually into the box below.');
-        return;
-      }
-      navigator.clipboard.readText().then(function(text) {
-        var ta = document.querySelector('textarea');
-        if (ta) {
-          ta.value = text;
-          ta.dispatchEvent(new Event('input', { bubbles: true }));
-          ta.dispatchEvent(new Event('change', { bubbles: true }));
-          ta.focus();
-
-          // Auto-trigger the generate / make button if found
-          var makeBtn = document.querySelector('#make, #generate, #build, button.primary, .btn-primary') ||
-                        Array.from(document.querySelectorAll('button')).find(function(b) {
-                          var t = (b.textContent || '').toLowerCase();
-                          return (t.indexOf('make') !== -1 || t.indexOf('generate') !== -1 || t.indexOf('build') !== -1) &&
-                                 b.id !== 'mts-paste-btn' && b.id !== 'mts-chatgpt-btn';
-                        });
-          if (makeBtn) {
-            makeBtn.click();
-            showToast('✅ AI cards pasted & generated!');
-          } else {
-            showToast('✅ Pasted! Click Make my cards below.');
-          }
-        } else {
-          alert('No text field found on this page.');
-        }
-      }).catch(function(err) {
-        alert('Could not read clipboard: ' + err + '\n\nPlease paste manually (Ctrl+V / ⌘+V).');
-      });
-    });
-  }
-})();
-</script>
-<!-- /mts-assistant-bar -->
-
 <div class="ui">
   <div class="top"><img src="data:image/png;base64,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" alt=""><div><h1>Halloween Escape Room Maker</h1>
     <p>Turns your AI chat's answer into your own printable escape room, in our design. Every puzzle is built and checked here, so the answers are always right.</p></div></div>
   <div class="panel">
+<!-- mts-card -->
+<section id="mts-card" aria-label="How to make your game">
+  <h2 class="mts-h">Make it in 3 steps</h2>
+  <ol class="mts-steps">
+    <li class="mts-step"><span class="mts-num">1</span><div class="mts-body">
+      <a id="mts-gpt" class="mts-btn mts-btn-gpt" href="https://chatgpt.com/?q=You%20are%20my%20Halloween%20escape%20room%20helper.%20I%20bought%20the%20Make%20Together%20Studio%20%22Halloween%20Escape%20Room%22%20(8%20printable%20puzzles%2C%203%20levels).%20Help%20me%20personalize%20it.%20You%20write%20the%20story%20and%20the%20setup%3B%20the%20Escape%20Room%20Maker%20builds%20the%20puzzles%2C%20so%20never%20invent%20puzzles%20or%20answers.%0A%0AThe%20fixed%20story%3A%20Willow%2C%20the%20friendly%20witch%2C%20cast%20a%20spell%20that%20locked%20the%20Halloween%20treats%20inside%20her%20Moon%20Chest.%20Only%20the%20magic%20word%20opens%20it.%20Each%20puzzle%20gives%20one%20letter%20of%20the%20magic%20word.%20Nobody%20is%20ever%20locked%20in%3B%20there%20are%20no%20real%20locks.%0A%0AAsk%20me%20these%20questions%20ONE%20at%20a%20time%20and%20wait%20for%20each%20answer.%20I&#x27;m%20welcome%20to%20answer%20in%20my%20own%20language%3A%0A1.%20Who%20is%20playing%3F%20(names%20and%20ages)%0A2.%20How%20long%20and%20how%20hard%3F%20Offer%3A%206%20puzzles%20(about%2030-40%20min)%2C%207%20(about%2040-50)%20or%208%20(about%2045-60).%20Levels%3A%20little%20(ages%205-7%2C%20with%20a%20grown-up)%2C%20clever%20(8-11)%2C%20master%20(12%2B%20and%20adults).%20Mixed%20ages%3A%20give%20each%20puzzle%20its%20own%20level.%0A3.%20The%20magic%20word%3A%20it%20must%20have%20exactly%20as%20many%20letters%20as%20there%20are%20puzzles.%20Offer%3A%206%20letters%20POTION%2C%20SPOOKY%2C%20WIZARD%2C%20GOBLIN%3B%207%20letters%20PUMPKIN%2C%20COSTUME%2C%20MOONLIT%3B%208%20letters%20CAULDRON%2C%20MOONBEAM%2C%20NIGHTOWL%3B%20or%20our%20own%20word%20(a%20name%20works%20if%20it%20has%20the%20right%20number%20of%20letters).%0A4.%20Where%20will%20the%20treats%20be%2C%20and%20do%20we%20play%20at%20the%20table%20(I%20hand%20over%20each%20envelope)%20or%20around%20the%20house%20(envelopes%20hidden%20in%20safe%20spots)%3F%0A5.%20A%20team%20name%2C%20and%20any%20fun%20details%20for%20the%20story%20(pets%2C%20costumes%2C%20family%20jokes).%0A%0ASafety%3A%20envelopes%20and%20treats%20only%20indoors%2C%20at%20child%20height%2C%20in%20safe%20places.%20Never%20the%20oven%2C%20stove%2C%20microwave%2C%20dryer%2C%20dishwasher%2C%20fireplace%2C%20heaters%2C%20candles%2C%20a%20lit%20jack-o&#x27;-lantern%2C%20high%20shelves%2C%20water%2C%20or%20anything%20outside%20(porch%2C%20yard%2C%20garden%2C%20balcony%2C%20garage%2C%20car).%20Never%20a%20door%20or%20window%20to%20a%20balcony%2C%20terrace%20or%20garden%2C%20even%20from%20inside.%20The%20front%20door%20only%20on%20the%20inside%2C%20with%20the%20door%20closed.%20No%20real%20locks%2C%20and%20nobody%20is%20ever%20locked%20in%20a%20room.%20If%20I%20list%20an%20unsafe%20spot%2C%20move%20it%20and%20tell%20me.%0A%0AThen%20give%20a%20short%20summary%20and%20ask%20%22Shall%20I%20write%20your%20escape%20room%3F%22%20When%20I%20say%20yes%2C%20write%3A%0A-%20STORY%3A%2080-140%20words%20for%20a%20grown-up%20to%20read%20aloud.%20Friendly-spooky%2C%20never%20scary%20or%20gory.%20Mention%20Willow%2C%20the%20Moon%20Chest%2C%20the%20magic%20word%20(but%20never%20the%20word%20itself)%2C%20the%20number%20of%20puzzles%2C%20the%20timer%20and%20the%20players%20by%20name.%20No%20brands%2C%20film%20or%20TV%20characters%2C%20and%20no%20song%20lyrics.%0A-%20FINAL%20MESSAGE%3A%2025-60%20words%2C%20warm%20and%20happy.%0A-%20ENVELOPES%3A%20only%20for%20the%20around-the-house%20version%3B%20envelope%201%20is%20handed%20to%20the%20team%20at%20the%20start.%0A%0APut%20EVERYTHING%20inside%20ONE%20plain%20code%20block%20(three%20backticks)%2C%20in%20exactly%20this%20format%2C%20so%20I%20can%20paste%20it%20into%20the%20Escape%20Room%20Maker.%20Never%20use%20Canvas%2C%20a%20document%20or%20a%20%22writing%20block%22.%20Keep%20the%20English%20keywords%3A%0AESCAPE%20ROOM%3A%20%5Btitle%5D%0ATEAM%3A%20%5Bteam%20name%5D%0APLAYERS%3A%20%5BName%20(age)%2C%20Name%20(age)%5D%0ALEVEL%3A%20%5Blittle%2C%20clever%2C%20master%20or%20mixed%5D%0ALEVELS%3A%20%5Bonly%20for%20mixed%3A%20one%20level%20per%20puzzle%2C%20comma-separated%5D%0APUZZLES%3A%20%5B6%2C%207%20or%208%5D%0AMAGIC%20WORD%3A%20%5Bthe%20word%5D%0ATIMER%3A%20%5Bminutes%5D%0AHOST%3A%20%5Bwho%20runs%20the%20game%5D%0ATREATS%20AT%3A%20%5Bsafe%20spot%5D%0A---%0ASTORY%3A%0A%5Bstory%5D%0A---%0AFINAL%20MESSAGE%3A%0A%5Bfinal%20message%5D%0A---%0AENVELOPES%3A%0A1%3A%20hand%20it%20to%20the%20team%20at%20the%20start%0A2%3A%20%5Bsafe%20spot%5D%0AFINAL%3A%20%5Bwho%20keeps%20the%20final%20envelope%5D%0A%0ABefore%20you%20answer%2C%20check%3A%20the%20magic%20word%20has%20exactly%20as%20many%20letters%20as%20puzzles%20and%20is%20not%20in%20the%20story%20or%20the%20team%20name%3B%20LEVELS%20has%20one%20entry%20per%20puzzle%3B%20every%20spot%20is%20safe%20and%20indoors.%20At%20the%20end%2C%20ask%20if%20I%20want%20any%20changes.%20If%20I%20change%20anything%2C%20give%20me%20the%20whole%20code%20block%20again.%0A%0AMAKE%20THE%20STORY%20FUNNIER%20OR%20SHORTER%3A%0ARewrite%20the%20STORY%20in%20the%20code%20block%3A%20%5Bfunnier%20%2F%20shorter%20%2F%20with%20our%20dog%20Pepper%20in%20it%5D.%20Keep%20Willow%2C%20the%20Moon%20Chest%2C%20the%20magic%20word%20and%20the%20format.%20Give%20me%20the%20whole%20code%20block%20again.%0A%0ASIBLINGS%20OF%20DIFFERENT%20AGES%3A%0AMy%20kids%20are%20%5B5%5D%20and%20%5B11%5D.%20Make%20it%20a%20mixed%20game%3A%20give%20each%20of%20the%208%20puzzles%20the%20level%20that%20fits%2C%20so%20both%20can%20help.%20Use%20LEVEL%3A%20mixed%20and%20a%20LEVELS%20line%20with%20one%20level%20per%20puzzle.%0A%0AA%20SHORTER%20GAME%3A%0AWe%20only%20have%20about%2030%20minutes.%20Make%20it%206%20puzzles%20and%20pick%20a%206-letter%20magic%20word.%20Update%20PUZZLES%2C%20MAGIC%20WORD%20and%20TIMER.%0A%0AA%20PARTY%20FOR%206-10%20KIDS%3A%0AIt&#x27;s%20a%20Halloween%20party%20for%20%5B8%5D%20kids%20aged%20%5B7-9%5D.%20Split%20them%20into%20two%20teams%20with%20their%20own%20team%20names%20and%20write%20one%20code%20block%20per%20team%2C%20so%20I%20can%20print%20two%20copies%20with%20the%20Escape%20Room%20Maker.%0A%0ATHE%20STORY%20IN%20ANOTHER%20LANGUAGE%3A%0AWrite%20the%20STORY%20and%20the%20FINAL%20MESSAGE%20in%20%5BGerman%20%2F%20French%20%2F%20Spanish%5D%2C%20naturally%2C%20not%20word%20for%20word.%20Keep%20the%20keywords%20(STORY%2C%20FINAL%20MESSAGE%2C%20TEAM...)%20in%20English.%20The%20puzzles%20stay%20in%20English." target="_blank" rel="noopener">Copy the AI prompt &amp; open ChatGPT</a>
+      <p class="mts-small">Using Gemini or Claude instead? <button type="button" class="mts-link" id="mts-copy-only">Copy the prompt</button> and paste it there.</p>
+      <div id="mts-manual" hidden><p class="mts-small">Couldn't copy automatically. Tap and hold in this box → Select All → Copy:</p><textarea readonly id="mts-manual-ta"></textarea></div>
+    </div></li>
+    <li class="mts-step"><span class="mts-num">2</span><div class="mts-body">
+      <p class="mts-text">Answer ChatGPT's questions, then tap <b>Copy</b> on its answer.</p>
+      <p class="mts-small">No Copy button? Ask it: <i>Put it all in one code block.</i></p>
+    </div></li>
+    <li class="mts-step"><span class="mts-num">3</span><div class="mts-body">
+      <button type="button" id="mts-paste" class="mts-btn mts-btn-paste">Paste the answer &amp; make my escape room</button><br>
+      <button type="button" id="mts-print" class="mts-btn mts-btn-print">Save as PDF / Print</button>
+      <p class="mts-small">iPhone: Print → Share → Save to Files. Android: Print → Save as PDF.</p>
+    </div></li>
+  </ol>
+  <p class="mts-privacy">🔒 Nothing you type leaves your device. Your text is only kept in this browser, so it's still here if you switch apps.</p>
+</section>
+<p id="mts-paste-hint" role="status" hidden>Tap and hold in the box → <b>Paste</b>, then tap <b>Make my escape room</b>.</p>
+<!-- /mts-card -->
+
     <div class="steps3">
       <div class="step"><b>1</b> In your AI chat, click <b>Copy</b> on the box with your escape room. No box? Send the AI: <i>Put it all in one code block.</i></div>
       <div class="step"><b>2</b> Paste it below and click <b>Make my escape room</b>. No AI? Fill in the form instead.</div>
@@ -1460,4 +1356,87 @@ const q = new URLSearchParams(location.search);
 if (q.get('paper') === 'a4') { $('#paper').value = 'a4'; setPaper(); }
 if (q.get('demo')) { $('#src').value = EXAMPLE; make(true); }
 </script>
+<!-- mts-assistant-js -->
+<div id="mts-toast" role="status" aria-live="polite"></div>
+<script id="mts-assistant-js">
+(function () {
+  var PROMPT = "You are my Halloween escape room helper. I bought the Make Together Studio \"Halloween Escape Room\" (8 printable puzzles, 3 levels). Help me personalize it. You write the story and the setup; the Escape Room Maker builds the puzzles, so never invent puzzles or answers.\n\nThe fixed story: Willow, the friendly witch, cast a spell that locked the Halloween treats inside her Moon Chest. Only the magic word opens it. Each puzzle gives one letter of the magic word. Nobody is ever locked in; there are no real locks.\n\nAsk me these questions ONE at a time and wait for each answer. I'm welcome to answer in my own language:\n1. Who is playing? (names and ages)\n2. How long and how hard? Offer: 6 puzzles (about 30-40 min), 7 (about 40-50) or 8 (about 45-60). Levels: little (ages 5-7, with a grown-up), clever (8-11), master (12+ and adults). Mixed ages: give each puzzle its own level.\n3. The magic word: it must have exactly as many letters as there are puzzles. Offer: 6 letters POTION, SPOOKY, WIZARD, GOBLIN; 7 letters PUMPKIN, COSTUME, MOONLIT; 8 letters CAULDRON, MOONBEAM, NIGHTOWL; or our own word (a name works if it has the right number of letters).\n4. Where will the treats be, and do we play at the table (I hand over each envelope) or around the house (envelopes hidden in safe spots)?\n5. A team name, and any fun details for the story (pets, costumes, family jokes).\n\nSafety: envelopes and treats only indoors, at child height, in safe places. Never the oven, stove, microwave, dryer, dishwasher, fireplace, heaters, candles, a lit jack-o'-lantern, high shelves, water, or anything outside (porch, yard, garden, balcony, garage, car). Never a door or window to a balcony, terrace or garden, even from inside. The front door only on the inside, with the door closed. No real locks, and nobody is ever locked in a room. If I list an unsafe spot, move it and tell me.\n\nThen give a short summary and ask \"Shall I write your escape room?\" When I say yes, write:\n- STORY: 80-140 words for a grown-up to read aloud. Friendly-spooky, never scary or gory. Mention Willow, the Moon Chest, the magic word (but never the word itself), the number of puzzles, the timer and the players by name. No brands, film or TV characters, and no song lyrics.\n- FINAL MESSAGE: 25-60 words, warm and happy.\n- ENVELOPES: only for the around-the-house version; envelope 1 is handed to the team at the start.\n\nPut EVERYTHING inside ONE plain code block (three backticks), in exactly this format, so I can paste it into the Escape Room Maker. Never use Canvas, a document or a \"writing block\". Keep the English keywords:\nESCAPE ROOM: [title]\nTEAM: [team name]\nPLAYERS: [Name (age), Name (age)]\nLEVEL: [little, clever, master or mixed]\nLEVELS: [only for mixed: one level per puzzle, comma-separated]\nPUZZLES: [6, 7 or 8]\nMAGIC WORD: [the word]\nTIMER: [minutes]\nHOST: [who runs the game]\nTREATS AT: [safe spot]\n---\nSTORY:\n[story]\n---\nFINAL MESSAGE:\n[final message]\n---\nENVELOPES:\n1: hand it to the team at the start\n2: [safe spot]\nFINAL: [who keeps the final envelope]\n\nBefore you answer, check: the magic word has exactly as many letters as puzzles and is not in the story or the team name; LEVELS has one entry per puzzle; every spot is safe and indoors. At the end, ask if I want any changes. If I change anything, give me the whole code block again.\n\nMAKE THE STORY FUNNIER OR SHORTER:\nRewrite the STORY in the code block: [funnier / shorter / with our dog Pepper in it]. Keep Willow, the Moon Chest, the magic word and the format. Give me the whole code block again.\n\nSIBLINGS OF DIFFERENT AGES:\nMy kids are [5] and [11]. Make it a mixed game: give each of the 8 puzzles the level that fits, so both can help. Use LEVEL: mixed and a LEVELS line with one level per puzzle.\n\nA SHORTER GAME:\nWe only have about 30 minutes. Make it 6 puzzles and pick a 6-letter magic word. Update PUZZLES, MAGIC WORD and TIMER.\n\nA PARTY FOR 6-10 KIDS:\nIt's a Halloween party for [8] kids aged [7-9]. Split them into two teams with their own team names and write one code block per team, so I can print two copies with the Escape Room Maker.\n\nTHE STORY IN ANOTHER LANGUAGE:\nWrite the STORY and the FINAL MESSAGE in [German / French / Spanish], naturally, not word for word. Keep the keywords (STORY, FINAL MESSAGE, TEAM...) in English. The puzzles stay in English.";
+  var PREFILLED = true;
+  var $id = function (i) { return document.getElementById(i); };
+  var toastEl = $id('mts-toast'), toastTimer;
+  function toast(msg, ms) {
+    toastEl.textContent = msg;
+    toastEl.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.style.display = 'none'; }, ms || 6000);
+  }
+  function legacyCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px;';
+    document.body.appendChild(ta);
+    ta.select();
+    try { ta.setSelectionRange(0, text.length); } catch (e) {}
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function showManual() {
+    $id('mts-manual-ta').value = PROMPT;
+    $id('mts-manual').hidden = false;
+  }
+  // Runs synchronously inside the tap handler so browsers treat it as user-initiated.
+  function copyPrompt(okMsg) {
+    var done = function (ok) {
+      if (ok) toast(okMsg, 7000);
+      else { showManual(); toast(PREFILLED ? 'The prompt is in ChatGPT. If not, copy it from the box under step 1.' : 'Copy the prompt from the box under step 1.', 7000); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(PROMPT).then(function () { done(true); }, function () { done(legacyCopy(PROMPT)); });
+    } else {
+      done(legacyCopy(PROMPT));
+    }
+  }
+  $id('mts-gpt').addEventListener('click', function () {
+    copyPrompt("Prompt copied. If it isn't already in ChatGPT, tap the message box → Paste.");
+  });
+  $id('mts-copy-only').addEventListener('click', function () {
+    copyPrompt('Prompt copied. Paste it into Gemini or Claude.');
+  });
+
+  var src = $id('src'), make = $id('make'), hint = $id('mts-paste-hint'), armed = false;
+  function makeNow() {
+    hint.hidden = true;
+    make.click();
+    var msg = $id('msg');
+    if (msg && msg.scrollIntoView) msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    toast('Check the preview below, then tap Save as PDF / Print.', 5000);
+  }
+  function askManualPaste() {
+    armed = true;
+    hint.hidden = false;
+    src.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    try { src.focus({ preventScroll: true }); } catch (e) { src.focus(); }
+  }
+  src.addEventListener('paste', function () {
+    if (!armed) return;
+    armed = false;
+    setTimeout(function () { if (src.value.trim()) makeNow(); }, 60);
+  });
+  $id('mts-paste').addEventListener('click', function () {
+    if (!navigator.clipboard || !navigator.clipboard.readText) { askManualPaste(); return; }
+    navigator.clipboard.readText().then(function (text) {
+      if (!text || !text.trim()) { askManualPaste(); return; }
+      if (text.trim() === PROMPT.trim()) { toast("That's still the prompt. In ChatGPT, tap Copy on its answer first.", 7000); return; }
+      src.value = text;
+      src.dispatchEvent(new Event('input', { bubbles: true }));
+      makeNow();
+    }, askManualPaste);
+  });
+  $id('mts-print').addEventListener('click', function () { $id('print').click(); });
+})();
+</script>
+<!-- /mts-assistant-js -->
 </body></html>

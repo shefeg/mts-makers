@@ -136,191 +136,87 @@ body.card .we-mini .we-desc { font-size: 7.6pt; }
 @media (max-width: 700px) { .steps { grid-template-columns: 1fr; } }
 </style>
 <!-- mts-assistant-styles -->
+<meta name="robots" content="noindex,nofollow">
 <style id="mts-assistant-styles">
-  #mts-bar {
-    position: sticky;
-    top: 0;
-    z-index: 99999;
-    background: #1F5E5B;
-    color: #fff;
-    padding: 10px 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  .panel > .steps, .panel > .steps3 { display: none !important; }
+  #mts-card {
+    background: #FFF8EE; border: 2px solid #F4C95D; border-radius: 16px;
+    padding: 16px 18px 12px; margin: 0 0 14px; color: #2B2B2B;
     font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
-  .mts-bar-inner {
-    max-width: 980px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  .mts-bar-title {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    color: #F4C95D;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .mts-bar-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .mts-btn {
-    border: none;
-    border-radius: 999px;
-    padding: 8px 16px;
-    font-size: 13.5px;
-    font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: transform 0.1s, background 0.15s;
-    font-family: inherit;
-    text-decoration: none;
-  }
-  .mts-btn:active { transform: scale(0.97); }
-  .mts-btn-chatgpt {
-    background: #ffffff;
-    color: #1F5E5B;
-  }
-  .mts-btn-chatgpt:hover { background: #FFF8EE; }
-  .mts-btn-paste {
-    background: #F07F5E;
-    color: #ffffff;
-  }
-  .mts-btn-paste:hover { background: #e06c4b; }
-  #mts-toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #2B2B2B;
-    color: #fff;
-    padding: 10px 22px;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
-    z-index: 100000;
-    display: none;
-    pointer-events: none;
-    text-align: center;
-    max-width: 90vw;
-    line-height: 1.4;
+  #mts-card [hidden], #mts-paste-hint[hidden] { display: none !important; }
+  .mts-h { margin: 0 0 10px; font-size: 19px; color: #1F5E5B; }
+  .mts-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .mts-step { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start;
+    background: #fff; border-radius: 12px; padding: 12px; }
+  .mts-num { width: 36px; height: 36px; border-radius: 50%; background: #1F5E5B; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+  .mts-body { min-width: 0; }
+  .mts-text { margin: 6px 0 0; font-size: 17px; line-height: 1.4; }
+  .mts-small { margin: 8px 0 0; font-size: 14px; color: #6B655E; line-height: 1.4; }
+  .mts-btn { display: inline-flex; align-items: center; justify-content: center; text-align: center;
+    min-height: 50px; padding: 12px 22px; border: 0; border-radius: 999px; cursor: pointer;
+    font: 700 16px 'Ubuntu', -apple-system, 'Segoe UI', sans-serif; text-decoration: none;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .mts-btn:active { transform: scale(0.98); }
+  .mts-btn-gpt { background: #1F5E5B; color: #fff; }
+  .mts-btn-paste { background: #F07F5E; color: #fff; }
+  .mts-btn-print { background: #fff; color: #1F5E5B; border: 2px solid #1F5E5B; margin-top: 10px; }
+  .mts-link { background: none; border: 0; padding: 0; font: inherit; color: #1F5E5B; font-weight: 700;
+    text-decoration: underline; cursor: pointer; }
+  #mts-manual textarea { width: 100%; box-sizing: border-box; height: 120px; margin-top: 8px; font-size: 16px;
+    border: 1px solid #E2DACE; border-radius: 10px; padding: 8px; }
+  #mts-paste-hint { margin: 0 0 10px; padding: 12px 14px; border-radius: 12px; background: #FDE8E1;
+    color: #8A2E17; font-size: 16px; font-weight: 700; line-height: 1.4; }
+  .mts-privacy { margin: 10px 2px 0; font-size: 13px; color: #6B655E; }
+  #mts-toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%); width: max-content; max-width: min(92vw, 520px); box-sizing: border-box;
+    background: #2B2B2B; color: #fff; padding: 12px 18px; border-radius: 14px; font-size: 15px; font-weight: 600;
+    line-height: 1.4; text-align: center; box-shadow: 0 4px 18px rgba(0,0,0,.35); z-index: 100000; display: none;
+    font-family: 'Ubuntu', -apple-system, 'Segoe UI', sans-serif; }
+  @media (max-width: 640px) {
+    #mts-card { padding: 14px 12px 10px; margin-left: -6px; margin-right: -6px; }
+    .mts-step { grid-template-columns: 30px 1fr; gap: 10px; padding: 12px 10px; }
+    .mts-num { width: 30px; height: 30px; font-size: 16px; }
+    .mts-btn { display: flex; width: 100%; min-height: 56px; font-size: 17px; padding: 12px 14px; }
+    .mts-text { margin-top: 3px; }
+    #src { font-size: 16px; }
   }
   @media print {
-    #mts-bar, #mts-toast, #mts-assistant-styles { display: none !important; }
-  }
-  @media (max-width: 640px) {
-    #mts-bar { padding: 8px 12px; }
-    .mts-bar-inner { flex-direction: column; align-items: stretch; gap: 6px; }
-    .mts-bar-title { justify-content: center; font-size: 12px; }
-    .mts-bar-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .mts-btn { justify-content: center; padding: 9px 8px; font-size: 12px; }
+    #mts-card, #mts-toast, #mts-paste-hint { display: none !important; }
   }
 </style>
 
 </head>
 <body>
-<!-- mts-assistant-bar -->
-<div id="mts-bar">
-  <div class="mts-bar-inner">
-    <div class="mts-bar-title">✨ Step 1 &amp; 2 Quick AI Helper</div>
-    <div class="mts-bar-actions">
-      <button id="mts-chatgpt-btn" class="mts-btn mts-btn-chatgpt" title="Copy Prompt & Open ChatGPT">
-        🤖 1. Copy Prompt &amp; Open ChatGPT
-      </button>
-      <button id="mts-paste-btn" class="mts-btn mts-btn-paste" title="Paste AI response into the maker">
-        📋 2. Paste AI Response
-      </button>
-    </div>
-  </div>
-</div>
-<div id="mts-toast"></div>
-
-<script id="mts-assistant-js">
-(function() {
-  var PROMPT = "You are the Make Together Studio White Elephant Dice Game Helper. Write custom twist cards and/or a custom dice chart for our white elephant gift exchange. 6-30 players each hold one wrapped gift; we take turns rolling a die and do what the chart says until a timer rings, then everyone keeps the gift in their hands.\nFirst ask me these questions, one at a time (I may answer in my own language): 1) who's playing and where (number of players, names or roles, occasion, ages if kids play); 2) family, friends or office (office = work-safe; names or roles?); 3) inside jokes, traditions, pets, team habits; 4) gift budget and how long we'll play; 5) twist cards (12, 24 or 36), a custom chart, or both, and the language (English, German or French). Then sum it up and ask \"Shall I write the cards?\"\nRules: everyone always holds exactly ONE gift. Every card or face either makes everyone pass (left or right, one or two seats), is a trade between two players, is a stand-up swap (\"Anyone who...: stand up and pass your gift to the next person standing on your left.\"), opens or locks a gift, reverses the die's direction, changes the timer by one minute, or gives two extra rolls. Never give someone a second gift or make someone sit out. A custom chart has faces 1-6 with one PASS LEFT and one PASS RIGHT, plus UNWRAP, SWAP, STEAL and TWIST (or LOCK IT). Titles 1-4 words, cards max 25 words. Use names exactly as I write them. Kind and inclusive: nothing about looks, age, money, health or private life; no alcohol, no dares; office cards are work-safe; no brands, games, movies, songs or characters.\nOutput ONE plain code block in exactly this format: GAME: [title], LANG: en (or de / fr; keep the keywords in English), FOR: [players], BUDGET: [budget], TIMER: [minutes], a line ---, then CHART and lines like \"1 | UNWRAP | text\" (if I want a chart), a line ---, one line per card like \"TWIST | title | text\", a line ---, and THE END. After the block, write the counts. If I ask for changes, send the whole block again.\n\nMORE PROMPTS (optional). Replace the [brackets] with your details:\n\nTWIST CARDS FOR THE OFFICE PARTY:\nWrite 24 work-safe twist cards for our office white elephant dice game: [team name], [number] players. Use roles, not names (the newest team member, whoever runs the weekly meeting), and jokes about [office things]. Every card keeps one gift per player: everyone passes, a named role picks two players to trade, or \"anyone who\u2026: stand up and pass your gift to the next person standing on your left\". One code block: lines TWIST | title | text, between GAME:, LANG: en, --- and THE END.\n\nA DICE CHART FOR A FAMILY WITH LITTLE KIDS:\nMake a dice chart for our family white elephant game with kids aged [ages]: faces 1-6, short simple words, about [pet / tradition]. Keep the actions UNWRAP, PASS LEFT, PASS RIGHT, SWAP, STEAL and TWIST. One code block: CHART, then lines 1 | TITLE | text.\n\nCARDS IN GERMAN OR FRENCH:\nWrite our twist cards in German (LANG: de) or French (LANG: fr). Keep the keywords GAME, LANG, FOR, CHART and TWIST in English, write everything else in German or French.";
-  var toastEl = document.getElementById('mts-toast');
-
-  function showToast(msg, duration) {
-    if (!toastEl) return;
-    toastEl.textContent = msg;
-    toastEl.style.display = 'block';
-    setTimeout(function() { toastEl.style.display = 'none'; }, duration || 3200);
-  }
-
-  // 1. Copy Prompt & Open ChatGPT
-  var gptBtn = document.getElementById('mts-chatgpt-btn');
-  if (gptBtn) {
-    gptBtn.addEventListener('click', function() {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(PROMPT).then(function() {
-          showToast('✅ Prompt copied! Opening ChatGPT... Just paste into chat!');
-          setTimeout(function() {
-            window.open('https://chatgpt.com', '_blank');
-          }, 600);
-        }).catch(function() {
-          window.open('https://chatgpt.com', '_blank');
-        });
-      } else {
-        window.open('https://chatgpt.com', '_blank');
-      }
-    });
-  }
-
-  // 2. Paste from clipboard & trigger maker
-  var pasteBtn = document.getElementById('mts-paste-btn');
-  if (pasteBtn) {
-    pasteBtn.addEventListener('click', function() {
-      if (!navigator.clipboard || !navigator.clipboard.readText) {
-        alert('Clipboard API not available. Please paste manually into the box below.');
-        return;
-      }
-      navigator.clipboard.readText().then(function(text) {
-        var ta = document.querySelector('textarea');
-        if (ta) {
-          ta.value = text;
-          ta.dispatchEvent(new Event('input', { bubbles: true }));
-          ta.dispatchEvent(new Event('change', { bubbles: true }));
-          ta.focus();
-
-          // Auto-trigger the generate / make button if found
-          var makeBtn = document.querySelector('#make, #generate, #build, button.primary, .btn-primary') ||
-                        Array.from(document.querySelectorAll('button')).find(function(b) {
-                          var t = (b.textContent || '').toLowerCase();
-                          return (t.indexOf('make') !== -1 || t.indexOf('generate') !== -1 || t.indexOf('build') !== -1) &&
-                                 b.id !== 'mts-paste-btn' && b.id !== 'mts-chatgpt-btn';
-                        });
-          if (makeBtn) {
-            makeBtn.click();
-            showToast('✅ AI cards pasted & generated!');
-          } else {
-            showToast('✅ Pasted! Click Make my cards below.');
-          }
-        } else {
-          alert('No text field found on this page.');
-        }
-      }).catch(function(err) {
-        alert('Could not read clipboard: ' + err + '\n\nPlease paste manually (Ctrl+V / ⌘+V).');
-      });
-    });
-  }
-})();
-</script>
-<!-- /mts-assistant-bar -->
-
 <div class="ui">
   <div class="top"><img src="data:image/png;base64,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" alt=""><div><h1>Make Together Studio Card Maker</h1>
     <p>Turn the dice chart and twist cards from your AI chat into a printable PDF, in our design.</p></div></div>
   <div class="panel">
+<!-- mts-card -->
+<section id="mts-card" aria-label="How to make your game">
+  <h2 class="mts-h">Make it in 3 steps</h2>
+  <ol class="mts-steps">
+    <li class="mts-step"><span class="mts-num">1</span><div class="mts-body">
+      <a id="mts-gpt" class="mts-btn mts-btn-gpt" href="https://chatgpt.com/?q=You%20are%20the%20Make%20Together%20Studio%20White%20Elephant%20Dice%20Game%20Helper.%20Write%20custom%20twist%20cards%20and%2For%20a%20custom%20dice%20chart%20for%20our%20white%20elephant%20gift%20exchange.%206-30%20players%20each%20hold%20one%20wrapped%20gift%3B%20we%20take%20turns%20rolling%20a%20die%20and%20do%20what%20the%20chart%20says%20until%20a%20timer%20rings%2C%20then%20everyone%20keeps%20the%20gift%20in%20their%20hands.%0AFirst%20ask%20me%20these%20questions%2C%20one%20at%20a%20time%20(I%20may%20answer%20in%20my%20own%20language)%3A%201)%20who&#x27;s%20playing%20and%20where%20(number%20of%20players%2C%20names%20or%20roles%2C%20occasion%2C%20ages%20if%20kids%20play)%3B%202)%20family%2C%20friends%20or%20office%20(office%20%3D%20work-safe%3B%20names%20or%20roles%3F)%3B%203)%20inside%20jokes%2C%20traditions%2C%20pets%2C%20team%20habits%3B%204)%20gift%20budget%20and%20how%20long%20we&#x27;ll%20play%3B%205)%20twist%20cards%20(12%2C%2024%20or%2036)%2C%20a%20custom%20chart%2C%20or%20both%2C%20and%20the%20language%20(English%2C%20German%20or%20French).%20Then%20sum%20it%20up%20and%20ask%20%22Shall%20I%20write%20the%20cards%3F%22%0ARules%3A%20everyone%20always%20holds%20exactly%20ONE%20gift.%20Every%20card%20or%20face%20either%20makes%20everyone%20pass%20(left%20or%20right%2C%20one%20or%20two%20seats)%2C%20is%20a%20trade%20between%20two%20players%2C%20is%20a%20stand-up%20swap%20(%22Anyone%20who...%3A%20stand%20up%20and%20pass%20your%20gift%20to%20the%20next%20person%20standing%20on%20your%20left.%22)%2C%20opens%20or%20locks%20a%20gift%2C%20reverses%20the%20die&#x27;s%20direction%2C%20changes%20the%20timer%20by%20one%20minute%2C%20or%20gives%20two%20extra%20rolls.%20Never%20give%20someone%20a%20second%20gift%20or%20make%20someone%20sit%20out.%20A%20custom%20chart%20has%20faces%201-6%20with%20one%20PASS%20LEFT%20and%20one%20PASS%20RIGHT%2C%20plus%20UNWRAP%2C%20SWAP%2C%20STEAL%20and%20TWIST%20(or%20LOCK%20IT).%20Titles%201-4%20words%2C%20cards%20max%2025%20words.%20Use%20names%20exactly%20as%20I%20write%20them.%20Kind%20and%20inclusive%3A%20nothing%20about%20looks%2C%20age%2C%20money%2C%20health%20or%20private%20life%3B%20no%20alcohol%2C%20no%20dares%3B%20office%20cards%20are%20work-safe%3B%20no%20brands%2C%20games%2C%20movies%2C%20songs%20or%20characters.%0AOutput%20ONE%20plain%20code%20block%20in%20exactly%20this%20format%3A%20GAME%3A%20%5Btitle%5D%2C%20LANG%3A%20en%20(or%20de%20%2F%20fr%3B%20keep%20the%20keywords%20in%20English)%2C%20FOR%3A%20%5Bplayers%5D%2C%20BUDGET%3A%20%5Bbudget%5D%2C%20TIMER%3A%20%5Bminutes%5D%2C%20a%20line%20---%2C%20then%20CHART%20and%20lines%20like%20%221%20%7C%20UNWRAP%20%7C%20text%22%20(if%20I%20want%20a%20chart)%2C%20a%20line%20---%2C%20one%20line%20per%20card%20like%20%22TWIST%20%7C%20title%20%7C%20text%22%2C%20a%20line%20---%2C%20and%20THE%20END.%20After%20the%20block%2C%20write%20the%20counts.%20If%20I%20ask%20for%20changes%2C%20send%20the%20whole%20block%20again.%0A%0AMORE%20PROMPTS%20(optional).%20Replace%20the%20%5Bbrackets%5D%20with%20your%20details%3A%0A%0ATWIST%20CARDS%20FOR%20THE%20OFFICE%20PARTY%3A%0AWrite%2024%20work-safe%20twist%20cards%20for%20our%20office%20white%20elephant%20dice%20game%3A%20%5Bteam%20name%5D%2C%20%5Bnumber%5D%20players.%20Use%20roles%2C%20not%20names%20(the%20newest%20team%20member%2C%20whoever%20runs%20the%20weekly%20meeting)%2C%20and%20jokes%20about%20%5Boffice%20things%5D.%20Every%20card%20keeps%20one%20gift%20per%20player%3A%20everyone%20passes%2C%20a%20named%20role%20picks%20two%20players%20to%20trade%2C%20or%20%22anyone%20who%E2%80%A6%3A%20stand%20up%20and%20pass%20your%20gift%20to%20the%20next%20person%20standing%20on%20your%20left%22.%20One%20code%20block%3A%20lines%20TWIST%20%7C%20title%20%7C%20text%2C%20between%20GAME%3A%2C%20LANG%3A%20en%2C%20---%20and%20THE%20END.%0A%0AA%20DICE%20CHART%20FOR%20A%20FAMILY%20WITH%20LITTLE%20KIDS%3A%0AMake%20a%20dice%20chart%20for%20our%20family%20white%20elephant%20game%20with%20kids%20aged%20%5Bages%5D%3A%20faces%201-6%2C%20short%20simple%20words%2C%20about%20%5Bpet%20%2F%20tradition%5D.%20Keep%20the%20actions%20UNWRAP%2C%20PASS%20LEFT%2C%20PASS%20RIGHT%2C%20SWAP%2C%20STEAL%20and%20TWIST.%20One%20code%20block%3A%20CHART%2C%20then%20lines%201%20%7C%20TITLE%20%7C%20text.%0A%0ACARDS%20IN%20GERMAN%20OR%20FRENCH%3A%0AWrite%20our%20twist%20cards%20in%20German%20(LANG%3A%20de)%20or%20French%20(LANG%3A%20fr).%20Keep%20the%20keywords%20GAME%2C%20LANG%2C%20FOR%2C%20CHART%20and%20TWIST%20in%20English%2C%20write%20everything%20else%20in%20German%20or%20French." target="_blank" rel="noopener">Copy the AI prompt &amp; open ChatGPT</a>
+      <p class="mts-small">Using Gemini or Claude instead? <button type="button" class="mts-link" id="mts-copy-only">Copy the prompt</button> and paste it there.</p>
+      <div id="mts-manual" hidden><p class="mts-small">Couldn't copy automatically. Tap and hold in this box → Select All → Copy:</p><textarea readonly id="mts-manual-ta"></textarea></div>
+    </div></li>
+    <li class="mts-step"><span class="mts-num">2</span><div class="mts-body">
+      <p class="mts-text">Answer ChatGPT's questions, then tap <b>Copy</b> on its answer.</p>
+      <p class="mts-small">No Copy button? Ask it: <i>Put it all in one code block.</i></p>
+    </div></li>
+    <li class="mts-step"><span class="mts-num">3</span><div class="mts-body">
+      <button type="button" id="mts-paste" class="mts-btn mts-btn-paste">Paste the answer &amp; make my cards</button><br>
+      <button type="button" id="mts-print" class="mts-btn mts-btn-print">Save as PDF / Print</button>
+      <p class="mts-small">iPhone: Print → Share → Save to Files. Android: Print → Save as PDF.</p>
+    </div></li>
+  </ol>
+  <p class="mts-privacy">🔒 Nothing you type leaves your device. Your text is only kept in this browser, so it's still here if you switch apps.</p>
+</section>
+<p id="mts-paste-hint" role="status" hidden>Tap and hold in the box → <b>Paste</b>, then tap <b>Make my cards</b>.</p>
+<!-- /mts-card -->
+
     <div class="steps">
       <div class="step"><b>1</b> In your AI chat, click <b>Copy</b> on the box with your cards. No box? Send the AI: <i>Put all cards in one code block.</i></div>
       <div class="step"><b>2</b> Paste it below and click <b>Make my cards</b>.</div>
@@ -675,4 +571,87 @@ function cardMode() {
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { WE.fit($('#preview')); window.WE_DONE = true; });
 }
 </script>
+<!-- mts-assistant-js -->
+<div id="mts-toast" role="status" aria-live="polite"></div>
+<script id="mts-assistant-js">
+(function () {
+  var PROMPT = "You are the Make Together Studio White Elephant Dice Game Helper. Write custom twist cards and/or a custom dice chart for our white elephant gift exchange. 6-30 players each hold one wrapped gift; we take turns rolling a die and do what the chart says until a timer rings, then everyone keeps the gift in their hands.\nFirst ask me these questions, one at a time (I may answer in my own language): 1) who's playing and where (number of players, names or roles, occasion, ages if kids play); 2) family, friends or office (office = work-safe; names or roles?); 3) inside jokes, traditions, pets, team habits; 4) gift budget and how long we'll play; 5) twist cards (12, 24 or 36), a custom chart, or both, and the language (English, German or French). Then sum it up and ask \"Shall I write the cards?\"\nRules: everyone always holds exactly ONE gift. Every card or face either makes everyone pass (left or right, one or two seats), is a trade between two players, is a stand-up swap (\"Anyone who...: stand up and pass your gift to the next person standing on your left.\"), opens or locks a gift, reverses the die's direction, changes the timer by one minute, or gives two extra rolls. Never give someone a second gift or make someone sit out. A custom chart has faces 1-6 with one PASS LEFT and one PASS RIGHT, plus UNWRAP, SWAP, STEAL and TWIST (or LOCK IT). Titles 1-4 words, cards max 25 words. Use names exactly as I write them. Kind and inclusive: nothing about looks, age, money, health or private life; no alcohol, no dares; office cards are work-safe; no brands, games, movies, songs or characters.\nOutput ONE plain code block in exactly this format: GAME: [title], LANG: en (or de / fr; keep the keywords in English), FOR: [players], BUDGET: [budget], TIMER: [minutes], a line ---, then CHART and lines like \"1 | UNWRAP | text\" (if I want a chart), a line ---, one line per card like \"TWIST | title | text\", a line ---, and THE END. After the block, write the counts. If I ask for changes, send the whole block again.\n\nMORE PROMPTS (optional). Replace the [brackets] with your details:\n\nTWIST CARDS FOR THE OFFICE PARTY:\nWrite 24 work-safe twist cards for our office white elephant dice game: [team name], [number] players. Use roles, not names (the newest team member, whoever runs the weekly meeting), and jokes about [office things]. Every card keeps one gift per player: everyone passes, a named role picks two players to trade, or \"anyone who\u2026: stand up and pass your gift to the next person standing on your left\". One code block: lines TWIST | title | text, between GAME:, LANG: en, --- and THE END.\n\nA DICE CHART FOR A FAMILY WITH LITTLE KIDS:\nMake a dice chart for our family white elephant game with kids aged [ages]: faces 1-6, short simple words, about [pet / tradition]. Keep the actions UNWRAP, PASS LEFT, PASS RIGHT, SWAP, STEAL and TWIST. One code block: CHART, then lines 1 | TITLE | text.\n\nCARDS IN GERMAN OR FRENCH:\nWrite our twist cards in German (LANG: de) or French (LANG: fr). Keep the keywords GAME, LANG, FOR, CHART and TWIST in English, write everything else in German or French.";
+  var PREFILLED = true;
+  var $id = function (i) { return document.getElementById(i); };
+  var toastEl = $id('mts-toast'), toastTimer;
+  function toast(msg, ms) {
+    toastEl.textContent = msg;
+    toastEl.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.style.display = 'none'; }, ms || 6000);
+  }
+  function legacyCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px;';
+    document.body.appendChild(ta);
+    ta.select();
+    try { ta.setSelectionRange(0, text.length); } catch (e) {}
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function showManual() {
+    $id('mts-manual-ta').value = PROMPT;
+    $id('mts-manual').hidden = false;
+  }
+  // Runs synchronously inside the tap handler so browsers treat it as user-initiated.
+  function copyPrompt(okMsg) {
+    var done = function (ok) {
+      if (ok) toast(okMsg, 7000);
+      else { showManual(); toast(PREFILLED ? 'The prompt is in ChatGPT. If not, copy it from the box under step 1.' : 'Copy the prompt from the box under step 1.', 7000); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(PROMPT).then(function () { done(true); }, function () { done(legacyCopy(PROMPT)); });
+    } else {
+      done(legacyCopy(PROMPT));
+    }
+  }
+  $id('mts-gpt').addEventListener('click', function () {
+    copyPrompt("Prompt copied. If it isn't already in ChatGPT, tap the message box → Paste.");
+  });
+  $id('mts-copy-only').addEventListener('click', function () {
+    copyPrompt('Prompt copied. Paste it into Gemini or Claude.');
+  });
+
+  var src = $id('src'), make = $id('make'), hint = $id('mts-paste-hint'), armed = false;
+  function makeNow() {
+    hint.hidden = true;
+    make.click();
+    var msg = $id('msg');
+    if (msg && msg.scrollIntoView) msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    toast('Check the preview below, then tap Save as PDF / Print.', 5000);
+  }
+  function askManualPaste() {
+    armed = true;
+    hint.hidden = false;
+    src.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    try { src.focus({ preventScroll: true }); } catch (e) { src.focus(); }
+  }
+  src.addEventListener('paste', function () {
+    if (!armed) return;
+    armed = false;
+    setTimeout(function () { if (src.value.trim()) makeNow(); }, 60);
+  });
+  $id('mts-paste').addEventListener('click', function () {
+    if (!navigator.clipboard || !navigator.clipboard.readText) { askManualPaste(); return; }
+    navigator.clipboard.readText().then(function (text) {
+      if (!text || !text.trim()) { askManualPaste(); return; }
+      if (text.trim() === PROMPT.trim()) { toast("That's still the prompt. In ChatGPT, tap Copy on its answer first.", 7000); return; }
+      src.value = text;
+      src.dispatchEvent(new Event('input', { bubbles: true }));
+      makeNow();
+    }, askManualPaste);
+  });
+  $id('mts-print').addEventListener('click', function () { $id('print').click(); });
+})();
+</script>
+<!-- /mts-assistant-js -->
 </body></html>

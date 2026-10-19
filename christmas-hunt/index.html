@@ -81,191 +81,87 @@ body:not(.a4) { --pw: 8.5in; --ph: 11in; --pad: 0.5in; --cw: 3.75in; --ch: 2.5in
 @media (max-width: 700px) { .steps { grid-template-columns: 1fr; } }
 </style>
 <!-- mts-assistant-styles -->
+<meta name="robots" content="noindex,nofollow">
 <style id="mts-assistant-styles">
-  #mts-bar {
-    position: sticky;
-    top: 0;
-    z-index: 99999;
-    background: #1F5E5B;
-    color: #fff;
-    padding: 10px 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  .panel > .steps, .panel > .steps3 { display: none !important; }
+  #mts-card {
+    background: #FFF8EE; border: 2px solid #F4C95D; border-radius: 16px;
+    padding: 16px 18px 12px; margin: 0 0 14px; color: #2B2B2B;
     font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
-  .mts-bar-inner {
-    max-width: 980px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  .mts-bar-title {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    color: #F4C95D;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .mts-bar-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .mts-btn {
-    border: none;
-    border-radius: 999px;
-    padding: 8px 16px;
-    font-size: 13.5px;
-    font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: transform 0.1s, background 0.15s;
-    font-family: inherit;
-    text-decoration: none;
-  }
-  .mts-btn:active { transform: scale(0.97); }
-  .mts-btn-chatgpt {
-    background: #ffffff;
-    color: #1F5E5B;
-  }
-  .mts-btn-chatgpt:hover { background: #FFF8EE; }
-  .mts-btn-paste {
-    background: #F07F5E;
-    color: #ffffff;
-  }
-  .mts-btn-paste:hover { background: #e06c4b; }
-  #mts-toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #2B2B2B;
-    color: #fff;
-    padding: 10px 22px;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
-    z-index: 100000;
-    display: none;
-    pointer-events: none;
-    text-align: center;
-    max-width: 90vw;
-    line-height: 1.4;
+  #mts-card [hidden], #mts-paste-hint[hidden] { display: none !important; }
+  .mts-h { margin: 0 0 10px; font-size: 19px; color: #1F5E5B; }
+  .mts-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .mts-step { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start;
+    background: #fff; border-radius: 12px; padding: 12px; }
+  .mts-num { width: 36px; height: 36px; border-radius: 50%; background: #1F5E5B; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+  .mts-body { min-width: 0; }
+  .mts-text { margin: 6px 0 0; font-size: 17px; line-height: 1.4; }
+  .mts-small { margin: 8px 0 0; font-size: 14px; color: #6B655E; line-height: 1.4; }
+  .mts-btn { display: inline-flex; align-items: center; justify-content: center; text-align: center;
+    min-height: 50px; padding: 12px 22px; border: 0; border-radius: 999px; cursor: pointer;
+    font: 700 16px 'Ubuntu', -apple-system, 'Segoe UI', sans-serif; text-decoration: none;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .mts-btn:active { transform: scale(0.98); }
+  .mts-btn-gpt { background: #1F5E5B; color: #fff; }
+  .mts-btn-paste { background: #F07F5E; color: #fff; }
+  .mts-btn-print { background: #fff; color: #1F5E5B; border: 2px solid #1F5E5B; margin-top: 10px; }
+  .mts-link { background: none; border: 0; padding: 0; font: inherit; color: #1F5E5B; font-weight: 700;
+    text-decoration: underline; cursor: pointer; }
+  #mts-manual textarea { width: 100%; box-sizing: border-box; height: 120px; margin-top: 8px; font-size: 16px;
+    border: 1px solid #E2DACE; border-radius: 10px; padding: 8px; }
+  #mts-paste-hint { margin: 0 0 10px; padding: 12px 14px; border-radius: 12px; background: #FDE8E1;
+    color: #8A2E17; font-size: 16px; font-weight: 700; line-height: 1.4; }
+  .mts-privacy { margin: 10px 2px 0; font-size: 13px; color: #6B655E; }
+  #mts-toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%); width: max-content; max-width: min(92vw, 520px); box-sizing: border-box;
+    background: #2B2B2B; color: #fff; padding: 12px 18px; border-radius: 14px; font-size: 15px; font-weight: 600;
+    line-height: 1.4; text-align: center; box-shadow: 0 4px 18px rgba(0,0,0,.35); z-index: 100000; display: none;
+    font-family: 'Ubuntu', -apple-system, 'Segoe UI', sans-serif; }
+  @media (max-width: 640px) {
+    #mts-card { padding: 14px 12px 10px; margin-left: -6px; margin-right: -6px; }
+    .mts-step { grid-template-columns: 30px 1fr; gap: 10px; padding: 12px 10px; }
+    .mts-num { width: 30px; height: 30px; font-size: 16px; }
+    .mts-btn { display: flex; width: 100%; min-height: 56px; font-size: 17px; padding: 12px 14px; }
+    .mts-text { margin-top: 3px; }
+    #src { font-size: 16px; }
   }
   @media print {
-    #mts-bar, #mts-toast, #mts-assistant-styles { display: none !important; }
-  }
-  @media (max-width: 640px) {
-    #mts-bar { padding: 8px 12px; }
-    .mts-bar-inner { flex-direction: column; align-items: stretch; gap: 6px; }
-    .mts-bar-title { justify-content: center; font-size: 12px; }
-    .mts-bar-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .mts-btn { justify-content: center; padding: 9px 8px; font-size: 12px; }
+    #mts-card, #mts-toast, #mts-paste-hint { display: none !important; }
   }
 </style>
 
 </head>
 <body>
-<!-- mts-assistant-bar -->
-<div id="mts-bar">
-  <div class="mts-bar-inner">
-    <div class="mts-bar-title">✨ Step 1 &amp; 2 Quick AI Helper</div>
-    <div class="mts-bar-actions">
-      <button id="mts-chatgpt-btn" class="mts-btn mts-btn-chatgpt" title="Copy Prompt & Open ChatGPT">
-        🤖 1. Copy Prompt &amp; Open ChatGPT
-      </button>
-      <button id="mts-paste-btn" class="mts-btn mts-btn-paste" title="Paste AI response into the maker">
-        📋 2. Paste AI Response
-      </button>
-    </div>
-  </div>
-</div>
-<div id="mts-toast"></div>
-
-<script id="mts-assistant-js">
-(function() {
-  var PROMPT = "You are my Christmas treasure hunt helper. Help me create a personalized Christmas morning treasure hunt for my family.\n\nFirst, ask me these questions one at a time and wait for my answer each time:\n1. Who is the hunt for? (names and ages)\n2. What do they love right now? (animals, hobbies, favorite foods, pets' names, inside jokes)\n3. Which story theme would they enjoy? (for example: elves, pirates, space, detectives, unicorns)\n4. Which hiding spots will you use, in order? The presents will be at the last spot.\n5. What kind of clues: picture clues to read aloud (ages 3-5), rhyming riddles (ages 6-9) or harder riddles (ages 10+)?\n\nSafety: never use hiding spots that are hot, high or could be switched on (oven, stove, microwave, dryer, dishwasher, fireplace, heaters, high shelves). Indoors only, never outside. Never use a door or window to a balcony, terrace or garden, even from inside; the front door is OK only from the inside, with the door closed. Never hide a clue in a Christmas stocking. A washing machine is OK only if it is switched off and empty. If I list an unsafe spot, suggest a safe one nearby.\n\nThen write the cards. Every card leads to the NEXT spot. First list the route (card, hide at, leads to), then write each clue about its \"leads to\" spot, never about the spot where the card is hidden:\n- Card 1 (START): a 2-3 sentence start message that ends with the clue for spot 1.\n- One card for each spot: a clue (4 short lines for rhymes and riddles, or one emoji + one short sentence for ages 3-5).\n- A last card (FOUND IT) with a warm \"You found it!\" message, hidden with the presents.\n- Don't give the answer away: rhymes and riddles never say the name of the spot they lead to, not even in the last line. Only picture clues for ages 3-5 may name it.\n\nPut ALL cards, from CARD 1 to the last card, inside ONE code block, in exactly this format (I will paste it into the Make Together Studio Card Maker). After \"hide at:\" write only the spot name. Use a plain code block, not Canvas or a document, and put an empty line before every --- line:\nHUNT: [Name]'s Christmas Treasure Hunt\n\n---\nCARD 1 | START | give at the start | leads to: [spot 1]\n[start message and the clue for spot 1]\n\n---\nCARD 2 | CLUE | hide at: [spot 1] | leads to: [spot 2] | level: [little, clever or master]\n[clue that describes spot 2, not spot 1]\n\n---\nCARD [last] | FOUND IT | hide with the presents at: [last spot]\n[final message]\n\nAt the end, ask me if I want any card easier, harder, funnier or more personal. If I change anything, give me the whole code block again.\n\nPICTURE CLUES FOR LITTLE ONES (AGES 3\u20135):\nFor each of these hiding spots, write one short sentence (8 words or fewer) that I can read aloud to my [3]-year-old, and suggest one emoji I could draw next to it: [list your spots]\n\nHARDER RIDDLES FOR BIG KIDS AND GROWN-UPS:\nRewrite these riddles for a [12]-year-old (or adults) using wordplay and double meanings. Each one must still point to only one spot: [paste riddles]\n\nTWO KIDS, TWO ROUTES:\nMake two different treasure hunts that end at the same spot ([under the tree]): one for [Leo, 7] using [spots], and one for [Mia, 4] with picture clues using [spots]. Format both as lists of cards.\n\nCHANGE THE STORY:\nRewrite these clues as a [pirate / space / detective / North Pole elf] adventure. Keep the same hiding spots and card order: [paste cards]";
-  var toastEl = document.getElementById('mts-toast');
-
-  function showToast(msg, duration) {
-    if (!toastEl) return;
-    toastEl.textContent = msg;
-    toastEl.style.display = 'block';
-    setTimeout(function() { toastEl.style.display = 'none'; }, duration || 3200);
-  }
-
-  // 1. Copy Prompt & Open ChatGPT
-  var gptBtn = document.getElementById('mts-chatgpt-btn');
-  if (gptBtn) {
-    gptBtn.addEventListener('click', function() {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(PROMPT).then(function() {
-          showToast('✅ Prompt copied! Opening ChatGPT... Just paste into chat!');
-          setTimeout(function() {
-            window.open('https://chatgpt.com', '_blank');
-          }, 600);
-        }).catch(function() {
-          window.open('https://chatgpt.com', '_blank');
-        });
-      } else {
-        window.open('https://chatgpt.com', '_blank');
-      }
-    });
-  }
-
-  // 2. Paste from clipboard & trigger maker
-  var pasteBtn = document.getElementById('mts-paste-btn');
-  if (pasteBtn) {
-    pasteBtn.addEventListener('click', function() {
-      if (!navigator.clipboard || !navigator.clipboard.readText) {
-        alert('Clipboard API not available. Please paste manually into the box below.');
-        return;
-      }
-      navigator.clipboard.readText().then(function(text) {
-        var ta = document.querySelector('textarea');
-        if (ta) {
-          ta.value = text;
-          ta.dispatchEvent(new Event('input', { bubbles: true }));
-          ta.dispatchEvent(new Event('change', { bubbles: true }));
-          ta.focus();
-
-          // Auto-trigger the generate / make button if found
-          var makeBtn = document.querySelector('#make, #generate, #build, button.primary, .btn-primary') ||
-                        Array.from(document.querySelectorAll('button')).find(function(b) {
-                          var t = (b.textContent || '').toLowerCase();
-                          return (t.indexOf('make') !== -1 || t.indexOf('generate') !== -1 || t.indexOf('build') !== -1) &&
-                                 b.id !== 'mts-paste-btn' && b.id !== 'mts-chatgpt-btn';
-                        });
-          if (makeBtn) {
-            makeBtn.click();
-            showToast('✅ AI cards pasted & generated!');
-          } else {
-            showToast('✅ Pasted! Click Make my cards below.');
-          }
-        } else {
-          alert('No text field found on this page.');
-        }
-      }).catch(function(err) {
-        alert('Could not read clipboard: ' + err + '\n\nPlease paste manually (Ctrl+V / ⌘+V).');
-      });
-    });
-  }
-})();
-</script>
-<!-- /mts-assistant-bar -->
-
 <div class="ui">
   <div class="top"><img src="data:image/png;base64,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" alt=""><div><h1>Make Together Studio Card Maker</h1>
     <p>Turn the cards from your AI chat into a printable PDF, in our design.</p></div></div>
   <div class="panel">
+<!-- mts-card -->
+<section id="mts-card" aria-label="How to make your game">
+  <h2 class="mts-h">Make it in 3 steps</h2>
+  <ol class="mts-steps">
+    <li class="mts-step"><span class="mts-num">1</span><div class="mts-body">
+      <a id="mts-gpt" class="mts-btn mts-btn-gpt" href="https://chatgpt.com/?q=You%20are%20my%20Christmas%20treasure%20hunt%20helper.%20Help%20me%20create%20a%20personalized%20Christmas%20morning%20treasure%20hunt%20for%20my%20family.%0A%0AFirst%2C%20ask%20me%20these%20questions%20one%20at%20a%20time%20and%20wait%20for%20my%20answer%20each%20time%3A%0A1.%20Who%20is%20the%20hunt%20for%3F%20(names%20and%20ages)%0A2.%20What%20do%20they%20love%20right%20now%3F%20(animals%2C%20hobbies%2C%20favorite%20foods%2C%20pets&#x27;%20names%2C%20inside%20jokes)%0A3.%20Which%20story%20theme%20would%20they%20enjoy%3F%20(for%20example%3A%20elves%2C%20pirates%2C%20space%2C%20detectives%2C%20unicorns)%0A4.%20Which%20hiding%20spots%20will%20you%20use%2C%20in%20order%3F%20The%20presents%20will%20be%20at%20the%20last%20spot.%0A5.%20What%20kind%20of%20clues%3A%20picture%20clues%20to%20read%20aloud%20(ages%203-5)%2C%20rhyming%20riddles%20(ages%206-9)%20or%20harder%20riddles%20(ages%2010%2B)%3F%0A%0ASafety%3A%20never%20use%20hiding%20spots%20that%20are%20hot%2C%20high%20or%20could%20be%20switched%20on%20(oven%2C%20stove%2C%20microwave%2C%20dryer%2C%20dishwasher%2C%20fireplace%2C%20heaters%2C%20high%20shelves).%20Indoors%20only%2C%20never%20outside.%20Never%20use%20a%20door%20or%20window%20to%20a%20balcony%2C%20terrace%20or%20garden%2C%20even%20from%20inside%3B%20the%20front%20door%20is%20OK%20only%20from%20the%20inside%2C%20with%20the%20door%20closed.%20Never%20hide%20a%20clue%20in%20a%20Christmas%20stocking.%20A%20washing%20machine%20is%20OK%20only%20if%20it%20is%20switched%20off%20and%20empty.%20If%20I%20list%20an%20unsafe%20spot%2C%20suggest%20a%20safe%20one%20nearby.%0A%0AThen%20write%20the%20cards.%20Every%20card%20leads%20to%20the%20NEXT%20spot.%20First%20list%20the%20route%20(card%2C%20hide%20at%2C%20leads%20to)%2C%20then%20write%20each%20clue%20about%20its%20%22leads%20to%22%20spot%2C%20never%20about%20the%20spot%20where%20the%20card%20is%20hidden%3A%0A-%20Card%201%20(START)%3A%20a%202-3%20sentence%20start%20message%20that%20ends%20with%20the%20clue%20for%20spot%201.%0A-%20One%20card%20for%20each%20spot%3A%20a%20clue%20(4%20short%20lines%20for%20rhymes%20and%20riddles%2C%20or%20one%20emoji%20%2B%20one%20short%20sentence%20for%20ages%203-5).%0A-%20A%20last%20card%20(FOUND%20IT)%20with%20a%20warm%20%22You%20found%20it!%22%20message%2C%20hidden%20with%20the%20presents.%0A-%20Don&#x27;t%20give%20the%20answer%20away%3A%20rhymes%20and%20riddles%20never%20say%20the%20name%20of%20the%20spot%20they%20lead%20to%2C%20not%20even%20in%20the%20last%20line.%20Only%20picture%20clues%20for%20ages%203-5%20may%20name%20it.%0A%0APut%20ALL%20cards%2C%20from%20CARD%201%20to%20the%20last%20card%2C%20inside%20ONE%20code%20block%2C%20in%20exactly%20this%20format%20(I%20will%20paste%20it%20into%20the%20Make%20Together%20Studio%20Card%20Maker).%20After%20%22hide%20at%3A%22%20write%20only%20the%20spot%20name.%20Use%20a%20plain%20code%20block%2C%20not%20Canvas%20or%20a%20document%2C%20and%20put%20an%20empty%20line%20before%20every%20---%20line%3A%0AHUNT%3A%20%5BName%5D&#x27;s%20Christmas%20Treasure%20Hunt%0A%0A---%0ACARD%201%20%7C%20START%20%7C%20give%20at%20the%20start%20%7C%20leads%20to%3A%20%5Bspot%201%5D%0A%5Bstart%20message%20and%20the%20clue%20for%20spot%201%5D%0A%0A---%0ACARD%202%20%7C%20CLUE%20%7C%20hide%20at%3A%20%5Bspot%201%5D%20%7C%20leads%20to%3A%20%5Bspot%202%5D%20%7C%20level%3A%20%5Blittle%2C%20clever%20or%20master%5D%0A%5Bclue%20that%20describes%20spot%202%2C%20not%20spot%201%5D%0A%0A---%0ACARD%20%5Blast%5D%20%7C%20FOUND%20IT%20%7C%20hide%20with%20the%20presents%20at%3A%20%5Blast%20spot%5D%0A%5Bfinal%20message%5D%0A%0AAt%20the%20end%2C%20ask%20me%20if%20I%20want%20any%20card%20easier%2C%20harder%2C%20funnier%20or%20more%20personal.%20If%20I%20change%20anything%2C%20give%20me%20the%20whole%20code%20block%20again.%0A%0APICTURE%20CLUES%20FOR%20LITTLE%20ONES%20(AGES%203%E2%80%935)%3A%0AFor%20each%20of%20these%20hiding%20spots%2C%20write%20one%20short%20sentence%20(8%20words%20or%20fewer)%20that%20I%20can%20read%20aloud%20to%20my%20%5B3%5D-year-old%2C%20and%20suggest%20one%20emoji%20I%20could%20draw%20next%20to%20it%3A%20%5Blist%20your%20spots%5D%0A%0AHARDER%20RIDDLES%20FOR%20BIG%20KIDS%20AND%20GROWN-UPS%3A%0ARewrite%20these%20riddles%20for%20a%20%5B12%5D-year-old%20(or%20adults)%20using%20wordplay%20and%20double%20meanings.%20Each%20one%20must%20still%20point%20to%20only%20one%20spot%3A%20%5Bpaste%20riddles%5D%0A%0ATWO%20KIDS%2C%20TWO%20ROUTES%3A%0AMake%20two%20different%20treasure%20hunts%20that%20end%20at%20the%20same%20spot%20(%5Bunder%20the%20tree%5D)%3A%20one%20for%20%5BLeo%2C%207%5D%20using%20%5Bspots%5D%2C%20and%20one%20for%20%5BMia%2C%204%5D%20with%20picture%20clues%20using%20%5Bspots%5D.%20Format%20both%20as%20lists%20of%20cards.%0A%0ACHANGE%20THE%20STORY%3A%0ARewrite%20these%20clues%20as%20a%20%5Bpirate%20%2F%20space%20%2F%20detective%20%2F%20North%20Pole%20elf%5D%20adventure.%20Keep%20the%20same%20hiding%20spots%20and%20card%20order%3A%20%5Bpaste%20cards%5D" target="_blank" rel="noopener">Copy the AI prompt &amp; open ChatGPT</a>
+      <p class="mts-small">Using Gemini or Claude instead? <button type="button" class="mts-link" id="mts-copy-only">Copy the prompt</button> and paste it there.</p>
+      <div id="mts-manual" hidden><p class="mts-small">Couldn't copy automatically. Tap and hold in this box → Select All → Copy:</p><textarea readonly id="mts-manual-ta"></textarea></div>
+    </div></li>
+    <li class="mts-step"><span class="mts-num">2</span><div class="mts-body">
+      <p class="mts-text">Answer ChatGPT's questions, then tap <b>Copy</b> on its answer.</p>
+      <p class="mts-small">No Copy button? Ask it: <i>Put it all in one code block.</i></p>
+    </div></li>
+    <li class="mts-step"><span class="mts-num">3</span><div class="mts-body">
+      <button type="button" id="mts-paste" class="mts-btn mts-btn-paste">Paste the answer &amp; make my cards</button><br>
+      <button type="button" id="mts-print" class="mts-btn mts-btn-print">Save as PDF / Print</button>
+      <p class="mts-small">iPhone: Print → Share → Save to Files. Android: Print → Save as PDF.</p>
+    </div></li>
+  </ol>
+  <p class="mts-privacy">🔒 Nothing you type leaves your device. Your text is only kept in this browser, so it's still here if you switch apps.</p>
+</section>
+<p id="mts-paste-hint" role="status" hidden>Tap and hold in the box → <b>Paste</b>, then tap <b>Make my cards</b>.</p>
+<!-- /mts-card -->
+
     <div class="steps">
       <div class="step"><b>1</b> In your AI chat, click <b>Copy</b> on the box with your cards. No box? Send the AI: <i>Put all cards in one code block.</i></div>
       <div class="step"><b>2</b> Paste it below and click <b>Make my cards</b>.</div>
@@ -496,4 +392,87 @@ const q = new URLSearchParams(location.search);
 if (q.get('paper') === 'a4') { $('#paper').value = 'a4'; setPaper(); }
 if (q.get('demo')) { $('#src').value = EXAMPLE; render(); }
 </script>
+<!-- mts-assistant-js -->
+<div id="mts-toast" role="status" aria-live="polite"></div>
+<script id="mts-assistant-js">
+(function () {
+  var PROMPT = "You are my Christmas treasure hunt helper. Help me create a personalized Christmas morning treasure hunt for my family.\n\nFirst, ask me these questions one at a time and wait for my answer each time:\n1. Who is the hunt for? (names and ages)\n2. What do they love right now? (animals, hobbies, favorite foods, pets' names, inside jokes)\n3. Which story theme would they enjoy? (for example: elves, pirates, space, detectives, unicorns)\n4. Which hiding spots will you use, in order? The presents will be at the last spot.\n5. What kind of clues: picture clues to read aloud (ages 3-5), rhyming riddles (ages 6-9) or harder riddles (ages 10+)?\n\nSafety: never use hiding spots that are hot, high or could be switched on (oven, stove, microwave, dryer, dishwasher, fireplace, heaters, high shelves). Indoors only, never outside. Never use a door or window to a balcony, terrace or garden, even from inside; the front door is OK only from the inside, with the door closed. Never hide a clue in a Christmas stocking. A washing machine is OK only if it is switched off and empty. If I list an unsafe spot, suggest a safe one nearby.\n\nThen write the cards. Every card leads to the NEXT spot. First list the route (card, hide at, leads to), then write each clue about its \"leads to\" spot, never about the spot where the card is hidden:\n- Card 1 (START): a 2-3 sentence start message that ends with the clue for spot 1.\n- One card for each spot: a clue (4 short lines for rhymes and riddles, or one emoji + one short sentence for ages 3-5).\n- A last card (FOUND IT) with a warm \"You found it!\" message, hidden with the presents.\n- Don't give the answer away: rhymes and riddles never say the name of the spot they lead to, not even in the last line. Only picture clues for ages 3-5 may name it.\n\nPut ALL cards, from CARD 1 to the last card, inside ONE code block, in exactly this format (I will paste it into the Make Together Studio Card Maker). After \"hide at:\" write only the spot name. Use a plain code block, not Canvas or a document, and put an empty line before every --- line:\nHUNT: [Name]'s Christmas Treasure Hunt\n\n---\nCARD 1 | START | give at the start | leads to: [spot 1]\n[start message and the clue for spot 1]\n\n---\nCARD 2 | CLUE | hide at: [spot 1] | leads to: [spot 2] | level: [little, clever or master]\n[clue that describes spot 2, not spot 1]\n\n---\nCARD [last] | FOUND IT | hide with the presents at: [last spot]\n[final message]\n\nAt the end, ask me if I want any card easier, harder, funnier or more personal. If I change anything, give me the whole code block again.\n\nPICTURE CLUES FOR LITTLE ONES (AGES 3\u20135):\nFor each of these hiding spots, write one short sentence (8 words or fewer) that I can read aloud to my [3]-year-old, and suggest one emoji I could draw next to it: [list your spots]\n\nHARDER RIDDLES FOR BIG KIDS AND GROWN-UPS:\nRewrite these riddles for a [12]-year-old (or adults) using wordplay and double meanings. Each one must still point to only one spot: [paste riddles]\n\nTWO KIDS, TWO ROUTES:\nMake two different treasure hunts that end at the same spot ([under the tree]): one for [Leo, 7] using [spots], and one for [Mia, 4] with picture clues using [spots]. Format both as lists of cards.\n\nCHANGE THE STORY:\nRewrite these clues as a [pirate / space / detective / North Pole elf] adventure. Keep the same hiding spots and card order: [paste cards]";
+  var PREFILLED = true;
+  var $id = function (i) { return document.getElementById(i); };
+  var toastEl = $id('mts-toast'), toastTimer;
+  function toast(msg, ms) {
+    toastEl.textContent = msg;
+    toastEl.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.style.display = 'none'; }, ms || 6000);
+  }
+  function legacyCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px;';
+    document.body.appendChild(ta);
+    ta.select();
+    try { ta.setSelectionRange(0, text.length); } catch (e) {}
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function showManual() {
+    $id('mts-manual-ta').value = PROMPT;
+    $id('mts-manual').hidden = false;
+  }
+  // Runs synchronously inside the tap handler so browsers treat it as user-initiated.
+  function copyPrompt(okMsg) {
+    var done = function (ok) {
+      if (ok) toast(okMsg, 7000);
+      else { showManual(); toast(PREFILLED ? 'The prompt is in ChatGPT. If not, copy it from the box under step 1.' : 'Copy the prompt from the box under step 1.', 7000); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(PROMPT).then(function () { done(true); }, function () { done(legacyCopy(PROMPT)); });
+    } else {
+      done(legacyCopy(PROMPT));
+    }
+  }
+  $id('mts-gpt').addEventListener('click', function () {
+    copyPrompt("Prompt copied. If it isn't already in ChatGPT, tap the message box → Paste.");
+  });
+  $id('mts-copy-only').addEventListener('click', function () {
+    copyPrompt('Prompt copied. Paste it into Gemini or Claude.');
+  });
+
+  var src = $id('src'), make = $id('make'), hint = $id('mts-paste-hint'), armed = false;
+  function makeNow() {
+    hint.hidden = true;
+    make.click();
+    var msg = $id('msg');
+    if (msg && msg.scrollIntoView) msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    toast('Check the preview below, then tap Save as PDF / Print.', 5000);
+  }
+  function askManualPaste() {
+    armed = true;
+    hint.hidden = false;
+    src.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    try { src.focus({ preventScroll: true }); } catch (e) { src.focus(); }
+  }
+  src.addEventListener('paste', function () {
+    if (!armed) return;
+    armed = false;
+    setTimeout(function () { if (src.value.trim()) makeNow(); }, 60);
+  });
+  $id('mts-paste').addEventListener('click', function () {
+    if (!navigator.clipboard || !navigator.clipboard.readText) { askManualPaste(); return; }
+    navigator.clipboard.readText().then(function (text) {
+      if (!text || !text.trim()) { askManualPaste(); return; }
+      if (text.trim() === PROMPT.trim()) { toast("That's still the prompt. In ChatGPT, tap Copy on its answer first.", 7000); return; }
+      src.value = text;
+      src.dispatchEvent(new Event('input', { bubbles: true }));
+      makeNow();
+    }, askManualPaste);
+  });
+  $id('mts-print').addEventListener('click', function () { $id('print').click(); });
+})();
+</script>
+<!-- /mts-assistant-js -->
 </body></html>
