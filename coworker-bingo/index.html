@@ -1,0 +1,1189 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Make Together Studio Find the Coworker Bingo Maker</title>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+<style id="pagesize">@page { size: 8.5in 11in; margin: 0; }</style>
+<style>/* Make Together Studio bingo engine: pages for print (US Letter default, body.a4 = A4). Light on ink: white paper,
+   season ink for lines and titles, one soft fill for the free centre. Sizes inside squares and calling cards use
+   container units, so 1 or 2 cards per page and Letter / A4 all scale from the same rules; BG.fit() then shrinks
+   anything that is still too wide or too tall. */
+.bg-doc { font-family: 'Ubuntu', 'Segoe UI', Arial, sans-serif; color: #2B2B2B; }
+.bg-doc *, .bg-doc *::before, .bg-doc *::after { box-sizing: border-box; }
+.bg-page { width: 8.5in; height: 11in; padding: .42in .45in .34in; position: relative; overflow: hidden; background: #fff;
+  display: flex; flex-direction: column; page-break-after: always; break-after: page;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body.a4 .bg-page { width: 210mm; height: 297mm; padding: .5in .42in .36in; }
+.bg-emo, .emo span { font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif; line-height: 1; }
+.emo > span { white-space: nowrap; }
+
+/* ---------------------------------------------------------------- player card */
+.bg-cardpage.per1 { padding: .36in .42in .3in; }
+body.a4 .bg-cardpage.per1 { padding: .45in .4in .34in; }
+.bg-card { flex: 1; min-height: 0; display: flex; flex-direction: column; border: 2.5px solid var(--ink); border-radius: 22px;
+  padding: .16in .22in .1in; background: #fff; --cell-min: 10px; --title-min: 20px; }
+.bg-head { display: flex; align-items: center; gap: .12in; height: .92in; flex: none; }
+.bg-deco { flex: none; width: .78in; height: .78in; }
+.bg-deco svg { width: 100%; height: 100%; display: block; }
+.bg-title { flex: 1; min-width: 0; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center;
+  overflow: hidden; }
+.bg-fit { display: inline-block; white-space: nowrap; font-family: Anton, 'Ubuntu', sans-serif; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--ink); font-size: 46px; line-height: 1.04; }
+.bg-meta { display: flex; align-items: flex-end; justify-content: space-between; gap: .3in; height: .36in; flex: none;
+  font-size: 13px; color: #6B655E; margin-bottom: .08in; }
+.bg-name { flex: 1; min-width: 0; display: flex; align-items: flex-end; gap: 6px; height: 100%; overflow: hidden; white-space: nowrap; }
+.bg-name i { flex: 1; border-bottom: 1.5px solid #B8AFA3; height: 1px; margin-bottom: 4px; }
+.bg-name.has b { font-size: 21px; color: var(--ink); line-height: 1.1; }
+.bg-no { flex: none; font-weight: 700; letter-spacing: .04em; }
+.bg-body { flex: 1; min-height: 0; container-type: size; display: flex; justify-content: center; align-items: center; }
+.bg-sq { width: min(100cqw, calc(100cqh - var(--lh, 0px))); display: flex; flex-direction: column; }
+.bg-card.g5 .bg-body { --lh: 0.78in; }
+.bg-letters { display: grid; grid-template-columns: repeat(5, 1fr); height: .7in; margin-bottom: .08in; justify-items: center; align-items: center; }
+.bg-letters span { width: .62in; height: .62in; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-family: Anton, sans-serif; font-size: 30px; line-height: 1; }
+.bg-grid { width: 100%; aspect-ratio: 1; display: grid; grid-template-columns: repeat(var(--g), 1fr); grid-template-rows: repeat(var(--g), 1fr);
+  border: 3px solid var(--ink); border-radius: 14px; overflow: hidden; background: #fff; }
+.bg-cell { position: relative; border-right: 2px solid var(--line); border-bottom: 2px solid var(--line); container-type: size; min-width: 0; min-height: 0; }
+/* the last column and row keep their 2px border, only invisible: every square then has the same size, so the
+   container-unit labels are the same size in every row and column (with border 0 the bottom row's labels shrank) */
+.bg-g5 .bg-cell:nth-child(5n), .g5 .bg-cell:nth-child(5n), .g4 .bg-cell:nth-child(4n), .g3 .bg-cell:nth-child(3n) { border-right-color: transparent; }
+.g5 .bg-cell:nth-child(n+21), .g4 .bg-cell:nth-child(n+13), .g3 .bg-cell:nth-child(n+7) { border-bottom-color: transparent; }
+.bg-in { position: absolute; inset: 6%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; overflow: hidden; }
+.bg-txt { font-weight: 700; color: #2B2B2B; line-height: 1.12; max-width: 100%; overflow-wrap: normal; word-break: normal;
+  hyphens: manual; text-wrap: balance; font-size: 17cqw; }
+.s-phrases .bg-txt { font-size: 12.5cqw; font-weight: 500; line-height: 1.16; }
+.s-pictures .bg-cell.has-pic .bg-txt { font-size: 10.5cqw; font-weight: 700; color: #4F4A44; line-height: 1.05; flex: none; margin-top: 2cqh; }
+.bg-pic { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
+.bg-pic svg { height: 100%; width: 100%; max-height: 66cqh; display: block; }
+.bg-cell.pic-only .bg-pic svg { max-height: 86cqh; }
+.bg-pic.emo span { font-size: 52cqh; }
+.bg-cell.pic-only .bg-pic.emo span { font-size: 70cqh; }
+.bg-cell.free { background: var(--free); }
+.bg-star { flex: none; height: 46cqh; width: 100%; display: flex; align-items: center; justify-content: center; }
+.bg-star svg { height: 100%; width: auto; display: block; }
+.bg-freetxt { font-family: Anton, sans-serif; font-weight: 400; letter-spacing: 1px; text-transform: uppercase; color: var(--em);
+  font-size: 15cqw; flex: none; line-height: 1.1; margin-top: 3cqh; }
+.bg-foot { flex: none; height: .2in; margin-top: .06in; font-size: 9.5px; color: #8A8379; text-align: center; letter-spacing: .03em; }
+.bg-cell.daub::after { content: ''; position: absolute; left: 12%; top: 12%; width: 76%; height: 76%; border-radius: 50%;
+  background: rgba(240, 127, 94, .5); mix-blend-mode: multiply; }
+
+/* two cards per page (paper saver): title column on the left, so the grid gets the whole height of the half page */
+.bg-cardpage.per2 { padding: .3in .42in .26in; }
+.per2 .bg-card { display: grid; grid-template-columns: 1.95in 1fr; grid-template-rows: auto auto 1fr auto; column-gap: .2in;
+  padding: .14in .2in .1in; border-radius: 16px; --cell-min: 8px; --title-min: 14px; }
+.per2 .bg-head { grid-column: 1; grid-row: 1; height: auto; flex-direction: column; align-items: center; gap: .04in; }
+.per2 .bg-deco { width: .62in; height: .62in; }
+.per2 .bg-deco.r { display: none; }
+.per2 .bg-title { width: 100%; height: 1.45in; flex: none; align-items: center; }
+.per2 .bg-fit { font-size: 30px; white-space: normal; display: block; line-height: 1.05; }
+.per2 .bg-meta { grid-column: 1; grid-row: 2; flex-direction: column; align-items: stretch; height: auto; gap: .1in;
+  font-size: 11px; margin: .08in 0 0; }
+.per2 .bg-name { height: .3in; }
+.per2 .bg-name.has b { font-size: 16px; }
+.per2 .bg-body { grid-column: 2; grid-row: 1 / span 4; min-height: 0; }
+.per2 .bg-card.g5 .bg-body { --lh: 0.46in; }
+.per2 .bg-letters { height: .42in; margin-bottom: .04in; }
+.per2 .bg-letters span { width: .36in; height: .36in; font-size: 18px; }
+.per2 .bg-grid { border-width: 2.5px; border-radius: 10px; }
+.per2 .bg-cell { border-width: 1.5px; }
+.per2 .bg-foot { grid-column: 1; grid-row: 4; align-self: end; height: auto; font-size: 8px; text-align: left; margin: 0; }
+.bg-cut { flex: none; height: 0; border-top: 2px dashed #C9C0B4; margin: .14in -.3in; }
+
+/* ---------------------------------------------------------------- caller pages */
+.bg-ph { flex: none; text-align: center; margin-bottom: .14in; }
+.bg-kick { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--em); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+.bg-ph h2 { margin: 0; font-family: Anton, sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--ink); font-size: 34px; line-height: 1.45; white-space: nowrap; }
+.bg-ph p { margin: .05in auto 0; max-width: 6.6in; font-size: 12.5px; line-height: 1.38; color: #4F4A44; max-height: .62in; overflow: hidden; }
+.bg-pfoot { flex: none; margin-top: .1in; font-size: 9px; color: #8A8379; text-align: center; height: .16in; overflow: hidden; white-space: nowrap; }
+
+.bg-calls { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr);
+  border-top: 2px dashed #C9C0B4; border-left: 2px dashed #C9C0B4; }
+.bg-call { position: relative; border-right: 2px dashed #C9C0B4; border-bottom: 2px dashed #C9C0B4; container-type: size; min-width: 0; min-height: 0; }
+.bg-cin { position: absolute; inset: 9% 8%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; overflow: hidden; border-radius: 12px; }
+.bg-call::before { content: ''; position: absolute; inset: 5%; border: 2px solid var(--line); border-radius: 12px; }
+.bg-ctxt { font-weight: 700; font-size: 13.5cqw; line-height: 1.12; color: #2B2B2B; max-width: 100%; text-wrap: balance; }
+.bg-call.s-phrases .bg-ctxt { font-size: 10.5cqw; font-weight: 500; }
+.bg-call.has-pic .bg-ctxt { font-size: 11cqw; flex: none; margin-top: 3cqh; }
+.bg-cpic { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
+.bg-cpic svg { height: 100%; width: 100%; max-height: 58cqh; }
+.bg-cpic.emo span { font-size: 46cqh; }
+
+.bg-sheet { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(var(--cols), 1fr); grid-template-rows: repeat(var(--rows), 1fr);
+  grid-auto-flow: column; gap: 0 .14in; max-height: 8.2in; }
+.bg-si { display: flex; align-items: center; gap: 7px; min-width: 0; min-height: 0; overflow: hidden; border-bottom: 1px solid #ECE5DA; padding: 1px 2px; }
+.bg-box { flex: none; width: 15px; height: 15px; border: 2px solid var(--ink); border-radius: 50%; }
+.bg-spic { flex: none; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; }
+.bg-spic svg { width: 26px; height: 26px; }
+.bg-spic.emo span { font-size: 20px; }
+.bg-stxt { flex: 1; min-width: 0; font-size: 13.5px; line-height: 1.12; font-weight: 500; color: #2B2B2B; }
+.bg-pats { flex: none; display: flex; align-items: center; justify-content: center; gap: .26in; margin-top: .14in;
+  padding-top: .1in; border-top: 2px solid #ECE5DA; font-size: 11.5px; color: #4F4A44; }
+.bg-pats > b { color: var(--ink); font-size: 13px; }
+.bg-pat { display: flex; align-items: center; gap: 7px; }
+.bg-mini { display: grid; grid-template-columns: repeat(5, 9px); grid-auto-rows: 9px; gap: 1.5px; }
+.bg-mini i { background: #ECE5DA; border-radius: 2px; }
+.bg-mini i.on { background: var(--em); }
+@media print { .bg-page { box-shadow: none !important; margin: 0 !important; } }
+
+/* Find the Coworker Bingo: product layer over products/_bingo-engine/bingo.css (loaded after it). Cobalt + marigold +
+   tomato, Lilita One titles; a "Find someone who…" strip on every card and a name line in every square. */
+@font-face { font-family: 'Lilita One'; src: url(data:font/woff2;base64,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) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Lilita One'; src: url(data:font/woff2;base64,d09GMgABAAAAAAVoAA8AAAAACegAAAUTAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGhYbDBwYBmAAbBEIColciA0LHgABNgIkAzgEIAWDZAc+DAcb9QdRlE5OmOBngm2rYa0IiBSU4SB6GXpb1ovxAEMb3kc8/X6ve+4LIEoWKsKQjE0KaAS5si8LV935qoC6jkBWl99PeNa/acrMsmIWkJM7J2fiwyD6/rZ3nySQEEJPI2+8mQgCjl/7/xfCPjhmumgbjyJtDTLAgZRI5C2Lsyg9Ej+AogCfIgpT4Glg/xqJD/gP3cxixar09EqCLkAR0S2CjsmOByOgCZ096O8EMaNtszM3NFMavYQr9Cp5x9dfFA/5c6zg2Tty8yAadUVizTiA6qa3QCC/ewmYw2NFVjA0W0NfnG8fGGCFUMwlNjUZzmSW9PlG/R/AyDGpxk28hPlctcMi84z8m/D+t4A8BCJ1LJF6PM8poA/kPvkJWDJ1K8BaUZaAFU7lYnST2ctUYrFxdcncWZ+9iCBZ7QpGtRZjgknaiROuAw9zmuW0fBVJAuYMq2n1OtKMXVFHky8Q0hrFz5fHL9r+nEPMnjt7HmivMC8x91xDA/1M/oAFOmT59tOnXR4D/SyfffGCednGaXbT8vxlrLJwBWKuYq7gZdFz7CSU+gIt6kE7uc+Qo2v37Ql5HkHKQsxRQtvGGz2XFwMdv411vIFQ6YqXmDMUlNIsQgwHBXRRFWtcw+hMzOajmR59mMsOuWmOF4yqrMx9tIxFTBfJL+Ii0RlIK4ImubT7MpIsjraaeanajTm7MtJOmW4rxrqXFRkT0If2oT0spW5rQzzafpjguAN9hiRinFZih+0AJ4zTkDbS8Uh95LjURmGlmKaOU1gqqpGTVk+skg4HuviVSNOtxkAukjRmgehpuFJzeK1lTT5P1BR1/PNEQdrPnuV+BTaWg//+kPhs+NC04dbkEaOaIOzcWmf+0GCvjO57t/beypjctoHZoyi8WpYUkmvITj8o+TTCOX91Xp24bnVevsQkk/AmUsZTIOZotreXUWEZNO7bn9qWsbLZpFW6JvXu9NXJzKKH42p+jchuqW1L6vNy1e9301q7tfmbr/QZMkUOD899Yd14NHBLo/SjF5cCSkjT2NHk135OQk4wT8IJPl3A+KVAmsC6w9Yzeb5ippX3NAv4svYkQsqFgb5lm1UzJZ7DRrsvW6fPCvnquOaJ3AZkUSKvIgyXf96PrZJ0kgSzaEuXOoX1hffmtOr/WYZ+xra+RIUo1WFKdehUQIrG3y5m3i9eznH2AwnYJE9dQSY4kM2VOdnutWqt4pcfeb+k1NlrCD2P3ZO5XLekNz+2uPpKb/XJ2t0NUfOkPccR0vHefWSNS4H/BGiupbdcml/BnXeommkZlIk13/I8D/sOQlw8z33xfpVl+C/GxBeA17vkDn3BYWv7dXrdRJsCQnVz7EH1QwnxcArxoPR47glkG2iQNwSZIChqhlyhaVP9a/045AZNdsyOfJGctxwg9NgmBAURbAFAm+MIaZIADY94zBhygFn0uMesbKlubVJlNpuQyGwxwB96jhQ4qR9Qu4XyKu1Tp1cLH/p5ZE990E5DFwpNaqksidKBtoMWVahBSjs1KNRwaI2gi380ig9P3rz5SjWgRqcMBWu/Q2sDMrNLKOq0U7MWT/ny5gPGn6tBkwHtavQaVcbp0m0kfWtTWctTnNVxceak0ulKzTpDe6uiNRqHjom7XY06zVt5qtVilAt3lKFEEM26JK19bwCDFNQf9sQgYUrmZO1Qm5ZiW0CGLZ6Hyvq4TZke5H+6xGcf+8Snzvruczt8Mu1G9R7wrwIAAA==) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+.bg-fit { font-family: 'Lilita One', 'Ubuntu', sans-serif; text-transform: none; letter-spacing: .5px; font-size: 50px; }
+.bg-letters span { font-family: 'Lilita One', sans-serif; font-size: 32px; }
+.bg-freetxt { font-family: 'Lilita One', sans-serif; letter-spacing: .5px; }
+.bg-ph h2 { font-family: 'Lilita One', sans-serif; text-transform: none; letter-spacing: .5px; }
+.bg-card { border-width: 3px; }
+.bg-meta { margin-bottom: .06in; }
+
+.fc-rule { flex: none; display: flex; align-items: center; gap: .16in; height: .5in; margin: 0 0 .1in; padding: 0 .18in;
+  background: var(--ink); border-radius: 12px; color: #fff; overflow: hidden; }
+.fc-who { flex: none; max-width: 48%; font-family: 'Lilita One', sans-serif; font-size: 23px; color: #FFD25E; white-space: nowrap;
+  overflow: hidden; line-height: 1.1; }
+.fc-hint { flex: 1; min-width: 0; font-size: 12px; line-height: 1.25; max-height: .42in; overflow: hidden; color: #fff; }
+
+.bg-cell:not(.free) .bg-in { inset: 6% 7% 5%; }
+.bg-cell:not(.free) .bg-txt { margin: auto 0; }
+.s-phrases .bg-txt { font-size: 12cqw; font-weight: 500; line-height: 1.15; }
+.fc-line { flex: none; width: 88%; height: 24cqh; border-bottom: 1.6px solid #8EA0D4; }
+
+.per2 .fc-rule { grid-column: 1; grid-row: 3; align-self: start; flex-direction: column; align-items: flex-start; height: auto;
+  max-height: 1.6in; gap: .04in; padding: .08in .12in; margin: .12in 0 0; }
+.per2 .fc-who { max-width: 100%; font-size: 17px; }
+.per2 .fc-hint { font-size: 10px; max-height: 1.1in; }
+.per2 .bg-fit { font-size: 30px; }
+
+/* the host's answer key (personal squares) */
+.fc-key { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(0, .5in); gap: .05in .2in;
+  align-content: start; }
+.fc-krow { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #E4E8F5; min-height: 0; overflow: hidden; padding: 2px 0; }
+.fc-kn { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; }
+.fc-kt { flex: 1; min-width: 0; font-size: 12.5px; line-height: 1.2; }
+.fc-kw { flex: none; max-width: 40%; font-weight: 700; color: var(--em); font-size: 13px; text-align: right; overflow-wrap: anywhere; }
+ 
+body { margin: 0; background: #EFE7DA; font-family: 'Ubuntu', 'Segoe UI', Arial, sans-serif; color: #2B2B2B; }
+.ui { max-width: 1000px; margin: 0 auto; padding: 22px 16px 8px; }
+.top { display: flex; align-items: center; gap: 14px; }
+.top img { width: 56px; height: 56px; }
+.top h1 { font-size: 26px; margin: 0; color: var(--ink); }
+.top p { margin: 2px 0 0; color: #6B655E; }
+.panel { background: #fff; border-radius: 16px; padding: 18px; margin-top: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.steps3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+.step { background: #FFF8EE; border-radius: 12px; padding: 10px 12px; font-size: 14px; line-height: 1.35; }
+.step b { color: #D2593A; }
+textarea { width: 100%; box-sizing: border-box; border: 2px solid #D9D1C4; border-radius: 12px; padding: 12px;
+  font: 14px/1.45 ui-monospace, Menlo, Consolas, monospace; resize: vertical; }
+#src { min-height: 170px; }
+textarea:focus, input:focus, select:focus { outline: none; border-color: var(--ink); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+button { border: 0; border-radius: 999px; padding: 12px 20px; font: 600 15px 'Ubuntu', sans-serif; cursor: pointer; }
+.primary { background: var(--ink); color: #fff; } .accent { background: #F07F5E; color: #2B2B2B; } .ghost { background: #FFF8EE; color: var(--ink); }
+select, input[type=text], input[type=number] { padding: 9px 11px; border-radius: 10px; border: 2px solid #D9D1C4; font: 14px 'Ubuntu', sans-serif; box-sizing: border-box; }
+details { margin-top: 12px; } summary { cursor: pointer; font-weight: 700; color: var(--ink); font-size: 15px; }
+.form { display: grid; grid-template-columns: 170px 1fr; gap: 9px 14px; align-items: center; margin-top: 12px; font-size: 14px; }
+.form label { font-weight: 700; color: var(--ink); }
+.form .wide { grid-column: 1 / -1; }
+.msg { margin-top: 10px; font-size: 14px; line-height: 1.45; } .msg.err { color: #B3412A; font-weight: 700; } .msg.ok { color: var(--ink); }
+.msg .warn { display: block; color: #9A5B10; font-weight: 400; }
+.hint { font-size: 13px; color: #6B655E; margin-top: 8px; line-height: 1.4; }
+#preview { padding: 12px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+#preview .bg-page { box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+#preview .bg-doc { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+@media print { body { background: #fff; } .ui { display: none; } #preview, #preview .bg-doc { padding: 0; gap: 0; display: block; }
+  #preview .bg-page { box-shadow: none; } }
+@media (max-width: 720px) { .steps3 { grid-template-columns: 1fr; } .form { grid-template-columns: 1fr; } }
+ 
+:root { --ink: #1F3C99; }
+.top h1 { font-family: 'Lilita One', 'Ubuntu', sans-serif; font-weight: 400; font-size: 30px; }
+.facts h2 { font: 400 22px 'Lilita One', 'Ubuntu', sans-serif; color: var(--ink); margin: 0 0 4px; }
+.facts .lead { margin: 0 0 10px; font-size: 14px; color: #5E6170; line-height: 1.45; }
+.frow { display: grid; grid-template-columns: 30px 190px 1fr; gap: 8px; align-items: center; margin-top: 7px; }
+.frow .n { width: 26px; height: 26px; border-radius: 50%; background: #F2A900; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.frow input { width: 100%; }
+.fcols { display: grid; grid-template-columns: 30px 190px 1fr; gap: 8px; font-size: 12px; color: #5E6170; margin-top: 8px; }
+.fopts { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; font-size: 14px; }
+.fopts label { font-weight: 700; color: var(--ink); }
+@media (max-width: 720px) { .frow, .fcols { grid-template-columns: 26px 1fr; } .frow .fx { grid-column: 2; } .fcols span:last-child { display: none; } }
+</style>
+<!-- mts-assistant-styles -->
+<meta name="robots" content="noindex,nofollow">
+<style id="mts-assistant-styles">
+  .panel > .steps, .panel > .steps3 { display: none !important; }
+  #mts-card {
+    background: #FFF8EE; border: 2px solid #F4C95D; border-radius: 16px;
+    padding: 16px 18px 12px; margin: 0 0 14px; color: #2B2B2B;
+    font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  #mts-card [hidden], #mts-paste-hint[hidden] { display: none !important; }
+  .mts-h { margin: 0 0 10px; font-size: 19px; color: #1F5E5B; }
+  .mts-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .mts-step { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start;
+    background: #fff; border-radius: 12px; padding: 12px; }
+  .mts-num { width: 36px; height: 36px; border-radius: 50%; background: #1F5E5B; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+  .mts-body { min-width: 0; }
+  .mts-text { margin: 6px 0 0; font-size: 17px; line-height: 1.4; }
+  .mts-small { margin: 8px 0 0; font-size: 14px; color: #6B655E; line-height: 1.4; }
+  .mts-btn { display: inline-flex; align-items: center; justify-content: center; text-align: center;
+    box-sizing: border-box; min-height: 50px; padding: 12px 22px; border: 0; border-radius: 999px; cursor: pointer;
+    font: 700 16px 'Ubuntu', -apple-system, 'Segoe UI', sans-serif; text-decoration: none;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .mts-btn:active { transform: scale(0.98); }
+  .mts-btn-gpt { background: #1F5E5B; color: #fff; }
+  .mts-btn-paste { background: #F07F5E; color: #fff; }
+  .mts-btn-print { background: #fff; color: #1F5E5B; border: 2px solid #1F5E5B; margin-top: 10px; }
+  .mts-link { background: none; border: 0; padding: 0; font: inherit; color: #1F5E5B; font-weight: 700;
+    text-decoration: underline; cursor: pointer; }
+  #mts-manual textarea { width: 100%; box-sizing: border-box; height: 120px; margin-top: 8px; font-size: 16px;
+    border: 1px solid #E2DACE; border-radius: 10px; padding: 8px; }
+  #mts-paste-hint { margin: 0 0 10px; padding: 12px 14px; border-radius: 12px; background: #FDE8E1;
+    color: #8A2E17; font-size: 16px; font-weight: 700; line-height: 1.4; }
+  .mts-privacy { margin: 10px 2px 0; font-size: 13px; color: #6B655E; }
+  #mts-toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%); width: max-content; max-width: min(92vw, 520px); box-sizing: border-box;
+    background: #2B2B2B; color: #fff; padding: 12px 18px; border-radius: 14px; font-size: 15px; font-weight: 600;
+    line-height: 1.4; text-align: center; box-shadow: 0 4px 18px rgba(0,0,0,.35); z-index: 100000; display: none;
+    font-family: 'Ubuntu', -apple-system, 'Segoe UI', sans-serif; }
+  @media (max-width: 640px) {
+    #mts-card { padding: 14px 12px 10px; margin-left: -6px; margin-right: -6px; }
+    .mts-step { grid-template-columns: 30px 1fr; gap: 10px; padding: 12px 10px; }
+    .mts-num { width: 30px; height: 30px; font-size: 16px; }
+    .mts-btn { display: flex; width: 100%; min-height: 56px; font-size: 17px; padding: 12px 14px; }
+    .mts-text { margin-top: 3px; }
+    #src { font-size: 16px; }
+  }
+  @media print {
+    #mts-card, #mts-toast, #mts-paste-hint { display: none !important; }
+  }
+</style>
+
+</head>
+<body>
+<div class="ui">
+  <div class="top"><img src="data:image/png;base64,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" alt=""><div><h1>Find the Coworker Bingo Maker</h1>
+    <p>Turns your coworkers' fun facts (typed in the form, or from your AI chat) into printable "find someone who…" bingo cards in our design. Every card is different.</p></div></div>
+  <div class="panel">
+<!-- mts-card -->
+<section id="mts-card" aria-label="How to make your game">
+  <h2 class="mts-h">Make it in 3 steps</h2>
+  <ol class="mts-steps">
+    <li class="mts-step"><span class="mts-num">1</span><div class="mts-body">
+      <a id="mts-gpt" class="mts-btn mts-btn-gpt" href="https://chatgpt.com/?q=You%20are%20my%20Find%20the%20Coworker%20Bingo%20helper.%20I%20bought%20the%20Make%20Together%20Studio%20%22Find%20the%20Coworker%20Bingo%22%20(printable%20%22find%20someone%20who...%22%20bingo%20cards%20%2B%20a%20Bingo%20Maker).%20Players%20mingle%20and%20write%20the%20name%20of%20a%20coworker%20who%20matches%20each%20square.%20Help%20me%20make%20bingo%20squares%20about%20my%20team.%20You%20write%20the%20LIST%3B%20the%20Bingo%20Maker%20makes%20every%20card%20and%20checks%20it%2C%20so%20never%20draw%20cards%2C%20grids%20or%20tables%20yourself.%0A%0AAsk%20me%20these%20questions%20ONE%20at%20a%20time%20and%20wait%20for%20each%20answer.%20I%20may%20answer%20in%20my%20own%20language%3A%0A1.%20What%20is%20the%20event%20(a%20Christmas%20or%20holiday%20party%2C%20or%20an%20all-year%20team%20day%2C%20kick-off%20or%20onboarding)%2C%20how%20many%20people%20play%2C%20and%20is%20it%20in%20person%20or%20on%20a%20video%20call%3F%0A2.%20Did%20my%20coworkers%20share%20fun%20facts%20for%20the%20game%3F%20If%20yes%2C%20I%20paste%20them%20as%20%22name%20-%20fact%22.%20Use%20ONLY%20facts%20people%20chose%20to%20share.%20If%20not%2C%20you%20write%20general%20squares%20only.%0A3.%20Anything%20to%20leave%20out%2C%20and%20any%20kind%20inside%20jokes%20about%20the%20team%20or%20the%20office%20(never%20about%20one%20person&#x27;s%20mistakes)%3F%0A4.%20The%20details%3A%20the%20language%20of%20the%20cards%20(English%2C%20German%2C%20French%20or%20Spanish)%2C%20the%20card%20size%20(5%20x%205%2C%20or%204%20x%204%20for%20a%20small%20team%20or%20a%20quick%20game)%2C%20the%20title%2C%20and%20how%20many%20cards%20(players%20%2B%20a%20few%20spares%2C%20at%20most%20100).%0A%0AThen%20give%20a%20short%20summary%20and%20ask%20%22Shall%20I%20write%20your%20bingo%20list%3F%22%20When%20I%20say%20yes%2C%20write%20the%20list%3A%0A-%20Every%20square%20completes%20the%20sentence%20%22Find%20someone%20who%20...%22%20and%20starts%20with%20a%20verb%3A%20has...%2C%20can...%2C%20is...%2C%20loves...%2C%20speaks...%20(German%3A%20%22Finde%20jemanden%2C%20der%20...%22%2C%20French%3A%20%22Trouve%20quelqu&#x27;un%20qui%20...%22%2C%20Spanish%3A%20%22Encuentra%20a%20alguien%20que%20...%22).%20At%20most%207%20words.%20True%20for%20some%20people%2C%20not%20for%20everyone.%0A-%20Enough%20squares%3A%20GRID%205%20needs%20at%20least%2024%2C%20best%2036-50%3B%20GRID%204%20at%20least%2016%2C%20best%2024-32.%20Every%20square%20different.%0A-%20Personal%20squares%20come%20only%20from%20the%20shared%20fun%20facts%3A%20one%20square%20per%20fact%2C%20rewritten%20without%20the%20person&#x27;s%20name%20(the%20cards%20must%20not%20give%20the%20answer%20away)%2C%20and%20the%20line%20ends%20with%20%22%20%7C%20%22%20and%20the%20person&#x27;s%20name%2C%20e.g.%20%22has%20run%20three%20marathons%20%7C%20Priya%22.%20At%20most%20half%20of%20the%20squares%20are%20personal%3B%20fill%20the%20rest%20with%20holiday%20or%20all-year%20squares%20that%20fit%20the%20event.%0A-%20Mix%20easy%20squares%20(many%20people%20match)%20with%20rarer%20ones.%0A-%20Squares%20are%20work-safe%2C%20kind%20and%20inclusive%3B%20nothing%20about%20health%2C%20religion%2C%20politics%2C%20money%20or%20salary%2C%20relationships%20or%20family%20status%2C%20age%2C%20weight%20or%20looks%3B%20no%20alcohol%3B%20nothing%20that%20embarrasses%20or%20singles%20out%20anyone%3B%20no%20brands%2C%20celebrities&#x27;%20names%2C%20films%2C%20TV%20shows%2C%20songs%20or%20characters.%20Never%20invent%20facts%20about%20real%20people.%0A-%20Write%20the%20squares%20in%20my%20language%20if%20I%20want%3B%20keep%20the%20keywords%20below%20in%20English.%0A%0APut%20EVERYTHING%20inside%20ONE%20plain%20code%20block%20(three%20backticks)%2C%20in%20exactly%20this%20format%2C%20so%20I%20can%20paste%20it%20into%20the%20Bingo%20Maker.%20Never%20use%20Canvas%2C%20a%20document%20or%20a%20%22writing%20block%22%3A%0ABINGO%3A%20%5Ba%20title%20for%20the%20cards%5D%0ASTYLE%3A%20phrases%0AGRID%3A%20%5B5%2C%20or%204%20for%20a%20small%20team%20or%20a%20quick%20game%5D%0AFREE%3A%20%5BFREE%2C%20a%20short%20word%20for%20the%20free%20centre%2C%20or%20none%20for%20GRID%204%5D%0ACARDS%3A%20%5Bhow%20many%20different%20cards%3A%20players%20%2B%20a%20few%20spares%2C%20at%20most%20100%5D%0ALANGUAGE%3A%20%5Ben%2C%20de%2C%20fr%20or%20es%5D%0A---%0AITEMS%3A%0A%5Bone%20square%20per%20line%3B%20a%20personal%20square%20ends%20with%20%22%20%7C%20%22%20and%20the%20coworker&#x27;s%20name%5D%0A%0ABefore%20you%20answer%2C%20check%3A%20enough%20squares%20for%20the%20GRID%2C%20no%20square%20twice%2C%20no%20person&#x27;s%20name%20inside%20a%20square%2C%20FREE%20is%20%22none%22%20for%20GRID%204%2C%20the%20keywords%20are%20in%20English.%20Write%20every%20square%3B%20never%20shorten%20the%20list%20with%20%22...%22%20or%20%22and%20so%20on%22.%20At%20the%20end%2C%20ask%20if%20I%20want%20any%20changes.%20If%20I%20change%20anything%2C%20give%20me%20the%20whole%20code%20block%20again." target="_blank" rel="noopener">Copy the AI prompt &amp; open ChatGPT</a>
+      <p class="mts-small">Using Gemini or Claude instead? <button type="button" class="mts-link" id="mts-copy-only">Copy the prompt</button> and paste it there.</p>
+      <div id="mts-manual" hidden><p class="mts-small">Couldn't copy automatically. Tap and hold in this box → Select All → Copy:</p><textarea readonly id="mts-manual-ta"></textarea></div>
+    </div></li>
+    <li class="mts-step"><span class="mts-num">2</span><div class="mts-body">
+      <p class="mts-text">Answer ChatGPT's questions, then tap <b>Copy</b> on its answer.</p>
+      <p class="mts-small">No Copy button? Ask it: <i>Put it all in one code block.</i></p>
+    </div></li>
+    <li class="mts-step"><span class="mts-num">3</span><div class="mts-body">
+      <button type="button" id="mts-paste" class="mts-btn mts-btn-paste">Paste the answer &amp; make my bingo cards</button><br>
+      <button type="button" id="mts-print" class="mts-btn mts-btn-print">Save as PDF / Print</button>
+      <p class="mts-small">iPhone: Print → Share → Save to Files. Android: Print → Save as PDF.</p>
+    </div></li>
+  </ol>
+  <p class="mts-privacy">🔒 Nothing you type leaves your device. Your text is only kept in this browser, so it's still here if you switch apps.</p>
+</section>
+<p id="mts-paste-hint" role="status" hidden>Tap and hold in the box → <b>Paste</b>, then tap <b>Make my bingo cards</b>.</p>
+<!-- /mts-card -->
+
+    <div class="steps3">
+      <div class="step"><b>1</b> In your AI chat, click <b>Copy</b> on the box with your bingo list. No box? Send the AI: <i>Put the whole bingo list in one code block.</i> No AI? Use the <b>fun facts form</b> below.</div>
+      <div class="step"><b>2</b> Paste it below and click <b>Make my bingo cards</b>. Or pick a ready set: holiday, all-year or quick 4 × 4.</div>
+      <div class="step"><b>3</b> Check the pages, then click <b>Print / Save as PDF</b>. Keep the host pages (and the answer key) for yourself.</div>
+    </div>
+    <textarea id="src" placeholder="Paste here. It starts with:  BINGO: …  STYLE: phrases  GRID: 5"></textarea>
+    <div class="row">
+      <button class="primary" id="make">Make my bingo cards</button>
+      <button class="accent" id="print">Print / Save as PDF</button>
+      <select id="paper"><option value="letter">US Letter paper</option><option value="a4">A4 paper</option></select>
+      <select id="per"><option value="1">1 card per page</option><option value="2">2 cards per page (saves paper)</option></select>
+    </div>
+    <div class="row">
+      <select id="ready"><option value="">Ready sets…</option><option value="holiday">Holiday bingo (Christmas & holiday party)</option><option value="allyear">All-year bingo (Any time of year)</option><option value="quick">Quick 4 × 4 (Small teams · 15 minutes)</option></select>
+      <button class="ghost" id="demo">Try an example</button>
+      <button class="ghost" id="mix">Mix new cards</button>
+    </div>
+    <div class="msg" id="msg"></div>
+    <details id="formbox"><summary>Change the details or edit the squares</summary>
+      <div class="form">
+        <label for="f-title">Title on the cards</label><input type="text" id="f-title" maxlength="90" placeholder="Find the Coworker Bingo">
+        <label for="f-grid">Card size</label><select id="f-grid"><option value="5">5 × 5 (24 squares + free centre)</option><option value="4">4 × 4 (16 squares, small teams, quick game)</option></select>
+        <label for="f-free">Free centre square</label><div><input type="text" id="f-free" maxlength="40" placeholder="FREE" style="width:220px"> <label style="font-weight:400"><input type="checkbox" id="f-nofree"> no free square</label></div>
+        <label for="f-cards">How many cards</label><input type="number" id="f-cards" min="1" max="100" value="30" style="width:90px">
+        <label for="f-lang">Card labels</label><select id="f-lang"><option value="en">English</option><option value="de">Deutsch</option><option value="fr">Français</option><option value="es">Español</option></select>
+        <label class="wide" for="f-items">Squares, one per line, as they follow "Find someone who…". A personal square ends with | and the name, e.g. <i>has run three marathons | Priya</i> (the name only goes on your answer key).</label>
+        <textarea class="wide" id="f-items" rows="10"></textarea>
+      </div>
+      <div class="row"><button class="primary" id="make2">Make my bingo cards</button></div>
+    </details>
+    <div class="hint">Printing tip: choose <b>Actual size / 100%</b>. To get a PDF file, pick <b>Save as PDF</b> as the printer.
+      Your words stay on this computer: nothing is uploaded. The same list always makes the same cards; <b>Mix new cards</b> makes a new set.<br>
+      For personal use in your home, at your own party or office party, or in one classroom; please don&#39;t resell or share the files.</div>
+  </div>
+  <div class="panel facts" id="facts">
+    <h2>Fun facts form: no AI needed</h2>
+    <p class="lead">Type each coworker's name and the fun fact they chose to share, written so it follows <b>"Find someone who…"</b>
+      (for example <i>has met a penguin up close</i>). Leave out the name inside the fact. We mix your facts with our squares, make
+      every card different, and print a secret answer key for you. Only use facts people were happy to share.</p>
+    <div class="fcols"><span></span><span>Name (answer key only)</span><span>Find someone who…</span></div>
+    <div id="frows"></div>
+    <div class="fopts">
+      <button class="ghost" id="fmore">+ 4 more rows</button>
+      <label for="fmixsel">Mix in our squares:</label>
+      <select id="fmixsel"><option value="holiday">Holiday party squares</option><option value="allyear">All-year team squares</option><option value="both">Both</option><option value="none">None (only our facts)</option></select>
+      <label for="fgrid">Card:</label><select id="fgrid"><option value="5">5 × 5</option><option value="4">4 × 4</option></select>
+      <label for="fcards">Cards:</label><input type="number" id="fcards" min="1" max="100" value="30" style="width:80px">
+    </div>
+    <div class="row"><button class="primary" id="make3">Make my bingo cards</button><button class="ghost" id="fclear">Clear the form</button></div>
+    <div class="msg" id="fmsg"></div>
+  </div>
+</div>
+<div id="preview"></div>
+<script>window.BG_CONTENT = {"season": "office", "default_title": "Find the Coworker Bingo", "brand_line": "Make Together Studio · Find the Coworker Bingo", "theme": {"ink": "#1F3C99", "em": "#D9452B", "soft": "#FFF8EE", "line": "#C9D3F0", "free": "#FFE29A", "letters": ["#1F3C99", "#D9452B", "#0E7466", "#A85A12", "#7A2E8E"]}, "deco": ["mug", "gift"], "icons": {"star": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 6 L62 37 L95 38 L69 59 L78 92 L50 73 L22 92 L31 59 L5 38 L38 37 Z\" fill=\"#F2A900\" stroke=\"#B07800\" stroke-width=\"3\" stroke-linejoin=\"round\"/></svg>", "mug": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M30 14 q-6 8 0 14 q6 6 0 14\" fill=\"none\" stroke=\"#C9D3F0\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M50 10 q-6 8 0 14 q6 6 0 14\" fill=\"none\" stroke=\"#C9D3F0\" stroke-width=\"5\" stroke-linecap=\"round\"/><rect x=\"18\" y=\"44\" width=\"52\" height=\"46\" rx=\"9\" fill=\"#1F3C99\"/><path d=\"M70 52 h8 a10 10 0 0 1 0 20 h-8\" fill=\"none\" stroke=\"#1F3C99\" stroke-width=\"7\"/><rect x=\"18\" y=\"58\" width=\"52\" height=\"9\" fill=\"#D9452B\"/><circle cx=\"31\" cy=\"62.5\" r=\"2.4\" fill=\"#FFFFFF\"/><circle cx=\"44\" cy=\"62.5\" r=\"2.4\" fill=\"#FFFFFF\"/><circle cx=\"57\" cy=\"62.5\" r=\"2.4\" fill=\"#FFFFFF\"/></svg>", "gift": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"14\" y=\"40\" width=\"72\" height=\"50\" rx=\"6\" fill=\"#D9452B\"/><rect x=\"9\" y=\"30\" width=\"82\" height=\"16\" rx=\"5\" fill=\"#E8644A\"/><rect x=\"44\" y=\"30\" width=\"12\" height=\"60\" fill=\"#F2A900\"/><path d=\"M50 30 C36 8 16 16 28 28 C34 33 44 31 50 30 Z\" fill=\"#F2A900\" stroke=\"#B07800\" stroke-width=\"2.5\"/><path d=\"M50 30 C64 8 84 16 72 28 C66 33 56 31 50 30 Z\" fill=\"#F2A900\" stroke=\"#B07800\" stroke-width=\"2.5\"/></svg>", "trophy": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M30 14 h40 v22 a20 20 0 0 1 -40 0 Z\" fill=\"#F2A900\"/><path d=\"M30 20 h-12 a12 12 0 0 0 14 18 M70 20 h12 a12 12 0 0 1 -14 18\" fill=\"none\" stroke=\"#F2A900\" stroke-width=\"6\"/><rect x=\"45\" y=\"54\" width=\"10\" height=\"16\" fill=\"#C98A00\"/><rect x=\"30\" y=\"70\" width=\"40\" height=\"14\" rx=\"4\" fill=\"#1F3C99\"/></svg>", "butterfly": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 50 C30 14 6 22 12 44 C16 58 36 58 50 50 Z\" fill=\"#D9452B\"/><path d=\"M50 50 C70 14 94 22 88 44 C84 58 64 58 50 50 Z\" fill=\"#D9452B\"/><path d=\"M50 52 C34 60 22 80 34 86 C44 90 50 72 50 52 Z\" fill=\"#F2A900\"/><path d=\"M50 52 C66 60 78 80 66 86 C56 90 50 72 50 52 Z\" fill=\"#F2A900\"/><rect x=\"46\" y=\"30\" width=\"8\" height=\"50\" rx=\"4\" fill=\"#1F3C99\"/></svg>", "bolt": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M58 6 L22 56 H46 L38 94 L80 40 H55 Z\" fill=\"#F2A900\" stroke=\"#B07800\" stroke-width=\"3\" stroke-linejoin=\"round\"/></svg>", "chat": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M12 18 h56 a8 8 0 0 1 8 8 v28 a8 8 0 0 1 -8 8 h-34 l-14 12 v-12 h-8 a8 8 0 0 1 -8 -8 v-28 a8 8 0 0 1 8 -8 Z\" fill=\"#0E7466\"/><path d=\"M50 44 h34 a8 8 0 0 1 8 8 v20 a8 8 0 0 1 -8 8 h-4 v10 l-12 -10 h-18 a8 8 0 0 1 -8 -8 v-20 a8 8 0 0 1 8 -8 Z\" fill=\"#F2A900\"/><circle cx=\"28\" cy=\"40\" r=\"4\" fill=\"#FFFFFF\"/><circle cx=\"40\" cy=\"40\" r=\"4\" fill=\"#FFFFFF\"/><circle cx=\"52\" cy=\"40\" r=\"4\" fill=\"#FFFFFF\"/></svg>", "heart": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 88 C20 66 8 50 10 34 C12 18 32 12 50 30 C68 12 88 18 90 34 C92 50 80 66 50 88 Z\" fill=\"#D9452B\"/></svg>", "pen": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><g transform=\"rotate(40 50 50)\"><rect x=\"42\" y=\"6\" width=\"16\" height=\"66\" rx=\"4\" fill=\"#1F3C99\"/><rect x=\"42\" y=\"16\" width=\"16\" height=\"7\" fill=\"#F2A900\"/><path d=\"M42 72 h16 l-8 20 Z\" fill=\"#F4D9B0\"/><path d=\"M47 84 h6 l-3 8 Z\" fill=\"#1F3C99\"/></g></svg>", "people": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"22\" cy=\"40\" r=\"12\" fill=\"#D9452B\"/><rect x=\"8\" y=\"56\" width=\"28\" height=\"34\" rx=\"12\" fill=\"#D9452B\"/><circle cx=\"50\" cy=\"34\" r=\"13\" fill=\"#1F3C99\"/><rect x=\"35\" y=\"51\" width=\"30\" height=\"40\" rx=\"13\" fill=\"#1F3C99\"/><circle cx=\"78\" cy=\"40\" r=\"12\" fill=\"#0E7466\"/><rect x=\"64\" y=\"56\" width=\"28\" height=\"34\" rx=\"12\" fill=\"#0E7466\"/><circle cx=\"36\" cy=\"12\" r=\"3.5\" fill=\"#F2A900\"/><circle cx=\"64\" cy=\"12\" r=\"3.5\" fill=\"#F2A900\"/><circle cx=\"50\" cy=\"8\" r=\"3.5\" fill=\"#F2A900\"/></svg>"}, "icon_label": {"star": "Star", "mug": "Mug", "gift": "Gift", "trophy": "Trophy", "butterfly": "Butterfly", "bolt": "Bolt", "chat": "Chat", "heart": "Heart", "pen": "Pen", "people": "People"}, "icon_names": {}, "emoji_icon": {}, "labels": {"en": {"free": "FREE", "card": "Card", "name": "My name", "page": "page", "items": "squares", "cards": "cards", "call_title": "Calling cards", "call_hint": "Cut the cards apart and shuffle them. Draw one at a time: read it out (and show the picture), then tick it on the caller sheet.", "sheet_title": "Host sheet", "sheet_hint": "Every square on the cards. When someone shouts BINGO, ask one or two people on their line: “Is that true?” If it is, they win.", "patterns": "Ways to win", "p_line": "Line", "p_corners": "4 corners", "p_x": "X", "p_full": "Full card", "find_rule": "Find someone who…", "find_hint": "Ask around and write the name of someone who fits. One square per person.", "key_title": "Answer key: personal squares", "key_hint": "For the host only. These squares came from the fun facts your coworkers shared, so only the person named fits. Keep this page hidden until the game ends."}, "de": {"free": "FREI", "card": "Karte", "name": "Mein Name", "page": "Seite", "items": "Felder", "cards": "Karten", "call_title": "Ziehkarten", "call_hint": "Schneidet die Karten aus und mischt sie. Zieht eine nach der anderen: vorlesen (und das Bild zeigen), dann auf dem Spielleiter-Blatt abhaken.", "sheet_title": "Blatt der Spielleitung", "sheet_hint": "Alle Felder der Karten. Ruft jemand BINGO, fragt ein oder zwei Personen aus der Reihe: „Stimmt das?“ Wenn ja, gewinnt die Karte.", "patterns": "So gewinnt man", "p_line": "Reihe", "p_corners": "4 Ecken", "p_x": "X", "p_full": "Volle Karte", "find_rule": "Finde jemanden, der …", "find_hint": "Fragt herum. Passt es, schreibt den Namen ins Feld. Jede Person nur einmal pro Karte.", "key_title": "Lösung: persönliche Felder", "key_hint": "Nur für die Spielleitung. Diese Felder stammen aus den Fun Facts, die eure Kolleginnen und Kollegen geteilt haben, also passt nur die genannte Person. Bis zum Spielende verdeckt halten."}, "fr": {"free": "LIBRE", "card": "Carte", "name": "Mon prénom", "page": "page", "items": "cases", "cards": "cartes", "call_title": "Cartes à tirer", "call_hint": "Découpez les cartes et mélangez-les. Tirez-en une à la fois : lisez-la à voix haute (et montrez l’image), puis cochez-la sur la feuille de l’animateur.", "sheet_title": "Feuille de l’animateur", "sheet_hint": "Toutes les cases des cartes. Quand quelqu’un crie BINGO, demandez à une ou deux personnes de sa ligne : « C’est vrai ? » Si oui, la carte gagne.", "patterns": "Pour gagner", "p_line": "Ligne", "p_corners": "4 coins", "p_x": "X", "p_full": "Carton plein", "find_rule": "Trouve quelqu’un qui…", "find_hint": "Pose des questions. Si ça colle, écris son prénom dans la case. Une case par personne.", "key_title": "Réponses : cases personnelles", "key_hint": "Pour l’animateur seulement. Ces cases viennent des anecdotes partagées par vos collègues : seule la personne nommée correspond. Gardez cette page cachée jusqu’à la fin du jeu."}, "es": {"free": "LIBRE", "card": "Cartón", "name": "Mi nombre", "page": "página", "items": "casillas", "cards": "cartones", "call_title": "Tarjetas para cantar", "call_hint": "Recortar las tarjetas y mezclarlas. Sacar una cada vez: leerla en voz alta (y enseñar el dibujo) y marcarla en la hoja del cantor.", "sheet_title": "Hoja del anfitrión", "sheet_hint": "Todas las casillas de los cartones. Cuando alguien grite ¡BINGO!, preguntar a una o dos personas de su línea: «¿Es verdad?». Si lo es, gana.", "patterns": "Formas de ganar", "p_line": "Línea", "p_corners": "4 esquinas", "p_x": "X", "p_full": "Cartón lleno", "find_rule": "Encuentra a alguien que…", "find_hint": "Pregunta. Si encaja, escribe su nombre en la casilla. Cada persona una vez por cartón.", "key_title": "Respuestas: casillas personales", "key_hint": "Solo para el anfitrión. Estas casillas salen de los datos curiosos que compartieron los compañeros: solo encaja la persona nombrada. Guardar esta hoja hasta el final."}}, "sets": {"holiday": {"key": "holiday", "title": "Find the Coworker", "short": "Holiday bingo", "style": "phrases", "grid": 5, "free": "default", "cards": 30, "seed": 61223, "items": ["has already finished their holiday shopping", "still has every gift left to buy", "is wearing something festive today", "has made a gingerbread house", "decorates before December starts", "has a holiday movie they watch every year", "has never seen real snow", "has built a snowman taller than themselves", "makes a family recipe every December", "wraps presents the night before", "uses gift bags instead of wrapping paper", "has an ornament they made themselves", "can sing a whole winter song from memory", "has been ice skating", "still sends paper holiday cards", "loves anything peppermint", "prefers hot cocoa to coffee", "will travel by plane this holiday", "spends the holidays somewhere warm", "has cooked a big holiday dinner", "has a funny holiday tradition", "owns festive pajamas", "has re-gifted a present (no names!)", "has made a snow angel", "bakes cookies every December", "has been to a holiday market", "puts lights up outside every year", "has a holiday song they never skip", "has a decoration older than 20 years", "has seen the northern lights", "has written a wish list as a grown-up", "kept a New Year's resolution all year", "can say \"Happy Holidays\" in 3 languages", "has burned a batch of holiday cookies", "has a tradition from another country", "shops for gifts all year round", "has a birthday in December or January", "likes winter more than summer", "has knitted or crocheted a gift", "owns more than one festive mug", "has untangled the lights this year", "has dressed a pet in a holiday outfit", "has been sledding in the last 3 years", "has opened a present before the big day", "has a favorite holiday cookie recipe", "has gone caroling or sung for neighbors", "has a gift-wrapping trick to share", "made a homemade gift this year"], "ages": "Christmas & holiday party", "who": "Holiday party", "blurb": "Winter, gifts, traditions and party moments. 5 × 5 with a free centre."}, "allyear": {"key": "allyear", "title": "Find the Coworker", "short": "All-year bingo", "style": "phrases", "grid": 5, "free": "default", "cards": 30, "seed": 40917, "items": ["has been to another continent", "speaks three or more languages", "can play a musical instrument", "has a birthday in the same month as you", "joined our team less than a year ago", "had an unusual first job", "has a pet with a human name", "has more than one pet", "can juggle (show us!)", "has met someone famous", "has been on TV or the radio", "is left-handed", "never drinks coffee", "has a talent you'd never guess", "has finished a fun run or a race", "has lived in another country", "reads a book every month", "grows their own herbs or vegetables", "has kept a houseplant alive for 5+ years", "can cook a dish from another country", "has gone zip-lining", "has slept in a tent this year", "has hiked to a mountain top", "collects something", "has a favorite board game", "can whistle a tune", "has written a poem or a song", "has a podcast they never miss", "has visited 10 or more countries", "walks or cycles to work", "is at their best before 8 a.m.", "is a proper night owl", "has the same favorite snack as you", "has a plant on their desk", "knows everyone's name in this room", "has taken a class just for fun this year", "has a funny story about their first day here", "has volunteered this year", "has been on a boat this year", "loves really spicy food", "has been to a concert this year", "can solve a puzzle cube", "knows a magic trick", "has a nickname everyone uses", "has more pet photos than selfies", "has been on a stage in a show", "sings in the car", "started a new hobby this year"], "ages": "Any time of year", "who": "Team days", "blurb": "Hobbies, travels and hidden talents for kick-offs, onboarding and team days."}, "quick": {"key": "quick", "title": "Find the Coworker", "short": "Quick 4 × 4", "style": "phrases", "grid": 4, "free": "none", "cards": 30, "seed": 17311, "items": ["has been ice skating", "has made a snow angel", "bakes cookies every December", "has never seen real snow", "prefers hot cocoa to coffee", "is wearing something festive today", "has been to a holiday market", "owns festive pajamas", "has a holiday movie they watch every year", "wraps presents the night before", "likes winter more than summer", "has made a gingerbread house", "will travel by plane this holiday", "loves anything peppermint", "uses gift bags instead of wrapping paper", "has seen the northern lights", "has been to another continent", "speaks three or more languages", "can play a musical instrument", "has a pet with a human name", "is left-handed", "never drinks coffee", "has a plant on their desk", "can whistle a tune", "has lived in another country", "has a favorite board game", "sings in the car", "knows a magic trick", "loves really spicy food", "has a birthday in the same month as you", "walks or cycles to work", "started a new hobby this year"], "ages": "Small teams · 15 minutes", "who": "Small teams", "blurb": "16 squares for small teams, a coffee break or a video call."}}};
+/* Make Together Studio bingo engine: one file shared by the printable PDFs (rendered in headless Chrome), the Bingo
+   Maker (the buyer's browser) and node (tests / independent verification).
+
+   Everything that must be exact is done here, never by the AI: the AI only writes a list of words or pictures.
+     BG.parse(text)              the AI's code block -> {cfg, items, errors, warnings}
+     BG.build(C, cfg, items)     -> game {cfg, items, cards, stats, errors, warnings}; every card unique, every item callable
+     BG.render(C, game, opt)     -> HTML pages: caller sheet, calling cards, player cards (Letter or A4, 1 or 2 per page)
+     BG.fit(root)                shrinks text to fit its box (width AND height), soft hyphens, last resort overflow-wrap
+     BG.overflow(root)           QA: every box whose content is wider/taller than the box or sticks out of the page
+   C = the season content (window.BG_CONTENT): labels, theme colours, icons (SVG), emoji -> icon map, ready sets.
+*/
+(function (root) {
+  'use strict';
+  const BG = {};
+  const MAX_ITEMS = 80, MAX_CARDS = 100, MIN_CARDS = 1;
+
+  // ------------------------------------------------------------------ small utils
+  BG.esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  BG.rng = function (seed) {                       // mulberry32: same seed -> same cards, everywhere
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  };
+  BG.hash = function (str) {                       // FNV-1a over code points
+    let h = 2166136261;
+    for (const ch of String(str)) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  };
+  function shuffle(a, rnd) {
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  // French typography: no-break space before : ; ! ? » and after «, so no mark starts a line alone
+  BG.nbsp = s => String(s).replace(/\s+([!?;:»])/g, ' $1').replace(/«\s+/g, '« ');
+  BG.norm = s => String(s).toLowerCase().normalize('NFC').replace(/[\s ]+/g, ' ').replace(/^[\s"'“”«»„.,;:!?-]+|[\s"'“”«»„.,;:!?-]+$/g, '').trim();
+
+  // one emoji = a flag (2 regional indicators), a keycap, or a pictograph with optional variation selector, skin tone and
+  // tag sequence; ZWJ joins several (🐈‍⬛, 👩🏽‍🍳, 🏳️‍🌈). A lone regional indicator is still taken, as before.
+  const EMO_EL = '(?:\\p{Regional_Indicator}{1,2}|[#*0-9]\\uFE0F?\\u20E3|\\p{Extended_Pictographic}[\\uFE0E\\uFE0F]?\\p{Emoji_Modifier}?' +
+    '[\\u{E0020}-\\u{E007E}]*\\u{E007F}?)';
+  const EMOJI_RE = new RegExp('^\\s*(' + EMO_EL + '(?:\\u200D' + EMO_EL + ')*[\\uFE0E\\uFE0F]?)\\s*', 'u');
+  BG.splitEmoji = function (line) {
+    const m = String(line).match(EMOJI_RE);
+    if (!m) return { emoji: '', text: String(line).trim() };
+    return { emoji: m[1], text: String(line).slice(m[0].length).trim() };
+  };
+
+  // ------------------------------------------------------------------ geometry
+  BG.cellsOf = (grid, free) => grid * grid - (free ? 1 : 0);
+  BG.comb = function (n, k) {                      // n choose k, capped (only compared with card counts <= 100)
+    let r = 1;
+    for (let i = 1; i <= k; i++) { r = r * (n - k + i) / i; if (r > 1e6) return 1e6; }
+    return Math.round(r);
+  };
+  BG.centre = grid => (grid % 2 ? (grid * grid - 1) / 2 : -1);
+  BG.lines = function (grid) {                     // rows, columns, both diagonals (positions 0..g*g-1)
+    const L = [];
+    for (let r = 0; r < grid; r++) L.push([...Array(grid)].map((_, c) => r * grid + c));
+    for (let c = 0; c < grid; c++) L.push([...Array(grid)].map((_, r) => r * grid + c));
+    L.push([...Array(grid)].map((_, i) => i * grid + i));
+    L.push([...Array(grid)].map((_, i) => i * grid + (grid - 1 - i)));
+    return L;
+  };
+
+  // ------------------------------------------------------------------ parsing the AI's code block
+  const KEYS = { BINGO: 'title', TITLE: 'title', STYLE: 'style', GRID: 'grid', FREE: 'free', CARDS: 'cards', PLAYERS: 'players',
+    LANGUAGE: 'lang', LANG: 'lang', LABELS: 'labels', ITEMS: 'items' };
+  const STYLES = { picture: 'pictures', pictures: 'pictures', pics: 'pictures', icons: 'pictures', emoji: 'pictures', word: 'words',
+    words: 'words', text: 'words', phrase: 'phrases', phrases: 'phrases', party: 'phrases', sentences: 'phrases' };
+
+  BG.parse = function (text) {
+    const cfg = {}, items = [], errors = [], warnings = [];
+    let mode = 'head';
+    const lines = String(text || '').replace(/\r/g, '').split('\n');
+    for (const raw of lines) {
+      if (/^\s*```/.test(raw)) { if (mode === 'items' && items.length) break; continue; }   // the end of the code block
+      const line = raw.replace(/\*\*/g, '').trim();
+      if (!line) continue;
+      if (/^[-–—_=]{3,}$/.test(line)) { if (mode === 'head' && Object.keys(cfg).length) mode = 'items'; continue; }
+      const m = line.match(/^([A-Za-z]+)\s*:\s*(.*)$/);
+      if (mode === 'head') {
+        if (m && KEYS[m[1].toUpperCase()]) {
+          const key = KEYS[m[1].toUpperCase()], val = m[2].trim();
+          if (key === 'items') { mode = 'items'; if (val) items.push(val); } else cfg[key] = val;
+          continue;
+        }
+        if (Object.keys(cfg).length) { mode = 'items'; items.push(line); }     // items without an ITEMS: line
+        continue;                                                                // text before the block: ignored
+      }
+      if (m && /^ITEMS$/i.test(m[1])) { if (m[2].trim()) items.push(m[2].trim()); continue; }
+      items.push(line);
+    }
+    if (items.length === 1 && (items[0].match(/,/g) || []).length >= 5) items.splice(0, 1, ...items[0].split(',').map(s => s.trim()));
+    const out = { title: (cfg.title || '').slice(0, 90) };
+    const st = BG.norm(cfg.style || '');
+    out.style = STYLES[st] || null;
+    if (cfg.style && !out.style) warnings.push(`STYLE “${cfg.style}” is unknown, so I chose the style myself.`);
+    const gm = String(cfg.grid || '').match(/(\d)/);
+    out.grid = gm ? +gm[1] : null;
+    if (cfg.grid && ![3, 4, 5].includes(out.grid)) { warnings.push('GRID must be 3, 4 or 5, so I chose the size myself.'); out.grid = null; }
+    const fr = (cfg.free || '').trim();
+    if (!fr || /^(yes|ja|oui|si|sí|free|frei|libre|true|centre|center)$/i.test(fr)) out.free = fr ? 'default' : null;
+    else if (/^(no|none|nein|non|false|off|-)$/i.test(fr)) out.free = 'none';
+    else out.free = fr.slice(0, 40);
+    if (cfg.cards) {
+      const n = parseInt(String(cfg.cards).replace(/[^\d]/g, ''), 10);
+      if (n >= MIN_CARDS) out.cards = Math.min(n, MAX_CARDS);
+      if (n > MAX_CARDS) warnings.push(`At most ${MAX_CARDS} cards at a time, so I made ${MAX_CARDS}.`);
+    }
+    out.players = (cfg.players || '').split(/[,;]|\s+(?:and|und|et|y)\s+|\s+&\s+/i).map(s => s.replace(/\(.*?\)/g, '').trim()).filter(Boolean).slice(0, MAX_CARDS);
+    out.lang = (cfg.lang || '').trim().slice(0, 2).toLowerCase();
+    out.labels = !/^(no|none|off|nein|non)$/i.test((cfg.labels || '').trim());
+    const its = items.map(s => s.replace(/^\s*(?:[-*•–]|\d{1,3}[.)])\s+/, '').trim()).filter(s => s && !/^(ITEMS|NOTES?)\s*:?$/i.test(s));
+    return { cfg: out, items: its, errors, warnings, found: Object.keys(cfg).length > 0 || its.length > 0 };
+  };
+
+  // ------------------------------------------------------------------ items: emoji, our drawn icons, duplicates
+  BG.items = function (C, list, style) {
+    const out = [], seen = new Map(), warnings = [], errors = [];
+    const names = C.icon_names || {};
+    for (const line of list) {
+      let { emoji, text } = BG.splitEmoji(line);
+      text = text.replace(/\s+/g, ' ').trim();
+      let icon = '';
+      const pm = text.match(/^\[([a-z-]+)\]\s*(.*)$/i);                  // [cat] Biscuit -> our cat drawing, label Biscuit
+      if (pm && C.icons[pm[1].toLowerCase()]) { icon = pm[1].toLowerCase(); text = pm[2].trim() || C.icon_label[icon] || icon; }
+      if (!icon && emoji) icon = (C.emoji_icon || {})[emoji.replace(/[️︎]/g, '')] || '';
+      // With an emoji, only our drawing's own name counts (Candy cane, Ornament: words with no exact emoji, which the AI
+      // guide says the Maker draws), never a synonym: the AI's 🐶 for a dog named Biscuit beats our cookie drawing.
+      if (!icon && style === 'pictures') {
+        const hit = names[BG.norm(text)] || '';
+        if (hit && (!emoji || BG.norm(C.icon_label[hit] || '') === BG.norm(text))) icon = hit;
+      }
+      if (!text && emoji) text = (icon && C.icon_label[icon]) || '';
+      if (!text) { if (emoji) warnings.push(`An item has a picture but no word (${emoji}); it was left out.`); continue; }
+      const key = BG.norm(text);
+      if (seen.has(key)) { warnings.push(`“${text}” is in the list twice; it is used once.`); continue; }
+      seen.set(key, out.length);
+      out.push({ text: text.slice(0, 80), emoji, icon, long: text.length > 80 });
+    }
+    out.filter(i => i.long).forEach(i => warnings.push(`“${i.text}…” is very long; it was shortened. Short items read best.`));
+    if (out.length > MAX_ITEMS) { warnings.push(`Only the first ${MAX_ITEMS} items are used (you gave ${out.length}).`); out.length = MAX_ITEMS; }
+    if (style === 'pictures') {
+      const bare = out.filter(i => !i.icon && !i.emoji);
+      if (bare.length) warnings.push(`${bare.length} picture item${bare.length > 1 ? 's have' : ' has'} no picture, so ${bare.length > 1 ? 'they show' : 'it shows'} the word only: ${bare.slice(0, 5).map(i => '“' + i.text + '”').join(', ')}${bare.length > 5 ? '…' : ''}.`);
+    }
+    return { items: out, warnings, errors };
+  };
+
+  // ------------------------------------------------------------------ card generation (deterministic, verified)
+  /* n items, k cells per card. Rules, checked for every new card against all earlier cards:
+       1. no item twice on a card;
+       2. the card's item SET is new (when n > k; with n == k every card has every item, so only the layout differs);
+       3. the card's LAYOUT is new;
+       4. no full line (row, column, diagonal) repeats an earlier card's line as a set (strict mode; relaxed only if the
+          list is too short to allow it, which is reported in stats);
+     Items are spread evenly (least-used first, random tie-break), so every item appears on some card and is worth calling. */
+  BG.generate = function (n, grid, free, count, seed) {
+    const k = BG.cellsOf(grid, free), centre = free ? BG.centre(grid) : -1;
+    if (n < k) return { error: `needs at least ${k} items`, cards: [] };
+    const rnd = BG.rng(seed);
+    const use = new Array(n).fill(0);
+    const sets = new Set(), layouts = new Set(), lineSet = new Set();
+    const LINES = BG.lines(grid);
+    const cards = [];
+    let relaxed = 0;
+    const lineKeys = cells => LINES.map(L => L.filter(p => p !== centre).map(p => cells[p]).sort((a, b) => a - b).join(','));
+    for (let c = 0; c < count; c++) {
+      let ok = null;
+      for (let attempt = 0; attempt < 1500 && !ok; attempt++) {
+        const strict = attempt < 600, setsFree = attempt >= 900 && BG.comb(n, k) < count;   // too few possible sets: layouts only
+        const order = [...Array(n).keys()].map(i => [use[i] + rnd() * (attempt < 200 ? 0.95 : 2.5), i]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+        const chosen = shuffle(order.slice(0, k), rnd);
+        const cells = [];
+        let j = 0;
+        for (let p = 0; p < grid * grid; p++) cells.push(p === centre ? -1 : chosen[j++]);
+        const setKey = chosen.slice().sort((a, b) => a - b).join(',');
+        if (n > k && sets.has(setKey) && !setsFree) continue;
+        const layKey = cells.join(',');
+        if (layouts.has(layKey)) continue;
+        const lk = lineKeys(cells);
+        if (new Set(lk).size !== lk.length) continue;
+        if (strict && lk.some(x => lineSet.has(x))) continue;
+        if (!strict) relaxed++;
+        ok = { cells, setKey, layKey, lk };
+      }
+      if (!ok) return { error: `could not make ${count} different cards from ${n} items; add more items or make fewer cards`, cards };
+      sets.add(ok.setKey); layouts.add(ok.layKey); ok.lk.forEach(x => lineSet.add(x));
+      ok.cells.forEach(i => { if (i >= 0) use[i]++; });
+      cards.push(ok.cells);
+    }
+    let maxShared = 0;
+    for (let a = 0; a < cards.length; a++) {
+      const A = new Set(cards[a]);
+      for (let b = a + 1; b < cards.length; b++) {
+        let s = 0; for (const x of cards[b]) if (x >= 0 && A.has(x)) s++;
+        if (s > maxShared) maxShared = s;
+      }
+    }
+    return { cards, stats: { items: n, cells: k, cards: count, relaxedCards: relaxed, maxShared, minUse: Math.min(...use), maxUse: Math.max(...use) } };
+  };
+
+  // ------------------------------------------------------------------ config + game
+  BG.defaults = function (C) {
+    return { title: C.default_title, style: 'words', grid: 5, free: 'default', cards: 30, players: [], lang: 'en', labels: true,
+      perPage: 1, seed: 0, salt: 0 };
+  };
+
+  BG.recommendGrid = function (style, n) {
+    if (style === 'pictures') return n >= 16 ? 4 : 3;
+    return n >= 24 ? 5 : (n >= 16 ? 4 : 3);
+  };
+
+  BG.build = function (C, cfgIn, list, opt) {
+    opt = opt || {};
+    const cfg = BG.defaults(C);
+    Object.entries(cfgIn || {}).forEach(([k, v]) => { if (v != null && v !== '' && !(Array.isArray(v) && !v.length && k !== 'players')) cfg[k] = v; });
+    if (!cfg.title) cfg.title = C.default_title;
+    const errors = [], warnings = [];
+    if (!cfg.style) cfg.style = (list || []).some(s => BG.splitEmoji(s).emoji) ? 'pictures' : 'words';
+    const it = BG.items(C, list || [], cfg.style);
+    warnings.push(...it.warnings);
+    const items = it.items;
+    if (!cfg.grid) cfg.grid = BG.recommendGrid(cfg.style, items.length);
+    const freeOn = cfg.grid % 2 === 1 && cfg.free !== 'none';
+    if (cfg.grid % 2 === 0 && cfg.free && cfg.free !== 'none' && cfg.free !== 'default' && cfgIn && cfgIn.free) warnings.push('A 4 × 4 card has no centre square, so there is no free space.');
+    cfg.freeOn = freeOn;
+    cfg.freeText = freeOn ? (cfg.free && cfg.free !== 'default' ? cfg.free : BG.L(C, cfg.lang).free) : '';
+    const k = BG.cellsOf(cfg.grid, freeOn);
+    cfg.players = (cfg.players || []).filter(Boolean);
+    cfg.cards = Math.max(MIN_CARDS, Math.min(MAX_CARDS, +cfg.cards || 30, 1e9));
+    if (cfg.players.length > cfg.cards) cfg.cards = Math.min(MAX_CARDS, cfg.players.length);
+    if (!C.labels[cfg.lang]) { if (cfg.lang && cfg.lang !== 'en') warnings.push(`Card labels in “${cfg.lang}” aren't built in yet, so they stay in English (your words print as written).`); cfg.lang = 'en'; }
+    if (items.length < k) {
+      const fits = [5, 4, 3].filter(g => BG.cellsOf(g, g % 2 === 1 && cfg.free !== 'none') <= items.length);
+      errors.push(`A ${cfg.grid} × ${cfg.grid} card needs at least ${k} different items; your list has ${items.length}.` +
+        (fits.length ? ` Add ${k - items.length} more, or choose a ${fits[0]} × ${fits[0]} card.` : ' Add more items.'));
+      return { cfg, items, cards: [], stats: null, errors, warnings };
+    }
+    if (items.length < Math.ceil(k * 1.4) && cfg.grid >= 4) warnings.push(`Tip: with ${items.length} items for ${k} squares the cards are very alike, so many players win at once. About ${Math.ceil(k * 1.5)}+ items make a better game.`);
+    const seed = opt.seed != null ? opt.seed : (cfg.seed || BG.hash([cfg.style, cfg.grid, freeOn, cfg.cards, items.map(i => i.text).join('|'), cfg.salt || 0].join('#')));
+    const g = BG.generate(items.length, cfg.grid, freeOn, cfg.cards, seed);
+    if (g.error) { errors.push(`I ${g.error}.`); return { cfg, items, cards: [], stats: null, errors, warnings }; }
+    const cards = g.cards.map((cells, i) => ({ no: i + 1, cells, player: cfg.players[i] || '' }));
+    const game = { cfg, items, cards, stats: Object.assign(g.stats, { seed }), errors, warnings };
+    const bad = BG.check(game);
+    if (bad.length) errors.push('Engine self-check failed: ' + bad.join('; '));
+    return game;
+  };
+
+  /* Self-check (the Python verifier repeats it independently): every card unique, every square an item on the list,
+     no item twice on a card, the free centre in place, every item on at least one card. */
+  BG.check = function (game) {
+    const { cfg, items, cards } = game, bad = [];
+    const k = BG.cellsOf(cfg.grid, cfg.freeOn), centre = cfg.freeOn ? BG.centre(cfg.grid) : -1;
+    const lays = new Set(), sets = new Set(), used = new Set();
+    cards.forEach(c => {
+      if (c.cells.length !== cfg.grid * cfg.grid) bad.push(`card ${c.no}: ${c.cells.length} squares`);
+      const real = c.cells.filter((x, p) => p !== centre);
+      if (centre >= 0 && c.cells[centre] !== -1) bad.push(`card ${c.no}: centre is not free`);
+      if (real.some(x => !(x >= 0 && x < items.length))) bad.push(`card ${c.no}: a square is not on the list`);
+      if (new Set(real).size !== k) bad.push(`card ${c.no}: an item twice`);
+      real.forEach(x => used.add(x));
+      const lk = c.cells.join(','), sk = real.slice().sort((a, b) => a - b).join(',');
+      if (lays.has(lk)) bad.push(`card ${c.no}: same layout as another card`);
+      if (items.length > k && BG.comb(items.length, k) >= cards.length && sets.has(sk)) bad.push(`card ${c.no}: same items as another card`);
+      lays.add(lk); sets.add(sk);
+    });
+    if (cards.length * k >= items.length && used.size !== items.length) bad.push(`${items.length - used.size} items are on no card`);
+    return bad;
+  };
+
+  // ------------------------------------------------------------------ labels
+  BG.L = (C, lang) => Object.assign({}, C.labels.en, C.labels[lang] || {});
+
+  // ------------------------------------------------------------------ rendering
+  function picHTML(C, item, cls) {
+    if (item.icon && C.icons[item.icon]) return `<div class="${cls}"><svg viewBox="0 0 100 100"><use href="#bgi-${item.icon}"/></svg></div>`;
+    if (item.emoji) return `<div class="${cls} emo"><span>${BG.esc(item.emoji)}</span></div>`;
+    return '';
+  }
+  function txt(s, lang) { return BG.esc(lang === 'fr' ? BG.nbsp(s) : s); }
+
+  BG.symbols = function (C, game) {
+    const keys = new Set(['star']);
+    (game ? game.items : []).forEach(i => { if (i.icon) keys.add(i.icon); });
+    (C.deco || []).forEach(k => keys.add(k));
+    const syms = [...keys].filter(k => C.icons[k]).map(k => C.icons[k].replace(/^<svg[^>]*>/, `<symbol id="bgi-${k}" viewBox="0 0 100 100">`).replace(/<\/svg>\s*$/, '</symbol>'));
+    return `<svg class="bg-syms" width="0" height="0" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">${syms.join('')}</svg>`;
+  };
+
+  function cardHTML(C, game, card, L) {
+    const { cfg, items } = game, g = cfg.grid, centre = cfg.freeOn ? BG.centre(g) : -1;
+    const T = C.theme;
+    const letters = g === 5 ? `<div class="bg-letters">${'BINGO'.split('').map((ch, i) => `<span style="background:${T.letters[i % T.letters.length]}">${ch}</span>`).join('')}</div>` : '';
+    const cells = card.cells.map((x, p) => {
+      if (p === centre) {
+        return `<div class="bg-cell free"><div class="bg-in"><div class="bg-star"><svg viewBox="0 0 100 100"><use href="#bgi-star"/></svg></div>` +
+          `<div class="bg-txt bg-freetxt" lang="${cfg.lang}">${txt(cfg.freeText, cfg.lang)}</div></div></div>`;
+      }
+      const it = items[x];
+      const pic = cfg.style === 'pictures' ? picHTML(C, it, 'bg-pic') : '';
+      const showTxt = cfg.style !== 'pictures' || cfg.labels || !pic;
+      return `<div class="bg-cell${pic ? ' has-pic' : ''}${pic && !showTxt ? ' pic-only' : ''}"><div class="bg-in">${pic}` +
+        (showTxt ? `<div class="bg-txt" lang="${cfg.lang}">${txt(it.text, cfg.lang)}</div>` : '') + `</div></div>`;
+    }).join('');
+    const name = card.player ? `<span class="bg-name has"><b>${BG.esc(card.player)}</b></span>` :
+      `<span class="bg-name">${BG.esc(L.name)}: <i></i></span>`;
+    return `<div class="bg-card g${g} s-${cfg.style}" data-card="${card.no}">` +
+      `<div class="bg-head"><div class="bg-deco l">${decoHTML(C, 0)}</div><div class="bg-title"><span class="bg-fit" lang="${cfg.lang}">${txt(cfg.title, cfg.lang)}</span></div><div class="bg-deco r">${decoHTML(C, 1)}</div></div>` +
+      `<div class="bg-meta">${name}<span class="bg-no">${BG.esc(L.card)} ${card.no}</span></div>` +
+      `<div class="bg-body"><div class="bg-sq">${letters}<div class="bg-grid" style="--g:${g}">${cells}</div></div></div>` +
+      `<div class="bg-foot">${BG.esc(C.brand_line)}</div></div>`;
+  }
+  function decoHTML(C, i) {
+    const k = (C.deco || [])[i];
+    return k && C.icons[k] ? `<svg viewBox="0 0 100 100"><use href="#bgi-${k}"/></svg>` : '';
+  }
+
+  function callPages(C, game, L) {
+    const { cfg, items } = game, per = 20, pages = [];
+    for (let s = 0; s < items.length; s += per) {
+      const chunk = items.slice(s, s + per);
+      const cells = chunk.map(it => {
+        const pic = cfg.style === 'pictures' ? picHTML(C, it, 'bg-cpic') : '';
+        return `<div class="bg-call${pic ? ' has-pic' : ''} s-${cfg.style}"><div class="bg-cin">${pic}<div class="bg-ctxt" lang="${cfg.lang}">${txt(it.text, cfg.lang)}</div></div></div>`;
+      }).join('');
+      pages.push(`<section class="bg-page bg-callpage"><div class="bg-ph"><div class="bg-kick">${BG.esc(cfg.title)}</div><h2 lang="${cfg.lang}">${BG.esc(L.call_title)}</h2><p lang="${cfg.lang}">${txt(L.call_hint, cfg.lang)}</p></div>` +
+        `<div class="bg-calls">${cells}</div><div class="bg-pfoot">${BG.esc(L.page)} ${pages.length + 1}/${Math.ceil(items.length / per)} · ${BG.esc(C.brand_line)}</div></section>`);
+    }
+    return pages;
+  }
+
+  function sheetPage(C, game, L) {
+    const { cfg, items } = game, n = items.length;
+    const cols = n <= 24 ? 3 : (n <= 48 ? 4 : 5);
+    const rows = Math.ceil(n / cols);
+    const cells = items.map(it => {
+      const pic = cfg.style === 'pictures' ? picHTML(C, it, 'bg-spic') : '';
+      return `<div class="bg-si"><span class="bg-box"></span>${pic}<span class="bg-stxt" lang="${cfg.lang}">${txt(it.text, cfg.lang)}</span></div>`;
+    }).join('');
+    const pat = (on, nm) => `<div class="bg-pat"><div class="bg-mini">${[...Array(25)].map((_, i) => `<i class="${on.includes(i) ? 'on' : ''}"></i>`).join('')}</div><span lang="${cfg.lang}">${BG.esc(nm)}</span></div>`;
+    const pats = cfg.grid === 5 ? [pat([5, 6, 7, 8, 9], L.p_line), pat([0, 4, 20, 24], L.p_corners), pat([0, 6, 12, 18, 24, 4, 8, 16, 20], L.p_x), pat([...Array(25).keys()], L.p_full)].join('') :
+      [pat([5, 6, 7, 8, 9], L.p_line), pat([0, 4, 20, 24], L.p_corners), pat([...Array(25).keys()], L.p_full)].join('');
+    return `<section class="bg-page bg-sheetpage"><div class="bg-ph"><div class="bg-kick">${BG.esc(cfg.title)}</div><h2 lang="${cfg.lang}">${BG.esc(L.sheet_title)}</h2><p lang="${cfg.lang}">${txt(L.sheet_hint, cfg.lang)}</p></div>` +
+      `<div class="bg-sheet" style="--cols:${cols};--rows:${rows}">${cells}</div>` +
+      `<div class="bg-pats"><b lang="${cfg.lang}">${BG.esc(L.patterns)}</b>${pats}</div>` +
+      `<div class="bg-pfoot">${BG.esc(n)} ${BG.esc(L.items)} · ${BG.esc(game.cards.length)} ${BG.esc(L.cards)} · ${BG.esc(C.brand_line)}</div></section>`;
+  }
+
+  /* opt.parts: which parts to render ('sheet', 'calls', 'cards'); opt.perPage 1 | 2 */
+  BG.render = function (C, game, opt) {
+    opt = opt || {};
+    const L = BG.L(C, game.cfg.lang);
+    const parts = opt.parts || ['sheet', 'calls', 'cards'];
+    const per = +(opt.perPage || game.cfg.perPage || 1) === 2 ? 2 : 1;
+    const out = [];
+    if (parts.includes('sheet')) out.push(sheetPage(C, game, L));
+    if (parts.includes('calls')) out.push(...callPages(C, game, L));
+    if (parts.includes('cards')) {
+      for (let i = 0; i < game.cards.length; i += per) {
+        const cs = game.cards.slice(i, i + per).map(c => cardHTML(C, game, c, L)).join(per === 2 ? '<div class="bg-cut"></div>' : '');
+        out.push(`<section class="bg-page bg-cardpage per${per}">${cs}</section>`);
+      }
+    }
+    return `<div class="bg-doc" style="--ink:${C.theme.ink};--em:${C.theme.em};--soft:${C.theme.soft};--line:${C.theme.line};--free:${C.theme.free}">` +
+      BG.symbols(C, game) + out.join('') + '</div>';
+  };
+
+  // ------------------------------------------------------------------ fitting
+  /* A soft hyphen between syllable-ish chunks (vowel | consonant, or between two consonants), never leaving fewer than
+     3 letters on a side. Only used for a word that is still too wide at a comfortable size. */
+  BG.hyphenate = function (word) {
+    const ch = [...word];
+    if (ch.length < 8) return word;
+    const isV = c => /[aeiouyäöüàâæéèêëîïôœùûÿáíóúåøőű]/i.test(c);
+    const ONSETS = ['schr', 'schl', 'schm', 'schn', 'schw', 'spr', 'str', 'scr', 'chr', 'sch', 'bl', 'br', 'ch', 'cl', 'cr',
+      'dr', 'fl', 'fr', 'gl', 'gn', 'gr', 'kl', 'kn', 'kr', 'ph', 'pl', 'pr', 'qu', 'sp', 'st',
+      'th', 'tr', 'wr', 'ck', 'pf'];
+    const groups = [];
+    for (let j = 0; j < ch.length;) {
+      if (isV(ch[j])) { let k = j; while (k < ch.length && isV(ch[k])) k++; groups.push([j, k]); j = k; } else j++;
+    }
+    const breaks = new Set();
+    for (let g = 0; g + 1 < groups.length; g++) {
+      const a = groups[g][1], b = groups[g + 1][0];
+      if (b - a < 1) continue;
+      const cl = ch.slice(a, b).join('');
+      if (!/^\p{L}+$/u.test(cl)) continue;
+      let pos = b - 1;
+      if (b - a === 1) pos = a;
+      else for (let len = Math.min(4, b - a); len >= 2; len--) { if (ONSETS.includes(cl.slice(cl.length - len).toLowerCase())) { pos = b - len; break; } }
+      if (pos >= 2 && ch.length - pos >= 3) breaks.add(pos);
+    }
+    return ch.map((c, i) => (breaks.has(i) ? '\u00ad' : '') + c).join('');
+  };
+  function hyphenateEl(el) {
+    const walk = n => {
+      if (n.nodeType === 3) n.nodeValue = n.nodeValue.split(/(\s+)/).map(w => (/\s/.test(w) ? w : BG.hyphenate(w))).join('');
+      else n.childNodes.forEach(walk);
+    };
+    walk(el);
+  }
+  function overBox(box, t) {
+    return box.scrollHeight > box.clientHeight + 0.5 || box.scrollWidth > box.clientWidth + 0.5 ||
+      (t && t.scrollWidth > t.clientWidth + 0.5);
+  }
+  function fitText(box, t, min, hyphAt) {
+    if (!box || !t) return;
+    let fs = parseFloat(getComputedStyle(t).fontSize), g = 120, hy = false;
+    while (overBox(box, t) && g-- > 0) {
+      if (!hy && fs <= hyphAt) { hyphenateEl(t); hy = true; continue; }
+      if (fs <= min) break;
+      fs = Math.max(min, fs * 0.95);
+      t.style.fontSize = fs.toFixed(2) + 'px';
+    }
+    if (!hy && overBox(box, t)) { hyphenateEl(t); }
+    if (overBox(box, t)) { t.style.overflowWrap = 'anywhere'; box.dataset.lastResort = '1'; }
+  }
+  function fitLine(el, min) {                      // a one-line title: shrink, then allow a second line
+    if (!el) return;
+    const box = el.parentElement;
+    let fs = parseFloat(getComputedStyle(el).fontSize), g = 80;
+    while (el.scrollWidth > box.clientWidth + 0.5 && fs > min && g--) { fs *= 0.95; el.style.fontSize = fs.toFixed(2) + 'px'; }
+    if (el.scrollWidth > box.clientWidth + 0.5) {
+      el.style.whiteSpace = 'normal'; el.style.display = 'block'; el.style.lineHeight = '1.02';
+      fitText(box, el, min * 0.8, min);
+    }
+  }
+  // An emoji picture never widens or heightens its square: a font without a ZWJ sequence or flag draws it as 2-3 glyphs
+  // side by side, which used to make the label below shrink to its minimum. Like our SVG icons, the emoji fits its box.
+  function fitEmoji(span) {
+    const box = span.parentElement;
+    for (let g = 0; box && g < 4; g++) {
+      const r = span.getBoundingClientRect(), bw = box.clientWidth, bh = box.clientHeight;
+      if (!r.width || !r.height || !bw || !bh) return;
+      const k = Math.min(bw / r.width, bh / r.height);
+      if (k >= 0.999) return;
+      span.style.fontSize = (parseFloat(getComputedStyle(span).fontSize) * k * 0.97).toFixed(2) + 'px';
+    }
+  }
+  BG.fit = function (root) {
+    root = root || document;
+    root.querySelectorAll('.emo > span').forEach(fitEmoji);
+    root.querySelectorAll('.bg-card').forEach(card => {
+      const tmin = parseFloat(getComputedStyle(card).getPropertyValue('--title-min')) || 18, tf = card.querySelector('.bg-fit');
+      if (card.closest('.per2')) { if (tf) fitText(tf.parentElement, tf, tmin, tmin); } else fitLine(tf, tmin);
+      const nm = card.querySelector('.bg-name b');
+      if (nm) fitText(nm.parentElement, nm, 9, 9);
+      const min = parseFloat(getComputedStyle(card).getPropertyValue('--cell-min')) || 10;
+      card.querySelectorAll('.bg-cell .bg-in').forEach(box => {
+        const t = box.querySelector('.bg-txt');
+        if (!t) return;
+        const fs = parseFloat(getComputedStyle(t).fontSize);
+        fitText(box, t, min, Math.max(min, fs * 0.7));
+      });
+    });
+    root.querySelectorAll('.bg-call .bg-cin').forEach(box => {
+      const t = box.querySelector('.bg-ctxt'); const fs = parseFloat(getComputedStyle(t).fontSize);
+      fitText(box, t, 9, fs * 0.7);
+    });
+    root.querySelectorAll('.bg-sheet').forEach(sh => {
+      sh.querySelectorAll('.bg-si').forEach(si => { const t = si.querySelector('.bg-stxt'); fitText(si, t, 7.5, 9); });
+    });
+    root.querySelectorAll('.bg-ph p').forEach(p => { let f = 12.5, g = 20; while (p.scrollHeight > p.clientHeight + 1 && f > 8 && g--) { f *= 0.94; p.style.fontSize = f + 'px'; } });
+  };
+
+  // ------------------------------------------------------------------ QA
+  BG.overflow = function (root) {
+    root = root || document;
+    const out = [], R = e => e.getBoundingClientRect();
+    const chk = (el, what) => {
+      if (el.scrollWidth > el.clientWidth + 1) out.push(`${what} too wide ${el.scrollWidth}>${el.clientWidth}: ${el.textContent.trim().slice(0, 50)}`);
+      if (el.scrollHeight > el.clientHeight + 1) out.push(`${what} too tall ${el.scrollHeight}>${el.clientHeight}: ${el.textContent.trim().slice(0, 50)}`);
+    };
+    root.querySelectorAll('.bg-page').forEach((pg, pi) => {
+      const pr = R(pg);
+      pg.querySelectorAll('.bg-card, .bg-calls, .bg-sheet, .bg-pats, .bg-pfoot, .bg-foot, .bg-ph').forEach(el => {
+        const r = R(el);
+        if (r.bottom > pr.bottom + 0.5 || r.right > pr.right + 0.5 || r.left < pr.left - 0.5 || r.top < pr.top - 0.5) out.push(`page ${pi + 1}: ${el.className} sticks out of the page`);
+      });
+      pg.querySelectorAll('.bg-cell .bg-in').forEach(b => chk(b, `page ${pi + 1} square`));
+      pg.querySelectorAll('.bg-cell .bg-txt').forEach(t => { if (t.scrollWidth > t.clientWidth + 1) out.push(`page ${pi + 1} square text too wide: ${t.textContent.slice(0, 40)}`); });
+      pg.querySelectorAll('.bg-title').forEach(b => chk(b, `page ${pi + 1} title`));
+      pg.querySelectorAll('.bg-name').forEach(b => chk(b, `page ${pi + 1} name`));
+      pg.querySelectorAll('.bg-call .bg-cin').forEach(b => chk(b, `page ${pi + 1} calling card`));
+      pg.querySelectorAll('.bg-si').forEach(b => chk(b, `page ${pi + 1} caller sheet item`));
+      pg.querySelectorAll('.bg-ph p').forEach(b => chk(b, `page ${pi + 1} heading`));
+      pg.querySelectorAll('.bg-ph h2').forEach(b => { if (b.scrollWidth > b.clientWidth + 1) out.push(`page ${pi + 1} heading too wide: ${b.textContent}`); });
+    });
+    return out;
+  };
+  BG.lastResort = root => [...(root || document).querySelectorAll('[data-last-resort]')].map(b => b.textContent.trim().slice(0, 50));
+  BG.minFont = function (root) {
+    let m = 99, at = '';
+    (root || document).querySelectorAll('.bg-txt, .bg-ctxt').forEach(t => { const f = parseFloat(getComputedStyle(t).fontSize); if (f < m) { m = f; at = t.textContent.slice(0, 40); } });
+    return { px: m, text: at };
+  };
+
+  BG.MAX_ITEMS = MAX_ITEMS; BG.MAX_CARDS = MAX_CARDS;
+  root.BG = BG;
+  if (typeof module !== 'undefined') module.exports = BG;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* Find the Coworker Bingo: the "find someone who…" layer over the shared bingo engine (products/_bingo-engine/bingo.js).
+   Loaded right after bingo.js in the printable PDF, the Bingo Maker and node; the engine file itself is not changed.
+
+   - BG.build: a personal square may end with " | Name" (the coworker it is about). The name is taken off the square
+     (it never prints on a player card) and kept in game.key for the host's answer key. "Find someone who" in front of
+     a square and a closing full stop are dropped; an English square that starts with a capital verb gets a small letter.
+   - BG.render: no calling cards (nobody calls squares); the caller sheet becomes the host sheet; every card gets the
+     "Find someone who…" strip; every square gets a line for a name; an answer-key page follows when there are
+     personal squares.
+*/
+(function (root) {
+  'use strict';
+  const BG = root.BG;
+  if (!BG || BG.FIND) return;
+  BG.FIND = true;
+  const EN_VERBS = /^(has|have|is|was|can|could|loves?|likes?|speaks?|plays?|knows?|owns?|makes?|bakes?|did|does|never|still|will|would|went|ran|lived|grew|collects?|reads?|sings?|walks?|cycles?|drives?|cooks?|wears?|hates?|prefers?|wants?|keeps?|grows?|builds?|writes?|draws?|paints?|dances?|swims?|runs?|travels?|visited|met|spent|started|learned|learnt|won|once|always|used|got|took|played|sang)$/i;
+  const PREFIX = /^\s*(?:find\s+someone\s+who|someone\s+who|finde\s+jemanden,?\s+der|jemand,?\s+der|trouve\s+quelqu['’]un\s+qui|quelqu['’]un\s+qui|encuentra\s+a\s+alguien\s+que|alguien\s+que)\s*(?:\.\.\.|…)?\s*/i;
+
+  BG.findClean = function (s, lang) {
+    let t = String(s).replace(PREFIX, '').replace(/\s*\.\s*$/, '').trim();
+    const first = t.split(/\s+/)[0] || '';
+    if ((lang || 'en') === 'en' && /^[A-Z][a-z]+$/.test(first) && EN_VERBS.test(first)) t = t[0].toLowerCase() + t.slice(1);
+    return t;
+  };
+
+  const build0 = BG.build;
+  BG.build = function (C, cfgIn, list, opt) {
+    const lang = (cfgIn && cfgIn.lang) || 'en';
+    const who = new Map(), notes = [];
+    const lines = (list || []).map(line => {
+      const raw = String(line);
+      const i = raw.lastIndexOf('|');
+      let text = raw, name = '';
+      if (i > 0) { text = raw.slice(0, i); name = raw.slice(i + 1).replace(/^\s*(?:who|wer|qui|quién|quien)\s*:\s*/i, '').trim(); }
+      const { emoji, text: t0 } = BG.splitEmoji(text);
+      let t = BG.findClean(t0, lang);
+      if (name) {
+        const fn = name.split(/[\s,]+/)[0];
+        if (fn.length > 1 && t.toLowerCase().startsWith(fn.toLowerCase() + ' ')) t = BG.findClean(t.slice(fn.length + 1), lang);   // "Leo can juggle" -> "can juggle"
+        const key = BG.norm(t);
+        if (!who.has(key)) who.set(key, []);
+        if (!who.get(key).includes(name)) who.get(key).push(name);
+        const first = name.split(/[\s,]+/)[0];
+        if (first.length > 1 && new RegExp('(^|[^\\p{L}])' + first.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^\\p{L}]|$)', 'iu').test(t))
+          notes.push(`The square “${t}” names ${first}, so it gives the answer away; write it without the name.`);
+      }
+      return (emoji ? emoji + ' ' : '') + t;
+    });
+    const game = build0(C, cfgIn, lines, opt);
+    game.key = game.items.map((it, idx) => ({ idx, text: it.text, who: who.get(BG.norm(it.text)) || [] })).filter(k => k.who.length);
+    game.warnings = game.warnings.filter(w => !/^Tip: with \d+ items/.test(w));   // a caller-bingo tip; mingling has no caller
+    if (notes.length) game.warnings.push(...notes);
+    return game;
+  };
+
+  function keyPage(C, game, L) {
+    const rows = game.key.map((k, i) => `<div class="fc-krow"><span class="fc-kn">${i + 1}</span><span class="fc-kt" lang="${game.cfg.lang}">${BG.esc(k.text)}</span>` +
+      `<span class="fc-kw">${BG.esc(k.who.join(', '))}</span></div>`).join('');
+    return `<section class="bg-page fc-keypage"><div class="bg-ph"><div class="bg-kick">${BG.esc(game.cfg.title)}</div><h2 lang="${game.cfg.lang}">${BG.esc(L.key_title)}</h2>` +
+      `<p lang="${game.cfg.lang}">${BG.esc(L.key_hint)}</p></div><div class="fc-key">${rows}</div>` +
+      `<div class="bg-pfoot">${BG.esc(game.key.length)} · ${BG.esc(C.brand_line)}</div></section>`;
+  }
+
+  const render0 = BG.render;
+  BG.render = function (C, game, opt) {
+    opt = Object.assign({ parts: ['sheet', 'cards'] }, opt || {});
+    const L = BG.L(C, game.cfg.lang);
+    let html = render0(C, game, opt);
+    const strip = `<div class="fc-rule"><span class="fc-who" lang="${game.cfg.lang}">${BG.esc(L.find_rule || 'Find someone who…')}</span>` +
+      `<span class="fc-hint" lang="${game.cfg.lang}">${BG.esc(L.find_hint || '')}</span></div>`;
+    html = html.replace(/<div class="bg-body">/g, strip + '<div class="bg-body">');
+    // a line for a name under every square's text (never in the free centre)
+    html = html.replace(/(<div class="bg-txt" lang="[^"]*">[^<]*<\/div>)<\/div><\/div>/g, '$1<div class="fc-line"></div></div></div>');
+    if (game.key && game.key.length && opt.key !== false && (opt.parts || []).includes('sheet')) {
+      const s0 = html.indexOf('bg-sheetpage'), i = s0 < 0 ? html.lastIndexOf('</div>') : html.indexOf('</section>', s0) + '</section>'.length;
+      html = html.slice(0, i) + keyPage(C, game, L) + html.slice(i);   // right after the host sheet: page 2
+    }
+    return html;
+  };
+
+  const fit0 = BG.fit;
+  BG.fit = function (rootEl) {
+    fit0(rootEl);
+    (rootEl || document).querySelectorAll('.fc-rule').forEach(r => {
+      const h = r.querySelector('.fc-hint'); if (!h) return;
+      let f = parseFloat(getComputedStyle(h).fontSize), g = 30;
+      while ((h.scrollHeight > h.clientHeight + 1 || h.scrollWidth > h.clientWidth + 1) && f > 7 && g--) { f *= 0.94; h.style.fontSize = f + 'px'; }
+      const w = r.querySelector('.fc-who'); let fw = parseFloat(getComputedStyle(w).fontSize), gw = 30;
+      while (w.scrollWidth > w.clientWidth + 1 && fw > 10 && gw--) { fw *= 0.94; w.style.fontSize = fw + 'px'; }
+    });
+    (rootEl || document).querySelectorAll('.fc-keypage .bg-ph h2').forEach(h => {
+      let f = parseFloat(getComputedStyle(h).fontSize), g = 30;
+      while (h.scrollWidth > h.clientWidth + 1 && f > 14 && g--) { f *= 0.94; h.style.fontSize = f + 'px'; }
+    });
+    (rootEl || document).querySelectorAll('.fc-krow').forEach(r => {
+      const t = r.querySelector('.fc-kt'); let f = parseFloat(getComputedStyle(t).fontSize), g = 20;
+      while (r.scrollHeight > r.clientHeight + 1 && f > 8 && g--) { f *= 0.94; t.style.fontSize = f + 'px'; }
+    });
+  };
+
+  const over0 = BG.overflow;
+  BG.overflow = function (rootEl) {
+    const out = over0(rootEl);
+    (rootEl || document).querySelectorAll('.fc-rule').forEach((r, i) => {
+      [r.querySelector('.fc-who'), r.querySelector('.fc-hint')].forEach(el => {
+        if (el && (el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1)) out.push(`card strip ${i + 1} too big: ${el.textContent.slice(0, 40)}`);
+      });
+    });
+    (rootEl || document).querySelectorAll('.bg-cell .fc-line').forEach((l, i) => {
+      const box = l.parentElement.getBoundingClientRect(), r = l.getBoundingClientRect();
+      if (r.bottom > box.bottom + 0.5 || r.height < 2) out.push(`name line ${i + 1} squeezed out of its square`);
+    });
+    return out;
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+const C = window.BG_CONTENT, EXAMPLE = "BINGO: Team Sparkle Holiday Bingo\nSTYLE: phrases\nGRID: 5\nFREE: FREE\nCARDS: 20\nLANGUAGE: en\n---\nITEMS:\nhas run three marathons | Priya\nplays the cello in an orchestra | Tom\nhas met a penguin up close | Ana\nwas once a puppet show host | Leo\nbakes sourdough every weekend | Grace\nhas lived in four countries | Mateo\nknows sign language | Sam\nhas a cat named Mr. Biscuit | Noor\nhas already finished their holiday shopping\nhas made a gingerbread house\nhas never seen real snow\nwraps presents the night before\ncan sing a whole winter song from memory\nhas been ice skating\nprefers hot cocoa to coffee\nhas a holiday movie they watch every year\nbakes cookies every December\nhas been to a holiday market\nowns festive pajamas\nhas seen the northern lights\nhas been to another continent\nspeaks three or more languages\nhas a plant on their desk\ncan play a musical instrument\nloves really spicy food\nis left-handed\nhas a funny holiday tradition\nhas made a snow angel\nlikes winter more than summer\nhas a favorite board game\nhas kept a houseplant alive for 5+ years\ncan cook a dish from another country\nhas a holiday song they never skip\nwalks or cycles to work\nhas hiked to a mountain top\nhas a nickname everyone uses\nhas a birthday in December or January", READY = {"holiday": "BINGO: Find the Coworker\nSTYLE: phrases\nGRID: 5\nFREE: FREE\nCARDS: 30\nLANGUAGE: en\n---\nITEMS:\nhas already finished their holiday shopping\nstill has every gift left to buy\nis wearing something festive today\nhas made a gingerbread house\ndecorates before December starts\nhas a holiday movie they watch every year\nhas never seen real snow\nhas built a snowman taller than themselves\nmakes a family recipe every December\nwraps presents the night before\nuses gift bags instead of wrapping paper\nhas an ornament they made themselves\ncan sing a whole winter song from memory\nhas been ice skating\nstill sends paper holiday cards\nloves anything peppermint\nprefers hot cocoa to coffee\nwill travel by plane this holiday\nspends the holidays somewhere warm\nhas cooked a big holiday dinner\nhas a funny holiday tradition\nowns festive pajamas\nhas re-gifted a present (no names!)\nhas made a snow angel\nbakes cookies every December\nhas been to a holiday market\nputs lights up outside every year\nhas a holiday song they never skip\nhas a decoration older than 20 years\nhas seen the northern lights\nhas written a wish list as a grown-up\nkept a New Year's resolution all year\ncan say \"Happy Holidays\" in 3 languages\nhas burned a batch of holiday cookies\nhas a tradition from another country\nshops for gifts all year round\nhas a birthday in December or January\nlikes winter more than summer\nhas knitted or crocheted a gift\nowns more than one festive mug\nhas untangled the lights this year\nhas dressed a pet in a holiday outfit\nhas been sledding in the last 3 years\nhas opened a present before the big day\nhas a favorite holiday cookie recipe\nhas gone caroling or sung for neighbors\nhas a gift-wrapping trick to share\nmade a homemade gift this year", "allyear": "BINGO: Find the Coworker\nSTYLE: phrases\nGRID: 5\nFREE: FREE\nCARDS: 30\nLANGUAGE: en\n---\nITEMS:\nhas been to another continent\nspeaks three or more languages\ncan play a musical instrument\nhas a birthday in the same month as you\njoined our team less than a year ago\nhad an unusual first job\nhas a pet with a human name\nhas more than one pet\ncan juggle (show us!)\nhas met someone famous\nhas been on TV or the radio\nis left-handed\nnever drinks coffee\nhas a talent you'd never guess\nhas finished a fun run or a race\nhas lived in another country\nreads a book every month\ngrows their own herbs or vegetables\nhas kept a houseplant alive for 5+ years\ncan cook a dish from another country\nhas gone zip-lining\nhas slept in a tent this year\nhas hiked to a mountain top\ncollects something\nhas a favorite board game\ncan whistle a tune\nhas written a poem or a song\nhas a podcast they never miss\nhas visited 10 or more countries\nwalks or cycles to work\nis at their best before 8 a.m.\nis a proper night owl\nhas the same favorite snack as you\nhas a plant on their desk\nknows everyone's name in this room\nhas taken a class just for fun this year\nhas a funny story about their first day here\nhas volunteered this year\nhas been on a boat this year\nloves really spicy food\nhas been to a concert this year\ncan solve a puzzle cube\nknows a magic trick\nhas a nickname everyone uses\nhas more pet photos than selfies\nhas been on a stage in a show\nsings in the car\nstarted a new hobby this year", "quick": "BINGO: Find the Coworker\nSTYLE: phrases\nGRID: 4\nFREE: none\nCARDS: 30\nLANGUAGE: en\n---\nITEMS:\nhas been ice skating\nhas made a snow angel\nbakes cookies every December\nhas never seen real snow\nprefers hot cocoa to coffee\nis wearing something festive today\nhas been to a holiday market\nowns festive pajamas\nhas a holiday movie they watch every year\nwraps presents the night before\nlikes winter more than summer\nhas made a gingerbread house\nwill travel by plane this holiday\nloves anything peppermint\nuses gift bags instead of wrapping paper\nhas seen the northern lights\nhas been to another continent\nspeaks three or more languages\ncan play a musical instrument\nhas a pet with a human name\nis left-handed\nnever drinks coffee\nhas a plant on their desk\ncan whistle a tune\nhas lived in another country\nhas a favorite board game\nsings in the car\nknows a magic trick\nloves really spicy food\nhas a birthday in the same month as you\nwalks or cycles to work\nstarted a new hobby this year"}, BANKS = {"holiday": ["has already finished their holiday shopping", "still has every gift left to buy", "is wearing something festive today", "has made a gingerbread house", "decorates before December starts", "has a holiday movie they watch every year", "has never seen real snow", "has built a snowman taller than themselves", "makes a family recipe every December", "wraps presents the night before", "uses gift bags instead of wrapping paper", "has an ornament they made themselves", "can sing a whole winter song from memory", "has been ice skating", "still sends paper holiday cards", "loves anything peppermint", "prefers hot cocoa to coffee", "will travel by plane this holiday", "spends the holidays somewhere warm", "has cooked a big holiday dinner", "has a funny holiday tradition", "owns festive pajamas", "has re-gifted a present (no names!)", "has made a snow angel", "bakes cookies every December", "has been to a holiday market", "puts lights up outside every year", "has a holiday song they never skip", "has a decoration older than 20 years", "has seen the northern lights", "has written a wish list as a grown-up", "kept a New Year's resolution all year", "can say \"Happy Holidays\" in 3 languages", "has burned a batch of holiday cookies", "has a tradition from another country", "shops for gifts all year round", "has a birthday in December or January", "likes winter more than summer", "has knitted or crocheted a gift", "owns more than one festive mug", "has untangled the lights this year", "has dressed a pet in a holiday outfit", "has been sledding in the last 3 years", "has opened a present before the big day", "has a favorite holiday cookie recipe", "has gone caroling or sung for neighbors", "has a gift-wrapping trick to share", "made a homemade gift this year"], "allyear": ["has been to another continent", "speaks three or more languages", "can play a musical instrument", "has a birthday in the same month as you", "joined our team less than a year ago", "had an unusual first job", "has a pet with a human name", "has more than one pet", "can juggle (show us!)", "has met someone famous", "has been on TV or the radio", "is left-handed", "never drinks coffee", "has a talent you'd never guess", "has finished a fun run or a race", "has lived in another country", "reads a book every month", "grows their own herbs or vegetables", "has kept a houseplant alive for 5+ years", "can cook a dish from another country", "has gone zip-lining", "has slept in a tent this year", "has hiked to a mountain top", "collects something", "has a favorite board game", "can whistle a tune", "has written a poem or a song", "has a podcast they never miss", "has visited 10 or more countries", "walks or cycles to work", "is at their best before 8 a.m.", "is a proper night owl", "has the same favorite snack as you", "has a plant on their desk", "knows everyone's name in this room", "has taken a class just for fun this year", "has a funny story about their first day here", "has volunteered this year", "has been on a boat this year", "loves really spicy food", "has been to a concert this year", "can solve a puzzle cube", "knows a magic trick", "has a nickname everyone uses", "has more pet photos than selfies", "has been on a stage in a show", "sings in the car", "started a new hobby this year"]};
+const $ = s => document.querySelector(s);
+let salt = 0;
+
+function fromText(raw) {
+  const p = BG.parse(raw);
+  const c = p.cfg;
+  $('#f-title').value = c.title || '';
+  $('#f-grid').value = String(c.grid === 4 ? 4 : 5);
+  $('#f-nofree').checked = c.free === 'none';
+  $('#f-free').value = c.free && c.free !== 'none' && c.free !== 'default' ? c.free : '';
+  $('#f-cards').value = c.cards || 30;
+  $('#f-lang').value = ['en', 'de', 'fr', 'es'].includes(c.lang) ? c.lang : 'en';
+  $('#f-items').value = p.items.join('\n');
+  return p;
+}
+function formCfg() {
+  const grid = +$('#f-grid').value;
+  const free = grid === 4 || $('#f-nofree').checked ? 'none' : ($('#f-free').value.trim() || 'default');
+  return { title: $('#f-title').value.trim(), style: 'phrases', grid, free, cards: +$('#f-cards').value || 30, lang: $('#f-lang').value, salt, players: [] };
+}
+function make(useText) {
+  const msg = $('#msg'), pv = $('#preview');
+  document.body.removeAttribute('data-ready');
+  let warn = [];
+  const raw = $('#src').value.trim();
+  if (useText && raw) {
+    const p = BG.parse(raw);
+    if (!p.found || !p.items.length) {
+      msg.className = 'msg err';
+      msg.textContent = "I couldn't find a bingo list in the pasted text. Copy the whole box from your AI chat: it has lines like “BINGO:”, “GRID:” and “ITEMS:”. No box? Send the AI: “" + "Put the whole bingo list in one code block." + "” No AI? Use the fun facts form below.";
+      pv.innerHTML = ''; return false;
+    }
+    fromText(raw); warn = p.warnings;
+  }
+  const items = $('#f-items').value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (!items.length) { msg.className = 'msg err'; msg.textContent = 'Paste a bingo list above, pick a ready set, or fill in the fun facts form.'; pv.innerHTML = ''; return false; }
+  const cfg = formCfg();
+  const game = BG.build(C, cfg, items);
+  if (game.errors.length) {
+    pv.innerHTML = ''; msg.className = 'msg err';
+    msg.textContent = game.errors.join(' ') + ' Add squares (or ask your AI for more), or choose 4 × 4, and click Make my bingo cards again.';
+    $('#formbox').open = true; return false;
+  }
+  const per = +$('#per').value;
+  pv.innerHTML = BG.render(C, game, { perPage: per });
+  const pages = pv.querySelectorAll('.bg-page').length;
+  const host = pv.querySelectorAll('.bg-sheetpage, .fc-keypage').length;
+  const g = game.cfg.grid, keyN = (game.key || []).length;
+  msg.className = 'msg ok';
+  msg.innerHTML = `Made <b>${game.cards.length} different bingo cards</b> (${g} × ${g}, ${game.items.length} squares${keyN ? `, ${keyN} personal` : ''}). ` +
+    (keyN ? `Page 1: your host sheet. Page 2: the <b>answer key</b> (who fits each personal square; keep it hidden). ` : `Page 1: your host sheet. `) +
+    `Pages ${host + 1}–${pages}: the player cards, one per player. Every card was checked: no two are the same.`;
+  warn.concat(game.warnings || []).forEach(w => msg.insertAdjacentHTML('beforeend', `<span class="warn">${BG.esc(w)}</span>`));
+  (document.fonts ? Promise.all([document.fonts.load("20px 'Lilita One'"), document.fonts.ready]) : Promise.resolve()).then(() => { BG.fit(pv); document.body.setAttribute('data-ready', '1'); });
+  return true;
+}
+function setPaper() {
+  const a4 = $('#paper').value === 'a4';
+  document.body.classList.toggle('a4', a4);
+  $('#pagesize').textContent = a4 ? '@page { size: 210mm 297mm; margin: 0; }' : '@page { size: 8.5in 11in; margin: 0; }';
+  if ($('#preview').innerHTML) make(false);
+}
+
+// ---------------- fun facts form (no AI)
+function addRows(n) {
+  const box = $('#frows'), start = box.children.length;
+  for (let i = 0; i < n; i++) box.insertAdjacentHTML('beforeend', `<div class="frow"><span class="n">${start + i + 1}</span>` +
+    `<input type="text" class="fn" maxlength="40" autocomplete="off" aria-label="Name ${start + i + 1}"><input type="text" class="fx" maxlength="80" autocomplete="off" aria-label="Fun fact ${start + i + 1}" placeholder="${start + i === 0 ? 'has met a penguin up close' : ''}"></div>`);
+}
+function seeded(seed) { return BG.rng(seed); }
+function fromFacts() {
+  const fm = $('#fmsg');
+  const rows = [...document.querySelectorAll('#frows .frow')].map(r => ({ n: r.querySelector('.fn').value.replace(/\|/g, '/').trim(), f: r.querySelector('.fx').value.replace(/\|/g, '/').replace(/\s+/g, ' ').trim() }));
+  const facts = rows.filter(r => r.f);
+  const noName = facts.filter(r => !r.n).length;
+  const grid = +$('#fgrid').value, need = grid === 5 ? 24 : 16, target = grid === 5 ? 40 : 28;
+  const mix = $('#fmixsel').value;
+  if (!facts.length && mix === 'none') { fm.className = 'msg err'; fm.textContent = 'Type at least one fun fact, or choose squares to mix in.'; return false; }
+  const own = facts.map(r => BG.findClean(r.f, 'en') + (r.n ? ' | ' + r.n : ''));
+  let bank = mix === 'both' ? BANKS.holiday.concat(BANKS.allyear) : (BANKS[mix] || []);
+  const taken = new Set(own.map(x => BG.norm(x.split('|')[0])));
+  const rnd = seeded(BG.hash(own.join('#') + mix));
+  bank = bank.filter(x => !taken.has(BG.norm(x))).map(x => [rnd(), x]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+  const fill = Math.max(0, Math.max(target, need) - own.length);
+  const list = own.concat(bank.slice(0, fill));
+  if (list.length < need) {
+    fm.className = 'msg err';
+    fm.textContent = `A ${grid} × ${grid} card needs at least ${need} squares; you have ${list.length}. Add ${need - list.length} more facts, or mix in our squares.`;
+    return false;
+  }
+  const title = mix === 'allyear' ? 'Find the Coworker' : 'Find the Coworker';
+  const block = [`BINGO: ${title}`, 'STYLE: phrases', `GRID: ${grid}`, `FREE: ${grid === 5 ? 'FREE' : 'none'}`, `CARDS: ${Math.max(1, Math.min(100, +$('#fcards').value || 30))}`, 'LANGUAGE: en', '---', 'ITEMS:'].concat(list).join('\n');
+  $('#src').value = block;
+  try { localStorage.setItem('mts-bingo-src-find-the-coworker-bingo', block); } catch (e) {}
+  salt = 0;
+  const ok = make(true);
+  if (ok) {
+    fm.className = 'msg ok';
+    fm.textContent = `${facts.length} personal square${facts.length === 1 ? '' : 's'} + ${list.length - own.length} of our squares. The cards are below; the box at the top now holds your list, so you can edit it there.` +
+      (noName ? ` ${noName} fact${noName === 1 ? ' has' : 's have'} no name, so ${noName === 1 ? 'it' : 'they'} won't appear on the answer key.` : '');
+    $('#msg').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  return ok;
+}
+function saveFacts() {
+  try { localStorage.setItem('mts-fc-facts', JSON.stringify([...document.querySelectorAll('#frows .frow')].map(r => [r.querySelector('.fn').value, r.querySelector('.fx').value]))); } catch (e) {}
+}
+
+$('#make').onclick = () => make(true);
+$('#make2').onclick = () => make(false);
+$('#make3').onclick = fromFacts;
+$('#fmore').onclick = () => addRows(4);
+$('#fclear').onclick = () => { document.querySelectorAll('#frows input').forEach(x => x.value = ''); saveFacts(); $('#fmsg').textContent = ''; };
+$('#frows').addEventListener('input', saveFacts);
+$('#demo').onclick = () => { $('#src').value = EXAMPLE; salt = 0; make(true); };
+$('#ready').onchange = () => { const k = $('#ready').value; if (!k) return; $('#src').value = READY[k]; salt = 0; make(true); $('#ready').value = ''; };
+$('#mix').onclick = () => { salt += 1; make(false); };
+$('#print').onclick = () => { if (!$('#preview').innerHTML && !make(true)) return; setTimeout(() => window.print(), 400); };
+$('#paper').onchange = setPaper;
+$('#per').onchange = () => { if ($('#preview').innerHTML) make(false); };
+addRows(8);
+try {
+  const f = JSON.parse(localStorage.getItem('mts-fc-facts') || '[]');
+  if (f.length > 8) addRows(Math.ceil((f.length - 8) / 4) * 4);
+  f.forEach(([n, x], i) => { const r = document.querySelectorAll('#frows .frow')[i]; if (r) { r.querySelector('.fn').value = n || ''; r.querySelector('.fx').value = x || ''; } });
+} catch (e) {}
+try { const saved = localStorage.getItem('mts-bingo-src-find-the-coworker-bingo'); if (saved) $('#src').value = saved; } catch (e) {}
+$('#src').addEventListener('input', () => { try { localStorage.setItem('mts-bingo-src-find-the-coworker-bingo', $('#src').value); } catch (e) {} });
+const q = new URLSearchParams(location.search);
+if (q.get('paper') === 'a4') { $('#paper').value = 'a4'; setPaper(); }
+if (q.get('per') === '2') { $('#per').value = '2'; }
+if (q.get('demo')) { $('#src').value = EXAMPLE; make(true); }
+</script>
+<!-- mts-assistant-js -->
+<div id="mts-toast" role="status" aria-live="polite"></div>
+<script id="mts-assistant-js">
+(function () {
+  var PROMPT = "You are my Find the Coworker Bingo helper. I bought the Make Together Studio \"Find the Coworker Bingo\" (printable \"find someone who...\" bingo cards + a Bingo Maker). Players mingle and write the name of a coworker who matches each square. Help me make bingo squares about my team. You write the LIST; the Bingo Maker makes every card and checks it, so never draw cards, grids or tables yourself.\n\nAsk me these questions ONE at a time and wait for each answer. I may answer in my own language:\n1. What is the event (a Christmas or holiday party, or an all-year team day, kick-off or onboarding), how many people play, and is it in person or on a video call?\n2. Did my coworkers share fun facts for the game? If yes, I paste them as \"name - fact\". Use ONLY facts people chose to share. If not, you write general squares only.\n3. Anything to leave out, and any kind inside jokes about the team or the office (never about one person's mistakes)?\n4. The details: the language of the cards (English, German, French or Spanish), the card size (5 x 5, or 4 x 4 for a small team or a quick game), the title, and how many cards (players + a few spares, at most 100).\n\nThen give a short summary and ask \"Shall I write your bingo list?\" When I say yes, write the list:\n- Every square completes the sentence \"Find someone who ...\" and starts with a verb: has..., can..., is..., loves..., speaks... (German: \"Finde jemanden, der ...\", French: \"Trouve quelqu'un qui ...\", Spanish: \"Encuentra a alguien que ...\"). At most 7 words. True for some people, not for everyone.\n- Enough squares: GRID 5 needs at least 24, best 36-50; GRID 4 at least 16, best 24-32. Every square different.\n- Personal squares come only from the shared fun facts: one square per fact, rewritten without the person's name (the cards must not give the answer away), and the line ends with \" | \" and the person's name, e.g. \"has run three marathons | Priya\". At most half of the squares are personal; fill the rest with holiday or all-year squares that fit the event.\n- Mix easy squares (many people match) with rarer ones.\n- Squares are work-safe, kind and inclusive; nothing about health, religion, politics, money or salary, relationships or family status, age, weight or looks; no alcohol; nothing that embarrasses or singles out anyone; no brands, celebrities' names, films, TV shows, songs or characters. Never invent facts about real people.\n- Write the squares in my language if I want; keep the keywords below in English.\n\nPut EVERYTHING inside ONE plain code block (three backticks), in exactly this format, so I can paste it into the Bingo Maker. Never use Canvas, a document or a \"writing block\":\nBINGO: [a title for the cards]\nSTYLE: phrases\nGRID: [5, or 4 for a small team or a quick game]\nFREE: [FREE, a short word for the free centre, or none for GRID 4]\nCARDS: [how many different cards: players + a few spares, at most 100]\nLANGUAGE: [en, de, fr or es]\n---\nITEMS:\n[one square per line; a personal square ends with \" | \" and the coworker's name]\n\nBefore you answer, check: enough squares for the GRID, no square twice, no person's name inside a square, FREE is \"none\" for GRID 4, the keywords are in English. Write every square; never shorten the list with \"...\" or \"and so on\". At the end, ask if I want any changes. If I change anything, give me the whole code block again.";
+  var PREFILLED = true;
+  var $id = function (i) { return document.getElementById(i); };
+  var toastEl = $id('mts-toast'), toastTimer;
+  function toast(msg, ms) {
+    toastEl.textContent = msg;
+    toastEl.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.style.display = 'none'; }, ms || 6000);
+  }
+  function legacyCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px;';
+    document.body.appendChild(ta);
+    ta.select();
+    try { ta.setSelectionRange(0, text.length); } catch (e) {}
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function showManual() {
+    $id('mts-manual-ta').value = PROMPT;
+    $id('mts-manual').hidden = false;
+  }
+  // Runs synchronously inside the tap handler so browsers treat it as user-initiated.
+  function copyPrompt(okMsg) {
+    var done = function (ok) {
+      if (ok) toast(okMsg, 7000);
+      else { showManual(); toast(PREFILLED ? 'The prompt is in ChatGPT. If not, copy it from the box under step 1.' : 'Copy the prompt from the box under step 1.', 7000); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(PROMPT).then(function () { done(true); }, function () { done(legacyCopy(PROMPT)); });
+    } else {
+      done(legacyCopy(PROMPT));
+    }
+  }
+  $id('mts-gpt').addEventListener('click', function () {
+    copyPrompt("Prompt copied. If it isn't already in ChatGPT, tap the message box → Paste.");
+  });
+  $id('mts-copy-only').addEventListener('click', function () {
+    copyPrompt('Prompt copied. Paste it into Gemini or Claude.');
+  });
+
+  var src = $id('src'), make = $id('make'), hint = $id('mts-paste-hint'), armed = false;
+  function makeNow() {
+    hint.hidden = true;
+    make.click();
+    var msg = $id('msg');
+    if (msg && msg.scrollIntoView) msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    toast('Check the preview below, then tap Save as PDF / Print.', 5000);
+  }
+  function askManualPaste() {
+    armed = true;
+    hint.hidden = false;
+    src.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    try { src.focus({ preventScroll: true }); } catch (e) { src.focus(); }
+  }
+  src.addEventListener('paste', function () {
+    if (!armed) return;
+    armed = false;
+    setTimeout(function () { if (src.value.trim()) makeNow(); }, 60);
+  });
+  $id('mts-paste').addEventListener('click', function () {
+    if (!navigator.clipboard || !navigator.clipboard.readText) { askManualPaste(); return; }
+    navigator.clipboard.readText().then(function (text) {
+      if (!text || !text.trim()) { askManualPaste(); return; }
+      if (text.trim() === PROMPT.trim()) { toast("That's still the prompt. In ChatGPT, tap Copy on its answer first.", 7000); return; }
+      src.value = text;
+      src.dispatchEvent(new Event('input', { bubbles: true }));
+      makeNow();
+    }, askManualPaste);
+  });
+  $id('mts-print').addEventListener('click', function () { $id('print').click(); });
+})();
+</script>
+<!-- /mts-assistant-js -->
+</body></html>
