@@ -406,7 +406,8 @@ function parse(raw) {
   const good = [];
   cards.forEach((c, i) => {
     const n = label(c, i);
-    c.question = c.question.replace(/^["“„«]\s*|\s*["”“»]$/g, '').trim();
+    const qIn = c.question.replace(/^["“„«]\s*|\s*["”“»]$/g, '');
+    c.question = (/["“„«»”]/.test(qIn) ? c.question : qIn).trim();
     const em = c.question.match(EMOJI);
     if (em && em[0].length < c.question.length) { c.emoji = em[1]; c.question = c.question.slice(em[0].length); }
     c.answers = c.answers.filter(a => a.text);
