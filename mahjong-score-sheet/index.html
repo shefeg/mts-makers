@@ -491,7 +491,7 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
       `<div class="f">Season ${fill(d.season)}</div>` +
       `<div class="f">From ${fill(d.start)} to ${fill(d.end)}</div>` +
       `<div class="f">This book belongs to ${fill(d.owner)}</div></div>` +
-      `<div class="tagline">Works with whatever card your group plays.<br>Big type, roomy lines, every page fill-in.</div>` +
+      `<div class="tagline">Works with whatever card your group plays.<br>Big type, roomy lines, ready to print.</div>` +
       `<div class="fan noqa">${['dot5', 'flower', 'joker', 'holly', 'bam5'].map((f, i) => `<span style="transform:translateY(${[18, 4, 0, 4, 18][i]}px) rotate(${[-14, -7, 0, 7, 14][i]}deg)">${T(f, '0.95in')}</span>`).join('')}</div>` +
       foot(d, 'MakeTogetherStudio'));
   }
@@ -543,7 +543,7 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
       `<tr><td>Self-drawn</td>${w('everyone ×2', 'everyone ×2')}</tr>` +
       `<tr><td>Jokerless, on a discard</td>${w('thrower ×4 · others ×2', 'everyone ×2')}</tr>` +
       `<tr><td>Jokerless, self-drawn</td>${w('everyone ×4', 'everyone ×2')}</tr></tbody></table>` +
-      `<div class="note" style="margin-top:6pt">Your house rules skip a doubling? Count only the ones you play, per payer: none ×1, one ×2, two ×4.</div></div>` +
+      `<div class="note" style="margin-top:6pt">Your house rules skip a doubling? Count only the ones you play, per payer: none ×1, one ×2, two ×4 if they stack (×2 if only one counts).</div></div>` +
       foot(d, 'Payments'));
   }
   function score(d, n, copy) {
