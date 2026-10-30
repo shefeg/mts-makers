@@ -95,7 +95,6 @@ body.a4 .cv { height: 1202px; transform: scale(.933766); }
 .k-sign { font: 700 30px/1 'SL Kid', cursive; color: #F8EEDC; white-space: nowrap; text-shadow: 0 1px 2px rgba(60,35,20,.55); letter-spacing: .02em; }
 .k-thanks { white-space: nowrap; }
 .k-thanks span { display: inline-block; font: 700 56px/1 'SL Kid', cursive; color: #A8322A; }
-.k-stampsvg { position: absolute; }
 .k-envto span, .k-envaddr span, .k-envfrom span { display: inline-block; }
 .k-envto { white-space: nowrap; font: 700 60px/1 'SL Kid', cursive; color: #3A2A1E; }
 .k-envaddr { white-space: nowrap; font: 600 36px/1 'SL Kid', cursive; color: #3A2A1E; }
@@ -180,13 +179,13 @@ body.a4 .cv { height: 1202px; transform: scale(.933766); }
 .npp .np-conthead { display: none; text-align: center; font: 700 15px/1 'NP Caps', sans-serif; letter-spacing: .22em; color: #1E6B3A; white-space: nowrap; }
 .npp.contpage .np-conthead { display: block; }
 
-/* rubber stamp + misc */
+/* rubber label, round medal + misc */
 .npp .np-rubber { border: 5px solid #C8102E; border-radius: 10px; padding: 8px 16px; text-align: center; color: #C8102E;
   font-family: 'NP Caps', sans-serif; font-weight: 700; opacity: .85; letter-spacing: .12em; mix-blend-mode: multiply; white-space: nowrap; }
 .npp .np-rubber .r1 { font-size: 27px; line-height: 1; }
 .npp .np-rubber .r2 { font-size: 12.5px; border-top: 3px solid #C8102E; margin-top: 5px; padding-top: 4px; }
-.npp .np-stamp { position: absolute; }
-.npp .np-stamp .pic { position: absolute; background-repeat: no-repeat; background-position: center; background-size: cover; }
+.npp .np-medal { position: absolute; }
+.npp .np-medal .pic { position: absolute; background-repeat: no-repeat; background-position: center; background-size: cover; }
 .npp .np-seal { border-radius: 50%; background: #C8102E; color: #FFF8EC; display: flex; align-items: center; justify-content: center;
   text-align: center; font: 700 15px/1.15 'NP Caps', sans-serif; letter-spacing: .12em; box-shadow: 0 0 0 5px #FFF8EC, 0 0 0 8px #C8102E; }
 
@@ -246,12 +245,12 @@ body.a4 .cv { height: 1202px; transform: scale(.933766); }
 .xa-hasvoice > .cv > .pc.letter > .art.cp-santa { display: none; }                      /* Candy Pop: the Santa sticker */
 .cp.xa-hasvoice .l-ps { left: 246px; width: 440px; }                                     /* Candy Pop: the P.S. moves right of the badge */
 .pc.cert.xa-hasvoice > .ab:has(> svg radialGradient#goldseal) { display: none; }         /* design A: the gold seal (now the QR medallion) */
-.pc.cert.xa-hasvoice > .np-stamp { display: none; }                                      /* North Pole Post: the star stamp */
+.pc.cert.xa-hasvoice > .np-medal { display: none; }                                      /* North Pole Post: the star medal */
 .pc.cert.xa-hasvoice > .art.cp-cane, .pc.cert.xa-hasvoice > .art.cp-candle { display: none; }        /* Candy Pop: the candy cane */
 .xa-qr { image-rendering: pixelated; }
 </style>
-<script>const SL_LABELS = {"en": {"fold_help": "How to fold: 1. Fold the letter in three. 2. Lay this sheet face down and put the letter on the middle panel. 3. Fold the bottom panel up, then the top panel down over it. 4. Close it with a sticker or a little tape.", "letter_kicker": "SENT FROM THE NORTH POLE", "place": "The Workshop · Snowdrift Lane · North Pole", "date": "Christmas Eve, {year}", "close": "With love and a twinkle,", "cert_kicker": "THE NORTH POLE · {year}", "cert_title": "Official Nice List", "cert_intro": "This certifies that", "cert_role": "CHIEF LIST CHECKER", "env_from": "FROM", "env_place": "The Workshop, North Pole", "stamp": "NORTH POLE POST", "postmark_top": "NORTH POLE", "postmark_bottom": "EXPRESS", "postmark_center": "24.12", "note_head": "REINDEER MAIL", "note_head_star": "A LITTLE NOTE", "fold": "fold", "dear_tpl": "Dear {name},", "my_name_is": "My name is", "and_i_am": "and I am", "years_old": "years old.", "this_year_i_was": "This year I was:", "traits": ["kind", "helpful", "brave", "a good friend"], "nice_thing": "Something nice I did this year:", "i_would_love": "For Christmas I would love:", "leave_out": "I'll leave out:", "leave_items": ["cookies", "milk", "a carrot for the reindeer"], "promise": "This year I'd like to:", "promise_items": ["share", "help at home", "be kind"], "love": "Love,", "wishes": "Here are my wishes:", "draw_here": "draw it here", "star_kind": "a star for each kind thing", "starters": ["This year I learned…", "Something I'm proud of…", "I'd love…"], "wish_title": "My Christmas Wish List", "by": "by", "want": "Something I want", "need": "Something I need", "wear": "Something to wear", "read": "Something to read", "thanks_tpl": "Thank you, {name}!", "to": "To:", "frm": "From:", "kid_addr": "The North Pole", "signpost": "NORTH POLE", "kid_stamp": "NORTH POLE POST", "kid_postmark": "SANTA MAIL"}, "de": {"fold_help": "So wird gefaltet: 1. Den Brief in drei Teile falten. 2. Dieses Blatt mit der bedruckten Seite nach unten legen und den Brief auf das mittlere Feld legen. 3. Das untere Feld nach oben falten, dann das obere darüber. 4. Mit einem Sticker oder etwas Klebeband schließen.", "letter_kicker": "POST VOM NORDPOL", "place": "Die Werkstatt · Schneeflockenweg · Nordpol", "date": "Heiligabend, 24.12.{year}", "close": "Mit herzlichen Grüßen,", "cert_kicker": "NORDPOL · {year}", "cert_title": "Liste der lieben Kinder", "cert_intro": "Hiermit wird bestätigt:", "cert_role": "OBERSTER LISTENPRÜFER", "env_from": "VON", "env_place": "Die Werkstatt, Nordpol", "stamp": "NORDPOL-POST", "postmark_top": "NORDPOL", "postmark_bottom": "EXPRESS", "postmark_center": "24.12", "note_head": "RENTIERPOST", "note_head_star": "EIN KLEINER GRUSS", "fold": "falten", "dear_tpl": "Lieber {name},", "my_name_is": "Ich heiße", "and_i_am": "und bin", "years_old": "Jahre alt.", "this_year_i_was": "Dieses Jahr war ich:", "traits": ["lieb", "hilfsbereit", "mutig", "freundlich"], "nice_thing": "Etwas Liebes, das ich getan habe:", "i_would_love": "Zu Weihnachten wünsche ich mir:", "leave_out": "Ich stelle bereit:", "leave_items": ["Plätzchen", "Milch", "eine Karotte für die Rentiere"], "promise": "Dieses Jahr möchte ich:", "promise_items": ["teilen", "helfen", "lieb sein"], "love": "Liebe Grüße,", "wishes": "Das wünsche ich mir:", "draw_here": "hier malen", "star_kind": "ein Stern für jede gute Tat", "starters": ["Dieses Jahr habe ich gelernt …", "Darauf bin ich stolz …", "Ich wünsche mir …"], "wish_title": "Mein Wunschzettel", "by": "von", "want": "Etwas, das ich mir wünsche", "need": "Etwas, das ich brauche", "wear": "Etwas zum Anziehen", "read": "Etwas zum Lesen", "thanks_tpl": "Danke, {name}!", "to": "An:", "frm": "Von:", "kid_addr": "Nordpol", "signpost": "NORDPOL", "kid_stamp": "NORDPOL-POST", "kid_postmark": "WUNSCHPOST"}, "fr": {"fold_help": "Pliage : 1. Pliez la lettre en trois. 2. Posez cette feuille face imprimée vers le bas, la lettre sur le panneau du milieu. 3. Rabattez le panneau du bas, puis celui du haut par-dessus. 4. Fermez avec un autocollant ou un peu de ruban adhésif.", "letter_kicker": "ENVOYÉ DU PÔLE NORD", "place": "L’atelier · Allée des Flocons · Pôle Nord", "date": "Le 24 décembre {year}", "close": "Avec toute mon affection,", "cert_kicker": "PÔLE NORD · {year}", "cert_title": "Liste des enfants sages", "cert_intro": "Nous certifions que", "cert_role": "VÉRIFICATEUR EN CHEF", "env_from": "DE", "env_place": "L’atelier, Pôle Nord", "stamp": "POSTE DU PÔLE NORD", "postmark_top": "PÔLE NORD", "postmark_bottom": "EXPRESS", "postmark_center": "24.12", "note_head": "COURRIER DES RENNES", "note_head_star": "UN PETIT MOT", "fold": "plier", "dear_tpl": "Cher {name},", "my_name_is": "Je m’appelle", "and_i_am": "et j’ai", "years_old": "ans.", "this_year_i_was": "Cette année :", "traits": ["gentillesse", "entraide", "courage", "amitié"], "nice_thing": "Une gentille chose que j’ai faite :", "i_would_love": "Pour Noël, j’aimerais :", "leave_out": "Je laisserai :", "leave_items": ["des biscuits", "du lait", "une carotte pour les rennes"], "promise": "Cette année, je veux :", "promise_items": ["partager", "aider", "faire plaisir"], "love": "Bisous,", "wishes": "Voici mes souhaits :", "draw_here": "dessine ici", "star_kind": "une étoile par gentillesse", "starters": ["Cette année, j’ai appris…", "Ma plus grande fierté…", "J’aimerais…"], "wish_title": "Ma liste de Noël", "by": "de", "want": "Une chose que je veux", "need": "Une chose dont j’ai besoin", "wear": "Une chose à porter", "read": "Une chose à lire", "thanks_tpl": "Merci, {name} !", "to": "À :", "frm": "De :", "kid_addr": "Pôle Nord", "signpost": "PÔLE NORD", "kid_stamp": "POSTE DU PÔLE NORD", "kid_postmark": "COURRIER"}, "uk": {"fold_help": "Як скласти: 1. Складіть лист утричі. 2. Покладіть цей аркуш друком донизу, а лист — на середню частину. 3. Загніть нижню частину вгору, потім верхню — донизу поверх неї. 4. Заклейте наліпкою або скотчем.", "letter_kicker": "НАДІСЛАНО З ПІВНІЧНОГО ПОЛЮСА", "place": "Майстерня · Сніжна вулиця · Північний полюс", "date": "{year}", "close": "З любов’ю,", "cert_kicker": "ПІВНІЧНИЙ ПОЛЮС · {year}", "cert_title": "Грамота", "cert_intro": "Ця грамота засвідчує, що", "cert_role": "ГОЛОВНИЙ ПЕРЕВІРЯЛЬНИК", "env_from": "ВІД", "env_place": "Майстерня, Північний полюс", "stamp": "ПОШТА ПОЛЮСА", "postmark_top": "ПІВНІЧНИЙ ПОЛЮС", "postmark_bottom": "ЕКСПРЕС", "postmark_center": "24.12", "note_head": "ОЛЕНЯЧА ПОШТА", "note_head_star": "МАЛЕНЬКА ЗАПИСКА", "fold": "згин", "dear_tpl": "Дорогий {name}!", "my_name_is": "Мене звати", "and_i_am": ", мій вік:", "years_old": "", "this_year_i_was": "Цього року:", "traits": ["допомога вдома", "турбота", "сміливість", "дружба"], "nice_thing": "Добра справа, якою я пишаюся:", "i_would_love": "Я мрію про:", "leave_out": "Я залишу:", "leave_items": ["печиво", "молоко", "морквинку для оленів"], "promise": "Цього року я хочу:", "promise_items": ["ділитися", "допомагати", "дарувати усмішки"], "love": "З любов’ю,", "wishes": "Мої бажання:", "draw_here": "намалюй тут", "star_kind": "зірочка за кожну добру справу", "starters": ["Цього року мені вдалося…", "Я пишаюся тим, що…", "Я мрію про…"], "wish_title": "Мій список бажань", "by": "Ім’я:", "want": "Те, що я хочу", "need": "Те, що мені потрібно", "wear": "Щось, щоб одягнути", "read": "Щось почитати", "thanks_tpl": "Дякую, {name}!", "to": "Кому:", "frm": "Від кого:", "kid_addr": "Північний полюс", "signpost": "", "kid_stamp": "ПОШТА", "kid_postmark": "ЛИСТ"}, "es": {"fold_help": "Cómo doblarlo: 1. Dobla la carta en tres. 2. Pon esta hoja boca abajo y la carta sobre el panel central. 3. Dobla hacia arriba el panel de abajo y luego el de arriba por encima. 4. Ciérralo con una pegatina o un poco de cinta.", "letter_kicker": "ENVIADA DESDE EL POLO NORTE", "place": "El Taller · Calle de los Copos · Polo Norte", "date": "Nochebuena, {year}", "close": "Con mucho cariño,", "cert_kicker": "POLO NORTE · {year}", "cert_title": "Lista de niños buenos", "cert_intro": "Certificamos que", "cert_role": "JEFE DE LA LISTA", "env_from": "DE", "env_place": "El Taller, Polo Norte", "stamp": "CORREO DEL POLO NORTE", "postmark_top": "POLO NORTE", "postmark_bottom": "EXPRESO", "postmark_center": "24.12", "note_head": "CORREO DE LOS RENOS", "note_head_star": "UNA NOTITA", "fold": "doblar", "dear_tpl": "Querido {name}:", "my_name_is": "Me llamo", "and_i_am": "y tengo", "years_old": "años.", "this_year_i_was": "Este año mostré:", "traits": ["bondad", "ayuda", "valentía", "amistad"], "nice_thing": "Algo bonito que hice este año:", "i_would_love": "Para Navidad me gustaría:", "leave_out": "Dejaré:", "leave_items": ["galletas", "leche", "una zanahoria para los renos"], "promise": "Este año quiero:", "promise_items": ["compartir", "ayudar", "ser amable"], "love": "Con cariño,", "wishes": "Estos son mis deseos:", "draw_here": "dibuja aquí", "star_kind": "una estrella por cada cosa buena", "starters": ["Este año aprendí…", "Lo que más me enorgullece…", "Me encantaría…"], "wish_title": "Mi lista de Navidad", "by": "de", "want": "Algo que quiero", "need": "Algo que necesito", "wear": "Algo para ponerme", "read": "Algo para leer", "thanks_tpl": "¡Gracias, {name}!", "to": "Para:", "frm": "De:", "kid_addr": "Polo Norte", "signpost": "POLO NORTE", "kid_stamp": "CORREO DEL POLO NORTE", "kid_postmark": "CORREO"}};
-const SL_SENDERS = {"santa": {"lang": "en", "name": "Santa Claus", "signature": "Santa Claus", "dear": "Dear Santa,", "to_name": "Santa Claus", "thanks": "Thank you, Santa!", "note_from": "Comet", "note_art": "reindeer", "leave": true}, "father-christmas": {"lang": "en", "name": "Father Christmas", "signature": "Father Christmas", "dear": "Dear Father Christmas,", "to_name": "Father Christmas", "thanks": "Thank you, Father Christmas!", "note_from": "Comet", "note_art": "reindeer", "leave": true}, "weihnachtsmann": {"lang": "de", "name": "Weihnachtsmann", "signature": "Dein Weihnachtsmann", "dear": "Lieber Weihnachtsmann,", "to_name": "Weihnachtsmann", "thanks": "Danke, lieber Weihnachtsmann!", "note_from": "Comet", "note_art": "reindeer", "leave": true}, "christkind": {"lang": "de", "name": "Christkind", "signature": "Dein Christkind", "dear": "Liebes Christkind,", "to_name": "Christkind", "thanks": "Danke, liebes Christkind!", "note_from": "Ein kleiner Engel", "note_art": "star", "leave": false, "letter_kicker": "POST AUS DER HIMMELSWERKSTATT", "place": "Die Himmelswerkstatt · Sternenweg", "env_place": "Die Himmelswerkstatt", "cert_kicker": "HIMMELSWERKSTATT · {year}", "cert_role": "AUS DER HIMMELSWERKSTATT", "stamp": "HIMMELSPOST", "postmark_top": "HIMMELSPOST", "kid_addr": "Himmelswerkstatt", "signpost": "", "kid_stamp": "HIMMELSPOST", "kid_postmark": "WUNSCHPOST"}, "pere-noel": {"lang": "fr", "name": "Père Noël", "signature": "Père Noël", "dear": "Cher Père Noël,", "to_name": "Père Noël", "thanks": "Merci, Père Noël !", "note_from": "Comète", "note_art": "reindeer", "leave": true}, "st-nicholas": {"lang": "uk", "name": "Святий Миколай", "signature": "Святий Миколай", "dear": "Дорогий Святий Миколаю!", "to_name": "Святому Миколаю", "thanks": "Дякую, Святий Миколаю!", "note_from": "Ангелик", "note_art": "star", "leave": false, "letter_kicker": "ЛИСТ ІЗ НЕБЕСНОЇ ПОШТИ", "place": "Небесна канцелярія · Зоряна стежка", "env_place": "Небесна канцелярія", "cert_kicker": "ДЕНЬ СВЯТОГО МИКОЛАЯ · {year}", "cert_role": "ПОКРОВИТЕЛЬ ДІТЕЙ", "stamp": "НЕБЕСНА ПОШТА", "postmark_top": "НЕБЕСНА ПОШТА", "postmark_bottom": "6 ГРУДНЯ", "postmark_center": "6.12", "date": "6 грудня {year} року", "kid_addr": "Небесна пошта", "signpost": "", "kid_stamp": "НЕБЕСНА ПОШТА", "kid_postmark": "6 ГРУДНЯ"}, "papa-noel": {"lang": "es", "name": "Papá Noel", "signature": "Papá Noel", "dear": "Querido Papá Noel:", "to_name": "Papá Noel", "thanks": "¡Gracias, Papá Noel!", "note_from": "Cometa", "note_art": "reindeer", "leave": true}};
+<script>const SL_LABELS = {"en": {"fold_help": "How to fold: 1. Fold the letter in three. 2. Lay this sheet face down and put the letter on the middle panel. 3. Fold the bottom panel up, then the top panel down over it. 4. Close it with a sticker or a little tape.", "letter_kicker": "SENT FROM THE NORTH POLE", "place": "The Workshop · Snowdrift Lane · North Pole", "date": "Christmas Eve, {year}", "close": "With love and a twinkle,", "cert_kicker": "THE NORTH POLE · {year}", "cert_title": "Official Nice List", "cert_intro": "This certifies that", "cert_role": "CHIEF LIST CHECKER", "env_from": "FROM", "env_place": "The Workshop, North Pole", "note_head": "REINDEER MAIL", "note_head_star": "A LITTLE NOTE", "fold": "fold", "dear_tpl": "Dear {name},", "my_name_is": "My name is", "and_i_am": "and I am", "years_old": "years old.", "this_year_i_was": "This year I was:", "traits": ["kind", "helpful", "brave", "a good friend"], "nice_thing": "Something nice I did this year:", "i_would_love": "For Christmas I would love:", "leave_out": "I'll leave out:", "leave_items": ["cookies", "milk", "a carrot for the reindeer"], "promise": "This year I'd like to:", "promise_items": ["share", "help at home", "be kind"], "love": "Love,", "wishes": "Here are my wishes:", "draw_here": "draw it here", "star_kind": "a star for each kind thing", "starters": ["This year I learned…", "Something I'm proud of…", "I'd love…"], "wish_title": "My Christmas Wish List", "by": "by", "want": "Something I want", "need": "Something I need", "wear": "Something to wear", "read": "Something to read", "thanks_tpl": "Thank you, {name}!", "to": "To:", "frm": "From:", "kid_addr": "The North Pole", "signpost": "NORTH POLE"}, "de": {"fold_help": "So wird gefaltet: 1. Den Brief in drei Teile falten. 2. Dieses Blatt mit der bedruckten Seite nach unten legen und den Brief auf das mittlere Feld legen. 3. Das untere Feld nach oben falten, dann das obere darüber. 4. Mit einem Sticker oder etwas Klebeband schließen.", "letter_kicker": "POST VOM NORDPOL", "place": "Die Werkstatt · Schneeflockenweg · Nordpol", "date": "Heiligabend, 24.12.{year}", "close": "Mit herzlichen Grüßen,", "cert_kicker": "NORDPOL · {year}", "cert_title": "Liste der lieben Kinder", "cert_intro": "Hiermit wird bestätigt:", "cert_role": "OBERSTER LISTENPRÜFER", "env_from": "VON", "env_place": "Die Werkstatt, Nordpol", "note_head": "RENTIERPOST", "note_head_star": "EIN KLEINER GRUSS", "fold": "falten", "dear_tpl": "Lieber {name},", "my_name_is": "Ich heiße", "and_i_am": "und bin", "years_old": "Jahre alt.", "this_year_i_was": "Dieses Jahr war ich:", "traits": ["lieb", "hilfsbereit", "mutig", "freundlich"], "nice_thing": "Etwas Liebes, das ich getan habe:", "i_would_love": "Zu Weihnachten wünsche ich mir:", "leave_out": "Ich stelle bereit:", "leave_items": ["Plätzchen", "Milch", "eine Karotte für die Rentiere"], "promise": "Dieses Jahr möchte ich:", "promise_items": ["teilen", "helfen", "lieb sein"], "love": "Liebe Grüße,", "wishes": "Das wünsche ich mir:", "draw_here": "hier malen", "star_kind": "ein Stern für jede gute Tat", "starters": ["Dieses Jahr habe ich gelernt …", "Darauf bin ich stolz …", "Ich wünsche mir …"], "wish_title": "Mein Wunschzettel", "by": "von", "want": "Etwas, das ich mir wünsche", "need": "Etwas, das ich brauche", "wear": "Etwas zum Anziehen", "read": "Etwas zum Lesen", "thanks_tpl": "Danke, {name}!", "to": "An:", "frm": "Von:", "kid_addr": "Nordpol", "signpost": "NORDPOL"}, "fr": {"fold_help": "Pliage : 1. Pliez la lettre en trois. 2. Posez cette feuille face imprimée vers le bas, la lettre sur le panneau du milieu. 3. Rabattez le panneau du bas, puis celui du haut par-dessus. 4. Fermez avec un autocollant ou un peu de ruban adhésif.", "letter_kicker": "ENVOYÉ DU PÔLE NORD", "place": "L’atelier · Allée des Flocons · Pôle Nord", "date": "Le 24 décembre {year}", "close": "Avec toute mon affection,", "cert_kicker": "PÔLE NORD · {year}", "cert_title": "Liste des enfants sages", "cert_intro": "Nous certifions que", "cert_role": "VÉRIFICATEUR EN CHEF", "env_from": "DE", "env_place": "L’atelier, Pôle Nord", "note_head": "COURRIER DES RENNES", "note_head_star": "UN PETIT MOT", "fold": "plier", "dear_tpl": "Cher {name},", "my_name_is": "Je m’appelle", "and_i_am": "et j’ai", "years_old": "ans.", "this_year_i_was": "Cette année :", "traits": ["gentillesse", "entraide", "courage", "amitié"], "nice_thing": "Une gentille chose que j’ai faite :", "i_would_love": "Pour Noël, j’aimerais :", "leave_out": "Je laisserai :", "leave_items": ["des biscuits", "du lait", "une carotte pour les rennes"], "promise": "Cette année, je veux :", "promise_items": ["partager", "aider", "faire plaisir"], "love": "Bisous,", "wishes": "Voici mes souhaits :", "draw_here": "dessine ici", "star_kind": "une étoile par gentillesse", "starters": ["Cette année, j’ai appris…", "Ma plus grande fierté…", "J’aimerais…"], "wish_title": "Ma liste de Noël", "by": "de", "want": "Une chose que je veux", "need": "Une chose dont j’ai besoin", "wear": "Une chose à porter", "read": "Une chose à lire", "thanks_tpl": "Merci, {name} !", "to": "À :", "frm": "De :", "kid_addr": "Pôle Nord", "signpost": "PÔLE NORD"}, "uk": {"fold_help": "Як скласти: 1. Складіть лист утричі. 2. Покладіть цей аркуш друком донизу, а лист — на середню частину. 3. Загніть нижню частину вгору, потім верхню — донизу поверх неї. 4. Заклейте наліпкою або скотчем.", "letter_kicker": "НАДІСЛАНО З ПІВНІЧНОГО ПОЛЮСА", "place": "Майстерня · Сніжна вулиця · Північний полюс", "date": "{year}", "close": "З любов’ю,", "cert_kicker": "ПІВНІЧНИЙ ПОЛЮС · {year}", "cert_title": "Грамота", "cert_intro": "Ця грамота засвідчує, що", "cert_role": "ГОЛОВНИЙ ПЕРЕВІРЯЛЬНИК", "env_from": "ВІД", "env_place": "Майстерня, Північний полюс", "note_head": "ОЛЕНЯЧА ПОШТА", "note_head_star": "МАЛЕНЬКА ЗАПИСКА", "fold": "згин", "dear_tpl": "Дорогий {name}!", "my_name_is": "Мене звати", "and_i_am": ", мій вік:", "years_old": "", "this_year_i_was": "Цього року:", "traits": ["допомога вдома", "турбота", "сміливість", "дружба"], "nice_thing": "Добра справа, якою я пишаюся:", "i_would_love": "Я мрію про:", "leave_out": "Я залишу:", "leave_items": ["печиво", "молоко", "морквинку для оленів"], "promise": "Цього року я хочу:", "promise_items": ["ділитися", "допомагати", "дарувати усмішки"], "love": "З любов’ю,", "wishes": "Мої бажання:", "draw_here": "намалюй тут", "star_kind": "зірочка за кожну добру справу", "starters": ["Цього року мені вдалося…", "Я пишаюся тим, що…", "Я мрію про…"], "wish_title": "Мій список бажань", "by": "Ім’я:", "want": "Те, що я хочу", "need": "Те, що мені потрібно", "wear": "Щось, щоб одягнути", "read": "Щось почитати", "thanks_tpl": "Дякую, {name}!", "to": "Кому:", "frm": "Від кого:", "kid_addr": "Північний полюс", "signpost": ""}, "es": {"fold_help": "Cómo doblarlo: 1. Dobla la carta en tres. 2. Pon esta hoja boca abajo y la carta sobre el panel central. 3. Dobla hacia arriba el panel de abajo y luego el de arriba por encima. 4. Ciérralo con una pegatina o un poco de cinta.", "letter_kicker": "ENVIADA DESDE EL POLO NORTE", "place": "El Taller · Calle de los Copos · Polo Norte", "date": "Nochebuena, {year}", "close": "Con mucho cariño,", "cert_kicker": "POLO NORTE · {year}", "cert_title": "Lista de niños buenos", "cert_intro": "Certificamos que", "cert_role": "JEFE DE LA LISTA", "env_from": "DE", "env_place": "El Taller, Polo Norte", "note_head": "CORREO DE LOS RENOS", "note_head_star": "UNA NOTITA", "fold": "doblar", "dear_tpl": "Querido {name}:", "my_name_is": "Me llamo", "and_i_am": "y tengo", "years_old": "años.", "this_year_i_was": "Este año mostré:", "traits": ["bondad", "ayuda", "valentía", "amistad"], "nice_thing": "Algo bonito que hice este año:", "i_would_love": "Para Navidad me gustaría:", "leave_out": "Dejaré:", "leave_items": ["galletas", "leche", "una zanahoria para los renos"], "promise": "Este año quiero:", "promise_items": ["compartir", "ayudar", "ser amable"], "love": "Con cariño,", "wishes": "Estos son mis deseos:", "draw_here": "dibuja aquí", "star_kind": "una estrella por cada cosa buena", "starters": ["Este año aprendí…", "Lo que más me enorgullece…", "Me encantaría…"], "wish_title": "Mi lista de Navidad", "by": "de", "want": "Algo que quiero", "need": "Algo que necesito", "wear": "Algo para ponerme", "read": "Algo para leer", "thanks_tpl": "¡Gracias, {name}!", "to": "Para:", "frm": "De:", "kid_addr": "Polo Norte", "signpost": "POLO NORTE"}};
+const SL_SENDERS = {"santa": {"lang": "en", "name": "Santa Claus", "signature": "Santa Claus", "dear": "Dear Santa,", "to_name": "Santa Claus", "thanks": "Thank you, Santa!", "note_from": "Comet", "note_art": "reindeer", "leave": true}, "father-christmas": {"lang": "en", "name": "Father Christmas", "signature": "Father Christmas", "dear": "Dear Father Christmas,", "to_name": "Father Christmas", "thanks": "Thank you, Father Christmas!", "note_from": "Comet", "note_art": "reindeer", "leave": true}, "weihnachtsmann": {"lang": "de", "name": "Weihnachtsmann", "signature": "Dein Weihnachtsmann", "dear": "Lieber Weihnachtsmann,", "to_name": "Weihnachtsmann", "thanks": "Danke, lieber Weihnachtsmann!", "note_from": "Comet", "note_art": "reindeer", "leave": true}, "christkind": {"lang": "de", "name": "Christkind", "signature": "Dein Christkind", "dear": "Liebes Christkind,", "to_name": "Christkind", "thanks": "Danke, liebes Christkind!", "note_from": "Ein kleiner Engel", "note_art": "star", "leave": false, "letter_kicker": "POST AUS DER HIMMELSWERKSTATT", "place": "Die Himmelswerkstatt · Sternenweg", "env_place": "Die Himmelswerkstatt", "cert_kicker": "HIMMELSWERKSTATT · {year}", "cert_role": "AUS DER HIMMELSWERKSTATT", "kid_addr": "Himmelswerkstatt", "signpost": ""}, "pere-noel": {"lang": "fr", "name": "Père Noël", "signature": "Père Noël", "dear": "Cher Père Noël,", "to_name": "Père Noël", "thanks": "Merci, Père Noël !", "note_from": "Comète", "note_art": "reindeer", "leave": true}, "st-nicholas": {"lang": "uk", "name": "Святий Миколай", "signature": "Святий Миколай", "dear": "Дорогий Святий Миколаю!", "to_name": "Святому Миколаю", "thanks": "Дякую, Святий Миколаю!", "note_from": "Ангелик", "note_art": "star", "leave": false, "letter_kicker": "ЛИСТ ІЗ НЕБЕСНОЇ ПОШТИ", "place": "Небесна канцелярія · Зоряна стежка", "env_place": "Небесна канцелярія", "cert_kicker": "ДЕНЬ СВЯТОГО МИКОЛАЯ · {year}", "cert_role": "ПОКРОВИТЕЛЬ ДІТЕЙ", "date": "6 грудня {year} року", "kid_addr": "Небесна пошта", "signpost": ""}, "papa-noel": {"lang": "es", "name": "Papá Noel", "signature": "Papá Noel", "dear": "Querido Papá Noel:", "to_name": "Papá Noel", "thanks": "¡Gracias, Papá Noel!", "note_from": "Cometa", "note_art": "reindeer", "leave": true}};
 const SL_SVG = {"splat": "<svg width=\"850\" height=\"300\"><defs><linearGradient id=\"slgold\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0\" stop-color=\"#E9CF86\"/><stop offset=\".45\" stop-color=\"#B98A35\"/><stop offset=\".7\" stop-color=\"#E2C273\"/><stop offset=\"1\" stop-color=\"#A97B2C\"/></linearGradient></defs><circle cx=\"213.3\" cy=\"167.4\" r=\"1.9\" fill=\"url(#slgold)\" opacity=\"0.72\"/><circle cx=\"211.8\" cy=\"142.2\" r=\"2.3\" fill=\"url(#slgold)\" opacity=\"0.70\"/><circle cx=\"247.0\" cy=\"158.5\" r=\"2.5\" fill=\"url(#slgold)\" opacity=\"0.66\"/><circle cx=\"224.8\" cy=\"158.1\" r=\"1.7\" fill=\"url(#slgold)\" opacity=\"0.56\"/><circle cx=\"176.0\" cy=\"90.7\" r=\"1.2\" fill=\"url(#slgold)\" opacity=\"0.94\"/><circle cx=\"207.8\" cy=\"214.4\" r=\"2.6\" fill=\"url(#slgold)\" opacity=\"0.59\"/><circle cx=\"228.0\" cy=\"163.4\" r=\"1.5\" fill=\"url(#slgold)\" opacity=\"0.54\"/><circle cx=\"264.7\" cy=\"107.7\" r=\"1.4\" fill=\"url(#slgold)\" opacity=\"0.64\"/><circle cx=\"211.1\" cy=\"146.4\" r=\"2.7\" fill=\"url(#slgold)\" opacity=\"0.79\"/><circle cx=\"226.5\" cy=\"123.5\" r=\"2.5\" fill=\"url(#slgold)\" opacity=\"0.74\"/><circle cx=\"199.0\" cy=\"158.3\" r=\"2.5\" fill=\"url(#slgold)\" opacity=\"0.57\"/><circle cx=\"181.3\" cy=\"113.0\" r=\"1.6\" fill=\"url(#slgold)\" opacity=\"0.89\"/><circle cx=\"217.2\" cy=\"122.2\" r=\"2.6\" fill=\"url(#slgold)\" opacity=\"0.66\"/><circle cx=\"218.4\" cy=\"150.9\" r=\"1.5\" fill=\"url(#slgold)\" opacity=\"0.69\"/><circle cx=\"257.5\" cy=\"162.3\" r=\"2.2\" fill=\"url(#slgold)\" opacity=\"0.89\"/><circle cx=\"186.2\" cy=\"129.6\" r=\"3.5\" fill=\"url(#slgold)\" opacity=\"0.75\"/><circle cx=\"194.8\" cy=\"131.9\" r=\"3.3\" fill=\"url(#slgold)\" opacity=\"0.69\"/><circle cx=\"167.2\" cy=\"143.8\" r=\"1.8\" fill=\"url(#slgold)\" opacity=\"0.80\"/><circle cx=\"580.6\" cy=\"64.4\" r=\"2.4\" fill=\"url(#slgold)\" opacity=\"0.64\"/><circle cx=\"610.9\" cy=\"146.4\" r=\"1.9\" fill=\"url(#slgold)\" opacity=\"0.68\"/><circle cx=\"636.4\" cy=\"164.8\" r=\"3.6\" fill=\"url(#slgold)\" opacity=\"0.51\"/><circle cx=\"646.1\" cy=\"150.5\" r=\"3.1\" fill=\"url(#slgold)\" opacity=\"0.89\"/><circle cx=\"654.8\" cy=\"168.0\" r=\"0.8\" fill=\"url(#slgold)\" opacity=\"0.86\"/><circle cx=\"613.5\" cy=\"168.0\" r=\"1.5\" fill=\"url(#slgold)\" opacity=\"0.66\"/><circle cx=\"595.9\" cy=\"204.7\" r=\"2.6\" fill=\"url(#slgold)\" opacity=\"0.54\"/><circle cx=\"626.1\" cy=\"152.8\" r=\"2.8\" fill=\"url(#slgold)\" opacity=\"0.69\"/><circle cx=\"612.8\" cy=\"135.9\" r=\"3.1\" fill=\"url(#slgold)\" opacity=\"0.63\"/><circle cx=\"630.7\" cy=\"73.1\" r=\"1.1\" fill=\"url(#slgold)\" opacity=\"0.80\"/><circle cx=\"594.1\" cy=\"145.4\" r=\"2.0\" fill=\"url(#slgold)\" opacity=\"0.90\"/><circle cx=\"622.3\" cy=\"163.0\" r=\"0.8\" fill=\"url(#slgold)\" opacity=\"0.85\"/><circle cx=\"609.5\" cy=\"171.5\" r=\"3.2\" fill=\"url(#slgold)\" opacity=\"0.48\"/><circle cx=\"652.3\" cy=\"171.2\" r=\"2.4\" fill=\"url(#slgold)\" opacity=\"0.53\"/><circle cx=\"625.4\" cy=\"159.4\" r=\"2.6\" fill=\"url(#slgold)\" opacity=\"0.50\"/><circle cx=\"630.0\" cy=\"144.9\" r=\"2.3\" fill=\"url(#slgold)\" opacity=\"0.89\"/><circle cx=\"618.9\" cy=\"137.3\" r=\"2.1\" fill=\"url(#slgold)\" opacity=\"0.63\"/><circle cx=\"654.0\" cy=\"197.4\" r=\"3.4\" fill=\"url(#slgold)\" opacity=\"0.95\"/></svg>", "rule": "<svg width=\"850\" height=\"240\"><defs><linearGradient id=\"slgold\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0\" stop-color=\"#E9CF86\"/><stop offset=\".45\" stop-color=\"#B98A35\"/><stop offset=\".7\" stop-color=\"#E2C273\"/><stop offset=\"1\" stop-color=\"#A97B2C\"/></linearGradient></defs><rect x=\"305.0\" y=\"213.2\" width=\"102\" height=\"1.6\" fill=\"url(#slgold)\"/><rect x=\"443.0\" y=\"213.2\" width=\"102\" height=\"1.6\" fill=\"url(#slgold)\"/><path d=\"M425.0,204.0 L427.6,210.4 L434.5,210.9 L429.3,215.4 L430.9,222.1 L425.0,218.5 L419.1,222.1 L420.7,215.4 L415.5,210.9 L422.4,210.4 Z\" fill=\"url(#slgold)\"/></svg>", "goldseal": "<svg width=\"140\" height=\"140\"><defs><radialGradient id=\"goldseal\" cx=\".38\" cy=\".32\" r=\".8\"><stop offset=\"0\" stop-color=\"#F3DD9A\"/><stop offset=\".5\" stop-color=\"#C99B42\"/><stop offset=\"1\" stop-color=\"#8E6522\"/></radialGradient></defs><path d=\"M131.0,70.0 L124.4,77.2 L128.9,85.8 L120.7,91.0 L122.8,100.5 L113.6,103.4 L113.1,113.1 L103.4,113.6 L100.5,122.8 L91.0,120.7 L85.8,128.9 L77.2,124.4 L70.0,131.0 L62.8,124.4 L54.2,128.9 L49.0,120.7 L39.5,122.8 L36.6,113.6 L26.9,113.1 L26.4,103.4 L17.2,100.5 L19.3,91.0 L11.1,85.8 L15.6,77.2 L9.0,70.0 L15.6,62.8 L11.1,54.2 L19.3,49.0 L17.2,39.5 L26.4,36.6 L26.9,26.9 L36.6,26.4 L39.5,17.2 L49.0,19.3 L54.2,11.1 L62.8,15.6 L70.0,9.0 L77.2,15.6 L85.8,11.1 L91.0,19.3 L100.5,17.2 L103.4,26.4 L113.1,26.9 L113.6,36.6 L122.8,39.5 L120.7,49.0 L128.9,54.2 L124.4,62.8 Z\" fill=\"url(#goldseal)\"/><circle cx=\"70.0\" cy=\"70.0\" r=\"41.5\" fill=\"none\" stroke=\"#8E6522\" stroke-width=\"1.4\"/><path d=\"M70.0,46.8 L76.1,61.6 L92.0,62.8 L79.9,73.2 L83.6,88.8 L70.0,80.4 L56.4,88.8 L60.1,73.2 L48.0,62.8 L63.9,61.6 Z\" fill=\"#F6E3A8\" opacity=\".9\"/><path d=\"M70.0,46.8 L76.1,61.6 L92.0,62.8 L79.9,73.2 L83.6,88.8 L70.0,80.4 L56.4,88.8 L60.1,73.2 L48.0,62.8 L63.9,61.6 Z\" fill=\"none\" stroke=\"#8E6522\" stroke-width=\"1\"/></svg>"};
 const SL_THEME = "npp";
 const SL_VOICE = {"url": "https://shefeg.github.io/mts-makers/santa-voice/north-pole/", "n": 33, "path": "M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM16 0h4v1h-4zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM15 1h2v1h-2zM18 1h1v1h-1zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h5v1h-5zM14 2h3v1h-3zM18 2h2v1h-2zM21 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h2v1h-2zM17 3h2v1h-2zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h4v1h-4zM13 4h9v1h-9zM23 4h1v1h-1zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h2v1h-2zM11 5h1v1h-1zM14 5h1v1h-1zM17 5h1v1h-1zM22 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h2v1h-2zM14 7h1v1h-1zM16 7h1v1h-1zM18 7h1v1h-1zM20 7h4v1h-4zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h1v1h-1zM11 8h4v1h-4zM17 8h1v1h-1zM23 8h2v1h-2zM26 8h5v1h-5zM0 9h3v1h-3zM9 9h1v1h-1zM13 9h1v1h-1zM17 9h5v1h-5zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h4v1h-4zM1 10h1v1h-1zM4 10h1v1h-1zM6 10h5v1h-5zM12 10h5v1h-5zM20 10h1v1h-1zM24 10h3v1h-3zM28 10h1v1h-1zM30 10h2v1h-2zM1 11h1v1h-1zM5 11h1v1h-1zM7 11h1v1h-1zM9 11h1v1h-1zM12 11h2v1h-2zM20 11h4v1h-4zM26 11h1v1h-1zM28 11h4v1h-4zM0 12h2v1h-2zM4 12h1v1h-1zM6 12h1v1h-1zM8 12h5v1h-5zM14 12h2v1h-2zM17 12h1v1h-1zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM31 12h1v1h-1zM0 13h2v1h-2zM3 13h1v1h-1zM7 13h3v1h-3zM13 13h1v1h-1zM15 13h1v1h-1zM17 13h1v1h-1zM19 13h2v1h-2zM23 13h1v1h-1zM25 13h2v1h-2zM30 13h3v1h-3zM1 14h1v1h-1zM3 14h4v1h-4zM8 14h1v1h-1zM11 14h3v1h-3zM15 14h2v1h-2zM18 14h1v1h-1zM22 14h1v1h-1zM24 14h3v1h-3zM31 14h1v1h-1zM0 15h1v1h-1zM4 15h2v1h-2zM7 15h1v1h-1zM10 15h1v1h-1zM16 15h1v1h-1zM19 15h1v1h-1zM21 15h1v1h-1zM23 15h1v1h-1zM25 15h3v1h-3zM29 15h2v1h-2zM0 16h1v1h-1zM4 16h3v1h-3zM8 16h2v1h-2zM14 16h1v1h-1zM16 16h2v1h-2zM20 16h1v1h-1zM22 16h1v1h-1zM24 16h2v1h-2zM27 16h3v1h-3zM32 16h1v1h-1zM0 17h2v1h-2zM3 17h1v1h-1zM7 17h1v1h-1zM11 17h2v1h-2zM14 17h1v1h-1zM16 17h1v1h-1zM18 17h4v1h-4zM23 17h1v1h-1zM25 17h3v1h-3zM29 17h2v1h-2zM32 17h1v1h-1zM1 18h2v1h-2zM5 18h4v1h-4zM10 18h1v1h-1zM12 18h1v1h-1zM15 18h1v1h-1zM18 18h1v1h-1zM21 18h2v1h-2zM25 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM4 19h1v1h-1zM8 19h1v1h-1zM11 19h2v1h-2zM14 19h3v1h-3zM18 19h1v1h-1zM21 19h2v1h-2zM27 19h6v1h-6zM0 20h1v1h-1zM2 20h1v1h-1zM4 20h1v1h-1zM6 20h5v1h-5zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h2v1h-2zM25 20h1v1h-1zM27 20h3v1h-3zM32 20h1v1h-1zM0 21h1v1h-1zM2 21h1v1h-1zM5 21h1v1h-1zM8 21h4v1h-4zM17 21h5v1h-5zM23 21h1v1h-1zM26 21h1v1h-1zM30 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM3 22h2v1h-2zM6 22h1v1h-1zM8 22h3v1h-3zM12 22h1v1h-1zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM28 22h2v1h-2zM31 22h1v1h-1zM0 23h1v1h-1zM2 23h4v1h-4zM7 23h1v1h-1zM12 23h1v1h-1zM15 23h2v1h-2zM19 23h4v1h-4zM25 23h3v1h-3zM30 23h3v1h-3zM0 24h1v1h-1zM2 24h1v1h-1zM4 24h5v1h-5zM10 24h2v1h-2zM13 24h1v1h-1zM15 24h5v1h-5zM22 24h7v1h-7zM32 24h1v1h-1zM8 25h1v1h-1zM13 25h1v1h-1zM16 25h5v1h-5zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM11 26h1v1h-1zM14 26h4v1h-4zM22 26h3v1h-3zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM10 27h2v1h-2zM13 27h4v1h-4zM20 27h5v1h-5zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h4v1h-4zM14 28h1v1h-1zM17 28h1v1h-1zM22 28h1v1h-1zM24 28h6v1h-6zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h2v1h-2zM14 29h1v1h-1zM16 29h5v1h-5zM24 29h2v1h-2zM28 29h2v1h-2zM31 29h2v1h-2zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h3v1h-3zM15 30h1v1h-1zM17 30h1v1h-1zM21 30h1v1h-1zM26 30h2v1h-2zM29 30h1v1h-1zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h3v1h-3zM15 31h2v1h-2zM19 31h4v1h-4zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h5v1h-5zM14 32h1v1h-1zM17 32h1v1h-1zM19 32h2v1h-2zM22 32h1v1h-1zM24 32h2v1h-2zM27 32h1v1h-1zM29 32h1v1h-1zM31 32h1v1h-1z"};
@@ -303,33 +302,6 @@ const SL = (function () {
     return 'M' + p.join(' L') + ' Z';
   }
   let uid = 0;
-  function stampSVG(w, h, label, col = '#B5463C', value = '1\u2605', fill = '#F3E3D3') {
-    const id = 'sm' + (++uid), r = 4.4, step = 11.5, holes = [];
-    for (let i = 0; i <= Math.floor(w / step); i++) { const x = (i * step + (w % step) / 2).toFixed(1); holes.push(`<circle cx="${x}" cy="0" r="${r}"/><circle cx="${x}" cy="${h}" r="${r}"/>`); }
-    for (let j = 0; j <= Math.floor(h / step); j++) { const y = (j * step + (h % step) / 2).toFixed(1); holes.push(`<circle cx="0" cy="${y}" r="${r}"/><circle cx="${w}" cy="${y}" r="${r}"/>`); }
-    const fs = Math.min(9.6, (w - 26) / (Math.max(8, label.length) * .68));
-    return `<svg width="${w + 8}" height="${h + 8}" viewBox="-4 -4 ${w + 8} ${h + 8}" style="overflow:visible">` +
-      `<defs><mask id="${id}"><rect x="-4" y="-4" width="${w + 8}" height="${h + 8}" fill="#fff"/><g fill="#000">${holes.join('')}</g></mask></defs>` +
-      `<rect x="2" y="4" width="${w}" height="${h}" fill="#3A2A20" opacity=".16" mask="url(#${id})"/>` +
-      `<rect width="${w}" height="${h}" fill="#FFFDF6" mask="url(#${id})"/>` +
-      `<rect x="9" y="9" width="${w - 18}" height="${h - 18}" fill="${fill}" stroke="${col}" stroke-width="1.3"/>` +
-      `<text x="${w / 2}" y="${h - 15}" text-anchor="middle" font-family="SL Stamp" font-weight="800" font-size="${fs.toFixed(1)}" letter-spacing=".5" fill="${col}">${esc(label)}</text>` +
-      `<text x="${w - 14}" y="24" text-anchor="end" font-family="SL Kid" font-weight="700" font-size="17" fill="${col}">${value}</text></svg>`;
-  }
-  function postmarkSVG(r, top, bottom, center, col = '#B23A2F') {
-    const a = 'p' + (++uid), b = 'p' + (++uid), d = r * 2 + 12, c = r + 6;
-    const ft = Math.min(r * .22, (Math.PI * r * .76) / Math.max(6, top.length) * 1.45);
-    const fb = Math.min(r * .19, (Math.PI * r * .9) / Math.max(6, bottom.length) * 1.45);
-    return `<svg width="${d}" height="${d}" viewBox="0 0 ${d} ${d}"><g opacity=".9">` +
-      `<defs><path id="${a}" d="M${c - r * .76},${c} A${r * .76},${r * .76} 0 0 1 ${c + r * .76},${c}"/>` +
-      `<path id="${b}" d="M${c - r * .9},${c} A${r * .9},${r * .9} 0 0 0 ${c + r * .9},${c}"/></defs>` +
-      `<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${col}" stroke-width="3.2"/>` +
-      `<circle cx="${c}" cy="${c}" r="${r * .6}" fill="none" stroke="${col}" stroke-width="1.5"/>` +
-      `<text font-family="SL Stamp" font-weight="900" font-size="${ft.toFixed(1)}" letter-spacing="1.5" fill="${col}"><textPath href="#${a}" startOffset="50%" text-anchor="middle">${esc(top)}</textPath></text>` +
-      `<text font-family="SL Stamp" font-weight="900" font-size="${fb.toFixed(1)}" letter-spacing="1.2" fill="${col}"><textPath href="#${b}" startOffset="50%" text-anchor="middle">${esc(bottom)}</textPath></text>` +
-      `<text x="${c}" y="${c + r * .13}" text-anchor="middle" font-family="SL Kid" font-weight="700" font-size="${(r * .4).toFixed(1)}" fill="${col}">${esc(center)}</text>` +
-      `<path d="${starPath(c - r * .74, c, r * .07)}" fill="${col}"/><path d="${starPath(c + r * .74, c, r * .07)}" fill="${col}"/></g></svg>`;
-  }
   function hoofSVG(s = 34, col = '#7A4B2E') {
     return `<svg width="${s}" height="${s}" viewBox="0 0 40 40"><g fill="${col}" opacity=".85">` +
       `<path d="M19,6 C11,6 7,14 8,23 C9,31 13,35 18,34 C19,26 19,15 19,6 Z"/><path d="M21,6 C29,6 33,14 32,23 C31,31 27,35 22,34 C21,26 21,15 21,6 Z"/></g></svg>`;
@@ -388,16 +360,14 @@ const SL = (function () {
   /* ---------------- design A: fold-around envelope */
   function envPage(e, L, ctx) {
     const H0 = H[ctx.paper], [T, M] = ENV[ctx.paper], lang = ctx.lang;
-    const stamp = `<div class="ab" style="left:636px;top:${T + 30}px;transform:rotate(5deg)">${stampSVG(112, 138, L.stamp)}` +
-      art('b-tree', 34, 22, 52, 64) + `</div>`;
-    const pm = `<div class="ab" style="left:516px;top:${T + 40}px;transform:rotate(-16deg)">${postmarkSVG(56, L.postmark_top, L.postmark_bottom, L.postmark_center)}</div>`;
+    const seal = `<div class="ab" style="left:652px;top:${T + 26}px;transform:rotate(6deg)">${art('a-seal', 0, 0, 124, 134)}</div>`;
     const front =
       `<svg class="ab" style="left:0;top:0" width="850" height="${H0}"><rect x="20" y="${T + 18}" width="810" height="${M - 36}" rx="3" fill="none" stroke="#C99B42" stroke-width="1.6"/>` +
       `<rect x="27" y="${T + 25}" width="796" height="${M - 50}" rx="2" fill="none" stroke="#9E2B25" stroke-width=".8" opacity=".5"/></svg>` +
       `<div class="ab e-fromlab" style="left:64px;top:${T + 48}px">${tx(L.env_from, lang)}</div>` +
       fitw('e-from', 62, T + 66, null, tx(e.fromName, lang), 380) +
       fitw('e-place', 64, T + 122, null, tx(e.fromPlace, lang), 380) +
-      stamp + pm +
+      seal +
       fitw('e-to', 300, T + 176, 480, tx(e.to, lang), 330) +
       (e.line1 ? fitw('e-line', 306, T + 262, 470, tx(e.line1, lang), 470) : '') +
       (e.line2 ? fitw('e-line', 306, T + 300, 470, tx(e.line2, lang), 470) : '');
@@ -538,8 +508,7 @@ const SL = (function () {
       fitw('k-envaddr', 74, T + 156, null, tx(kid.addr, lang), 500) +
       `<div class="ab k-envfrom" data-fitw="540" style="left:74px;top:${T + 262}px"><span>${tx(L.frm, lang)} ${blank(kid.name, 220)}</span></div>` +
       art(kp(ctx, 'b-tree'), 700, T + M - 150, 84, 103) + art(kp(ctx, 'b-cookies'), 586, T + M - 112, 84, 75) +
-      `<div class="ab" style="left:640px;top:${T + 36}px;transform:rotate(-4deg)">${stampSVG(112, 138, L.kid_stamp, ctx.lineart ? '#555555' : '#B5463C', '1\u2605', ctx.lineart ? '#FFFFFF' : '#F3E3D3')}${L.note_art === 'star' ? art(kp(ctx, 'b-star'), 26, 26, 60, 59) : art(kp(ctx, 'b-reindeer'), 30, 18, 52, 75)}</div>` +
-      `<div class="ab" style="left:548px;top:${T + 104}px;transform:rotate(14deg)">${postmarkSVG(52, L.kid_postmark, String(kid.addr || '').toUpperCase(), '\u2665', ctx.lineart ? '#555555' : '#8E2A22')}</div>`;
+      `<div class="ab" style="left:636px;top:${T + 46}px;transform:rotate(-4deg)">${L.note_art === 'star' ? art(kp(ctx, 'b-star'), 10, 8, 118, 116) : art(kp(ctx, 'b-reindeer'), 10, 0, 100, 144)}</div>`;
     const back = `<div class="ab" style="left:0;top:0;width:850px;height:${T}px;transform:rotate(180deg)">` +
       art(kp(ctx, 'b-star'), 365, T - 190, 120, 118) + art(kp(ctx, 'b-gift'), 230, T - 150, 70, 79) + art(kp(ctx, 'b-mitten'), 560, T - 150, 60, 77) + `</div>`;
     const ticks = [T, T + M].map(yv =>
@@ -688,7 +657,7 @@ const SL = (function () {
 /* North Pole Post theme for the Santa letter engine (loaded after engine.js, only in North Pole Post files). SL.render(doc)
    hands the doc to NPP.render unless doc.theme names another design; design A's code path is untouched. The fit step (SL.fit) is shared: the letter
    flow keeps the engine's class names (.l-flow, .l-body, .l-close, .l-sign, .l-ps, header .l-title/.l-kicker/.l-date,
-   decorations .splat/.l-addr, the bottom stamp .a-seal), so long letters continue on a second page the same way. */
+   decorations .splat/.l-addr, the bottom seal .a-seal), so long letters continue on a second page the same way. */
 const NPP = (function () {
   const H = SL.H;
   const ENV = { letter: [350, 380, 370], a4: [382, 418, 402] };
@@ -701,32 +670,27 @@ const NPP = (function () {
 
   /* ---------- labels (theme words; everything else comes from SL.labels) */
   const T = {
-    en: { head: 'NORTH POLE POST', sub: 'FROM THE DESK OF {NAME} · AIR MAIL', approved: 'APPROVED', approved2: 'NICE LIST · CHECKED TWICE',
-      pm_date: '24 DEC {year}', stamp: 'NORTH POLE · {year}', cert_head: 'NORTH POLE POST OFFICE',
+    en: { head: 'NORTH POLE POST', sub: 'FROM THE DESK OF {NAME} · AIR MAIL', approved: 'APPROVED', approved2: 'NICE LIST · CHECKED TWICE', cert_head: 'NORTH POLE POST OFFICE',
       cert_sub: 'OFFICIAL NICE LIST REGISTRATION · {year}', f_name: 'NAME', f_reason: 'REASON', reg: 'REG. NO. NP-{year}-1224 · CHECKED TWICE',
       cert_role: 'POSTMASTER, NORTH POLE', tg_head: 'NORTH POLE TELEGRAM', tg_no: 'NO. 1224 · PRIORITY', priority: 'PRIORITY · AIR MAIL',
       seal: 'SEALED AT THE NORTH POLE', kid_air: 'AIR MAIL · PRIORITY TO THE NORTH POLE', kid_title: 'Letter to Santa',
       f_from: 'FROM', f_age: 'AGE', f_to: 'TO', signed: 'SIGNED', wish_sub: 'PARCEL LIST FOR THE NORTH POLE' },
-    de: { head: 'NORDPOL-POST', sub: 'LUFTPOST AUS DER WERKSTATT', approved: 'GENEHMIGT', approved2: 'ZWEIMAL GEPRÜFT',
-      pm_date: '24 DEZ {year}', stamp: 'NORDPOL · {year}', cert_head: 'NORDPOL-POSTAMT',
+    de: { head: 'NORDPOL-POST', sub: 'LUFTPOST AUS DER WERKSTATT', approved: 'GENEHMIGT', approved2: 'ZWEIMAL GEPRÜFT', cert_head: 'NORDPOL-POSTAMT',
       cert_sub: 'OFFIZIELLE EINTRAGUNG · {year}', f_name: 'NAME', f_reason: 'GRUND', reg: 'NR. NP-{year}-1224 · ZWEIMAL GEPRÜFT',
       cert_role: 'POSTMEISTER, NORDPOL', tg_head: 'NORDPOL-TELEGRAMM', tg_no: 'NR. 1224 · EILT', priority: 'EILT · LUFTPOST',
       seal: 'VERSIEGELT AM NORDPOL', kid_air: 'LUFTPOST · EILT · AN DEN NORDPOL', kid_title: 'Brief an den Weihnachtsmann',
       f_from: 'VON', f_age: 'ALTER', f_to: 'AN', signed: 'UNTERSCHRIFT', wish_sub: 'PAKETLISTE FÜR DEN NORDPOL' },
-    fr: { head: 'POSTE DU PÔLE NORD', sub: 'COURRIER AÉRIEN DE L’ATELIER', approved: 'APPROUVÉ', approved2: 'VÉRIFIÉ DEUX FOIS',
-      pm_date: '24 DÉC {year}', stamp: 'PÔLE NORD · {year}', cert_head: 'BUREAU DE POSTE DU PÔLE NORD',
+    fr: { head: 'POSTE DU PÔLE NORD', sub: 'COURRIER AÉRIEN DE L’ATELIER', approved: 'APPROUVÉ', approved2: 'VÉRIFIÉ DEUX FOIS', cert_head: 'BUREAU DE POSTE DU PÔLE NORD',
       cert_sub: 'INSCRIPTION OFFICIELLE · {year}', f_name: 'NOM', f_reason: 'MOTIF', reg: 'N° NP-{year}-1224 · VÉRIFIÉ DEUX FOIS',
       cert_role: 'MAÎTRE DE POSTE, PÔLE NORD', tg_head: 'TÉLÉGRAMME DU PÔLE NORD', tg_no: 'N° 1224 · PRIORITAIRE', priority: 'PRIORITAIRE · PAR AVION',
       seal: 'SCELLÉ AU PÔLE NORD', kid_air: 'PAR AVION · PRIORITAIRE · PÔLE NORD', kid_title: 'Lettre au Père Noël',
       f_from: 'DE', f_age: 'ÂGE', f_to: 'À', signed: 'SIGNATURE', wish_sub: 'LISTE DES COLIS POUR LE PÔLE NORD' },
-    uk: { head: 'ПОШТА ПІВНІЧНОГО ПОЛЮСА', sub: 'АВІАПОШТА З МАЙСТЕРНІ', approved: 'СХВАЛЕНО', approved2: 'ПЕРЕВІРЕНО ДВІЧІ',
-      pm_date: '24 ГРУД {year}', stamp: 'ПІВНІЧНИЙ ПОЛЮС · {year}', cert_head: 'ПОШТА ПІВНІЧНОГО ПОЛЮСА',
+    uk: { head: 'ПОШТА ПІВНІЧНОГО ПОЛЮСА', sub: 'АВІАПОШТА З МАЙСТЕРНІ', approved: 'СХВАЛЕНО', approved2: 'ПЕРЕВІРЕНО ДВІЧІ', cert_head: 'ПОШТА ПІВНІЧНОГО ПОЛЮСА',
       cert_sub: 'ОФІЦІЙНА ГРАМОТА · {year}', f_name: 'ІМ’Я', f_reason: 'ЗА ЩО', reg: '№ NP-{year}-1224 · ПЕРЕВІРЕНО ДВІЧІ',
       cert_role: 'ПОШТМЕЙСТЕР', tg_head: 'ТЕЛЕГРАМА', tg_no: '№ 1224 · ТЕРМІНОВО', priority: 'ТЕРМІНОВО · АВІАПОШТА',
       seal: 'ЗАПЕЧАТАНО НА ПОЛЮСІ', kid_air: 'АВІАПОШТА · ТЕРМІНОВО', kid_title: 'Лист Санті',
       f_from: 'ВІД', f_age: 'ВІК', f_to: 'КОМУ', signed: 'ПІДПИС', wish_sub: 'СПИСОК ПОДАРУНКІВ' },
-    es: { head: 'CORREO DEL POLO NORTE', sub: 'CORREO AÉREO DEL TALLER', approved: 'APROBADO', approved2: 'REVISADO DOS VECES',
-      pm_date: '24 DIC {year}', stamp: 'POLO NORTE · {year}', cert_head: 'OFICINA DE CORREOS DEL POLO NORTE',
+    es: { head: 'CORREO DEL POLO NORTE', sub: 'CORREO AÉREO DEL TALLER', approved: 'APROBADO', approved2: 'REVISADO DOS VECES', cert_head: 'OFICINA DE CORREOS DEL POLO NORTE',
       cert_sub: 'REGISTRO OFICIAL · {year}', f_name: 'NOMBRE', f_reason: 'MOTIVO', reg: 'N.º NP-{year}-1224 · REVISADO DOS VECES',
       cert_role: 'JEFE DE CORREOS, POLO NORTE', tg_head: 'TELEGRAMA DEL POLO NORTE', tg_no: 'N.º 1224 · URGENTE', priority: 'URGENTE · CORREO AÉREO',
       seal: 'SELLADO EN EL POLO NORTE', kid_air: 'CORREO AÉREO · URGENTE · POLO NORTE', kid_title: 'Carta a Papá Noel',
@@ -735,10 +699,9 @@ const NPP = (function () {
   const SENDER = {   // per gift-bringer, only in that sender's own language
     'father-christmas': { lang: 'en', kid_title: 'Letter to Father Christmas' },
     'christkind': { lang: 'de', head: 'HIMMELSPOST', sub: 'LUFTPOST AUS DER HIMMELSWERKSTATT', cert_head: 'HIMMELSPOST',
-      cert_role: 'AUS DER HIMMELSWERKSTATT', stamp: 'HIMMELSPOST · {year}', tg_head: 'HIMMELSTELEGRAMM', seal: 'VERSIEGELT IM HIMMEL',
+      cert_role: 'AUS DER HIMMELSWERKSTATT', tg_head: 'HIMMELSTELEGRAMM', seal: 'VERSIEGELT IM HIMMEL',
       kid_air: 'HIMMELSPOST · EILT', kid_title: 'Brief ans Christkind', wish_sub: 'WUNSCHLISTE FÜR DIE HIMMELSWERKSTATT' },
-    'st-nicholas': { lang: 'uk', head: 'НЕБЕСНА ПОШТА', sub: 'ЛИСТ ВІД СВЯТОГО МИКОЛАЯ', pm_date: '6 ГРУД {year}',
-      stamp: 'НЕБЕСНА ПОШТА · {year}', cert_head: 'НЕБЕСНА ПОШТА', cert_role: 'НЕБЕСНА КАНЦЕЛЯРІЯ', tg_head: 'НЕБЕСНА ТЕЛЕГРАМА',
+    'st-nicholas': { lang: 'uk', head: 'НЕБЕСНА ПОШТА', sub: 'ЛИСТ ВІД СВЯТОГО МИКОЛАЯ', cert_head: 'НЕБЕСНА ПОШТА', cert_role: 'НЕБЕСНА КАНЦЕЛЯРІЯ', tg_head: 'НЕБЕСНА ТЕЛЕГРАМА',
       seal: 'ЗАПЕЧАТАНО НА НЕБІ', kid_air: 'НЕБЕСНА ПОШТА · 6 ГРУДНЯ', kid_title: 'Лист Святому Миколаю', wish_sub: 'МОЇ МРІЇ' },
     'pere-noel': { lang: 'fr' }, 'papa-noel': { lang: 'es' }, 'weihnachtsmann': { lang: 'de' }, 'santa': { lang: 'en' },
   };
@@ -760,32 +723,14 @@ const NPP = (function () {
     `<div class="ab ${cls}" data-fitw="${maxw}" style="left:${x}px;top:${y}px;${w ? 'width:' + w + 'px;' : ''}${extra}"><span>${inner}</span></div>`;
   let uid = 0;
   let gentle = false;      // Christkind / St Nicholas: no reindeer, no sleigh (set per piece by the caller)
-  function stamp(pic, x, y, w, h, label, rot, lineart, col = '#C8102E') {
+  function medal(pic, x, y, d, rot, lineart, col = '#C8102E') {      // a round framed illustration (no perforation, no value, no text)
     if (gentle && (pic === 'sleigh' || pic === 'reindeer')) pic = 'star';
-    const id = 'np' + (++uid), r = 4.4, step = 11.5, holes = [];
-    for (let i = 0; i <= Math.floor(w / step); i++) { const xx = (i * step + (w % step) / 2).toFixed(1); holes.push(`<circle cx="${xx}" cy="0" r="${r}"/><circle cx="${xx}" cy="${h}" r="${r}"/>`); }
-    for (let j = 0; j <= Math.floor(h / step); j++) { const yy = (j * step + (h % step) / 2).toFixed(1); holes.push(`<circle cx="0" cy="${yy}" r="${r}"/><circle cx="${w}" cy="${yy}" r="${r}"/>`); }
-    const c = lineart ? '#333333' : col, fs = Math.min(10.5, (w - 22) / (Math.max(8, label.length) * .64));
-    return `<div class="np-stamp splat" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;transform:rotate(${rot}deg);` +
+    const c = lineart ? '#333333' : col, p = Math.round(d * .17);
+    return `<div class="np-medal splat" style="left:${x}px;top:${y}px;width:${d}px;height:${d}px;transform:rotate(${rot}deg);` +
       `filter:drop-shadow(2px 4px 4px rgba(60,30,10,${lineart ? 0 : .3}))">` +
-      `<svg width="${w + 10}" height="${h + 10}" viewBox="-5 -5 ${w + 10} ${h + 10}" style="position:absolute;left:-5px;top:-5px"><defs><mask id="${id}">` +
-      `<rect x="-5" y="-5" width="${w + 10}" height="${h + 10}" fill="#fff"/><g fill="#000">${holes.join('')}</g></mask></defs>` +
-      `<rect width="${w}" height="${h}" fill="#FFFDF6" mask="url(#${id})"/>` +
-      `<rect x="9" y="9" width="${w - 18}" height="${h - 40}" fill="${lineart ? '#FFFFFF' : '#F3E3D3'}" stroke="${c}" stroke-width="1.4"/>` +
-      `<text x="${w / 2}" y="${h - 14}" text-anchor="middle" font-family="NP Caps" font-weight="700" font-size="${fs.toFixed(1)}" letter-spacing=".8" fill="${c}">${esc(label)}</text></svg>` +
-      `<div class="pic npp-${pic}${lineart ? '-line' : ''}" style="left:11px;top:11px;width:${w - 22}px;height:${h - 44}px"></div></div>`;
-  }
-  function postmark(d, top, bottom, center, col, rot, waves = true) {
-    const r = d / 2 - 8, c = d / 2, id = 'pm' + (++uid);
-    let wav = '';
-    if (waves) for (let k = 0; k < 4; k++) { const y = c - 30 + k * 20; wav += `<path d="M${c + r - 6},${y} q22,-10 44,0 t44,0 t44,0" fill="none" stroke="${col}" stroke-width="3" opacity=".8"/>`; }
-    const ft = Math.min(r * .24, (Math.PI * r * .78) / Math.max(6, top.length) * 1.5), fb = Math.min(r * .2, (Math.PI * r * .9) / Math.max(6, bottom.length) * 1.5);
-    return `<svg width="${d + (waves ? 150 : 0)}" height="${d}" viewBox="0 0 ${d + (waves ? 150 : 0)} ${d}" style="transform:rotate(${rot}deg);opacity:.85;overflow:visible">` +
-      `<defs><path id="${id}a" d="M${c - r * .78},${c} A${r * .78},${r * .78} 0 0 1 ${c + r * .78},${c}"/><path id="${id}b" d="M${c - r * .9},${c} A${r * .9},${r * .9} 0 0 0 ${c + r * .9},${c}"/></defs>` +
-      `<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${col}" stroke-width="4"/><circle cx="${c}" cy="${c}" r="${r * .58}" fill="none" stroke="${col}" stroke-width="2"/>` +
-      `<text font-family="NP Caps" font-weight="700" font-size="${ft.toFixed(1)}" letter-spacing="1.5" fill="${col}"><textPath href="#${id}a" startOffset="50%" text-anchor="middle">${esc(top)}</textPath></text>` +
-      `<text font-family="NP Caps" font-weight="700" font-size="${fb.toFixed(1)}" letter-spacing="1.5" fill="${col}"><textPath href="#${id}b" startOffset="50%" text-anchor="middle">${esc(bottom)}</textPath></text>` +
-      `<text x="${c}" y="${c + r * .15}" text-anchor="middle" font-family="NP Slab" font-size="${(r * .42).toFixed(1)}" fill="${col}">${esc(center)}</text>${wav}</svg>`;
+      `<svg width="${d}" height="${d}" viewBox="0 0 ${d} ${d}" style="position:absolute;left:0;top:0"><circle cx="${d / 2}" cy="${d / 2}" r="${d / 2 - 2}" fill="${lineart ? '#FFFFFF' : '#FBF4E4'}" stroke="${c}" stroke-width="4"/>` +
+      `<circle cx="${d / 2}" cy="${d / 2}" r="${d / 2 - 10}" fill="none" stroke="${c}" stroke-width="1.5"/></svg>` +
+      `<div class="pic npp-${pic}${lineart ? '-line' : ''}" style="left:${p}px;top:${p}px;width:${d - 2 * p}px;height:${d - 2 * p}px;border-radius:50%"></div></div>`;
   }
   const rubber = (t1, t2, rot, w) => `<div class="np-rubber" style="transform:rotate(${rot}deg);width:${w}px"><div class="r1">${esc(t1)}</div><div class="r2">${esc(t2)}</div></div>`;
   const frame = () => '<div class="np-frame"></div><div class="np-paper"></div>';
@@ -799,8 +744,7 @@ const NPP = (function () {
     const body = frame() +
       (gentle ? art('npp-candle l-addr', 270, 40, 180, 180) : art('npp-vignette l-addr', 214, 42, 292, 178)) +
       `<div class="ab np-conthead" data-fitw="640" style="left:0;width:850px;top:92px"><span>${tx(N.head + ' · ' + N.priority, lang)}</span></div>` +
-      `<div class="ab splat" style="left:0;top:0;width:850px;height:330px">${stamp('sleigh', 690, 48, 116, 140, N.stamp, 6, false)}` +
-      `<div class="ab" style="left:572px;top:92px">${postmark(120, N.head, N.pm_date, '★', '#1E3A6E', -14)}</div></div>` +
+      `<div class="ab splat" style="left:0;top:0;width:850px;height:330px">${medal('sleigh', 676, 52, 136, 6, false)}</div>` +
       fitw('l-title', 0, 230, 850, tx(N.head, lang), 640) +
       `<div class="ab l-kicker" data-fitw="640" style="top:290px"><span>${tx(N.sub.replace('{NAME}', String(t.title || L.name || 'Santa Claus').toUpperCase()), lang)}</span></div>` +
       `<div class="ab l-date" data-fitw="400" style="top:328px"><span>${tx(t.date, lang)}</span></div>` +
@@ -829,8 +773,7 @@ const NPP = (function () {
       fitw('np-type', 86, y(326), null, tx(N.reg, lang), 470, 'font-size:14px;white-space:nowrap') +
       fitw('np-sign', 430, y(384), null, tx(c.signer, lang), 300, 'font-size:36px') +
       fitw('np-type', 440, y(456), 290, tx(N.cert_role, lang), 290, 'font-size:13px;border-top:2px solid #262626;padding-top:4px;white-space:nowrap') +
-      stamp('star', 676, y(130), 108, 132, N.stamp, 8, false) +
-      `<div class="ab" style="left:568px;top:${y(268)}px">${postmark(120, N.head, N.pm_date, '★', '#1E3A6E', -8, false)}</div>` +
+      medal('star', 672, y(128), 124, 8, false) +
       `<div class="ab" style="left:86px;top:${y(384)}px">${rubber(N.approved, N.approved2, -8, 220)}</div>`;
     return `<div class="pc cert npp" style="left:0;top:${top}px;width:850px;height:${hh}px">${body}</div>`;
   }
@@ -844,8 +787,7 @@ const NPP = (function () {
       fitw('np-type', 62, Tp + 66, null, tx(e.fromName, lang), 360, 'font-size:24px') +
       fitw('np-type', 62, Tp + 98, null, tx(e.fromPlace, lang), 360, 'font-size:16px') +
       `<div class="ab" style="left:62px;top:${Tp + 140}px;border:3px solid #C8102E;padding:5px 12px;font:700 13px/1 'NP Caps';letter-spacing:.16em;color:#C8102E">${tx(N.priority, lang)}</div>` +
-      stamp('sleigh', 676, Tp + 30, 116, 140, N.stamp, 5, false) +
-      `<div class="ab" style="left:566px;top:${Tp + 38}px">${postmark(112, N.head, N.pm_date, '★', '#1E3A6E', -16)}</div>` +
+      medal('sleigh', 664, Tp + 36, 136, 5, false) +
       fitw('np-addr', 300, Tp + 178, 470, tx(e.to, lang), 360) +
       (e.line1 ? fitw('np-addrline', 306, Tp + 264, 470, tx(e.line1, lang), 470) : '') +
       (e.line2 ? fitw('np-addrline', 306, Tp + 300, 470, tx(e.line2, lang), 470) : '');
@@ -866,7 +808,7 @@ const NPP = (function () {
     const body = `<div class="np-frame" style="background:repeating-linear-gradient(45deg,#C8102E 0 10px,#FBF4E4 10px 15px,#1E6B3A 15px 25px,#FBF4E4 25px 30px)"></div>` +
       `<div class="np-tg"><div class="np-tghead" data-fitw="360"><span>${tx(N.tg_head, lang)}</span></div></div>` +
       `<div class="ab np-caps" style="left:34px;top:76px;font-size:11px;color:#8C8478">${tx(N.tg_no, lang)}</div>` +
-      stamp(star ? 'star' : 'reindeer', 300, 70, 90, 110, N.stamp, 6, false) +
+      medal(star ? 'star' : 'reindeer', 292, 70, 100, 6, false) +
       `<div class="ab np-tgtext" data-fitbox="1" style="left:34px;top:196px;width:357px;height:${hh - 320}px;display:flex;align-items:center"><div>${tx(n.text, lang)}</div></div>` +
       `<div class="ab np-tgfrom" data-fitw="300" style="left:34px;top:${hh - 104}px"><span>— ${tx(n.from, lang)}</span></div>`;
     return `<div class="pc note npp" style="left:${x}px;top:${y}px;width:425px;height:${hh}px">${body}</div>`;
@@ -889,7 +831,7 @@ const NPP = (function () {
     const inner =
       `<div class="ab k-lab" data-fitw="560" style="left:64px;top:60px;color:#C8102E"><span>${tx(N.kid_air, lang)}</span></div>` +
       fitw('k-title', 62, 90, null, tx(N.kid_title, lang), 560) +
-      stamp('reindeer', 660, 46, 112, 136, N.stamp, 4, ctx.lineart) +
+      medal('reindeer', 662, 44, 128, 4, ctx.lineart) +
       `<div class="np-toaddr" style="left:484px;top:${190}px;width:300px"><div class="a1">${tx(N.f_to, lang)}:</div>` +
       `<div class="a2">${tx(kid.toName, lang)}</div><div class="a2" style="font-size:20px">${tx(kid.addr, lang)}</div></div>` +
       `<div class="ab k-row" style="left:64px;top:208px"><span>${tx(N.f_from, lang)}: ${blank(kid.name, 200)}</span></div>` +
@@ -899,8 +841,7 @@ const NPP = (function () {
       `<div class="np-box" style="left:64px;top:${446 + s(1.5)}px;width:722px;height:${150 + s(.5)}px"></div>` +
       `<div class="ab k-lab" data-fitw="700" style="left:64px;top:${676 + s(3)}px"><span>${tx(L.i_would_love, lang)}</span></div>` + lines +
       `<div class="ab k-row" data-fitw="720" style="left:64px;top:${926 + s(4)}px"><span>${tx(leave ? L.leave_out : L.promise, lang)}${items}</span></div>` +
-      `<div class="ab k-row" data-fitw="560" style="left:64px;top:${986 + s(5)}px"><span>${tx(N.signed, lang)}: ${blank(kid.name, 220)}</span></div>` +
-      `<div class="ab" style="left:652px;top:${962 + s(5)}px">${postmark(106, N.head, N.pm_date, '♥', ctx.lineart ? '#333' : '#C8102E', 10, false)}</div>`;
+      `<div class="ab k-row" data-fitw="560" style="left:64px;top:${986 + s(5)}px"><span>${tx(N.signed, lang)}: ${blank(kid.name, 220)}</span></div>` ;
     return kidWrap(inner, ctx, 'k2');
   }
   function k1(kid, L, ctx) {            // ages 3-5: four postcards to draw in
@@ -911,7 +852,7 @@ const NPP = (function () {
     const stars = [0, 1, 2, 3, 4].map(i => `<path d="${starPath(330 + i * 92, 0, 34)}"/>`).join('');
     const sy = 300 + 2 * bh + 22 + 66;
     const inner = fitw('k-title big', 64, 70, null, tx(kid.dear, lang), 560) +
-      stamp('reindeer', 672, 46, 112, 136, N.stamp, 5, ctx.lineart) +
+      medal('reindeer', 664, 44, 128, 5, ctx.lineart) +
       `<div class="ab k-row" data-fitw="560" style="left:68px;top:176px;font-size:24px"><span>${tx(L.my_name_is, lang)} ${blank(kid.name, 220)}</span></div>` +
       `<div class="ab k-lab" data-fitw="560" style="left:68px;top:242px;font-size:20px"><span>${tx(L.wishes, lang)}</span></div>` +
       boxes.map(([x, y], i) => `<div class="np-card" style="left:${x}px;top:${y}px;width:350px;height:${bh}px"></div>` +
@@ -934,7 +875,7 @@ const NPP = (function () {
     const st = [0, Math.round(n * .36), Math.round(n * .7)].map((li, i) =>
       `<div class="k-starter" data-fitw="680" style="left:76px;top:${top + li * lh - 30}px"><span>${tx(L.starters[i] || '', lang)}</span></div>`).join('');
     const inner = (gentle ? art(P(ctx, 'npp-candle'), 110, 40, 184, 184) : art(P(ctx, 'npp-vignette'), 64, 44, 300, 184)) +
-      stamp('sleigh', 670, 46, 112, 136, N.stamp, 5, ctx.lineart) +
+      medal('sleigh', 662, 44, 128, 5, ctx.lineart) +
       fitw('k-title', 64, 236, null, tx(kid.dear, lang), 700) +
       `<div class="ab k-row" data-fitw="460" style="left:68px;top:322px"><span>${tx(L.my_name_is, lang)} ${blank(kid.name, 190)}</span></div>` +
       lines + st +
@@ -982,8 +923,7 @@ const NPP = (function () {
       fitw('np-kenv', 64, Tp + 82, null, tx(kid.toName, lang), 460, 'font-size:56px') +
       fitw('np-kenv', 66, Tp + 156, null, tx(kid.addr, lang), 460, 'font-size:34px') +
       `<div class="ab k-row" data-fitw="520" style="left:64px;top:${Tp + 262}px"><span>${tx(N.f_from, lang)}: ${blank(kid.name, 220)}</span></div>` +
-      stamp('reindeer', 676, Tp + 36, 112, 136, N.stamp, -4, ctx.lineart) +
-      `<div class="ab" style="left:560px;top:${Tp + 70}px">${postmark(112, N.head, N.pm_date, '♥', ctx.lineart ? '#333' : '#8E2A22', 14)}</div>`;
+      medal('reindeer', 664, Tp + 40, 136, -4, ctx.lineart);
     const back = `<div class="ab" style="left:0;top:0;width:850px;height:${Tp}px;transform:rotate(180deg)">` +
       art(P(ctx, 'npp-holly'), 360, Tp - 200, 130, 134) + `</div>`;
     const ticks = [Tp, Tp + M].map(yv => `<div class="e-tick" style="left:0;top:${yv}px"></div><div class="e-tick" style="left:816px;top:${yv}px"></div>`).join('');
@@ -1087,7 +1027,7 @@ const SLX = (function () {
       r_kicker: 'NORTH POLE · CHRISTMAS EVE {year}', r_title: 'Sleigh Delivery Receipt', r_no: 'RECEIPT NO. NP-{year}-1158',
       r_to: 'DELIVERED TO', r_addr: 'ADDRESS', r_addr_v: 'your house', r_time: 'ARRIVED', r_time_v: '11:58 pm, Christmas Eve',
       r_items: 'DELIVERED', items: ['1 sleigh-load of joy', 'presents, just the right number', 'cookies: all eaten, thank you!', 'carrots: crunched by {deer}'],
-      r_sign: 'SIGNED', r_role: 'REINDEER · DELIVERY TEAM', st_top: 'DELIVERED', st_bot: 'NORTH POLE',
+      r_sign: 'SIGNED', r_role: 'REINDEER · DELIVERY TEAM', st_top: 'DELIVERED',
       t_title: 'Magic Reindeer Food', t_text: 'Sprinkle me on the lawn tonight, so {deer} spots your house from flight!',
       t_note: 'OATS + SPRINKLES · NO GLITTER',
       c_title: 'Cookies for {name}', c_sub: 'EASY BUTTER COOKIES · MAKES ABOUT 24 · BAKE WITH A GROWN-UP', c_need: 'You need', c_do: 'Let’s bake',
@@ -1102,7 +1042,7 @@ const SLX = (function () {
       r_kicker: 'NORDPOL · HEILIGABEND {year}', r_title: 'Schlitten-Lieferschein', r_no: 'BELEG-NR. NP-{year}-1158',
       r_to: 'GELIEFERT AN', r_addr: 'ADRESSE', r_addr_v: 'dein Zuhause', r_time: 'ANKUNFT', r_time_v: '23:58 Uhr, Heiligabend',
       r_items: 'GELIEFERT', items: ['1 Schlittenladung Freude', 'Geschenke, genau richtig viele', 'Plätzchen: aufgegessen, danke!', 'Karotten: von {deer} geknabbert'],
-      r_sign: 'UNTERSCHRIFT', r_role: 'RENTIER · LIEFERTEAM', st_top: 'GELIEFERT', st_bot: 'NORDPOL',
+      r_sign: 'UNTERSCHRIFT', r_role: 'RENTIER · LIEFERTEAM', st_top: 'GELIEFERT',
       t_title: 'Magisches Rentierfutter', t_text: 'Heute Nacht auf den Rasen streuen, dann findet {deer} dein Haus von oben!',
       t_note: 'HAFER + STREUSEL · KEIN GLITZER',
       c_title: 'Plätzchen für {name}', c_sub: 'EINFACHE BUTTERPLÄTZCHEN · ETWA 24 STÜCK · MIT EINEM ERWACHSENEN BACKEN', c_need: 'Du brauchst', c_do: 'Los geht’s',
@@ -1117,7 +1057,7 @@ const SLX = (function () {
       r_kicker: 'PÔLE NORD · VEILLE DE NOËL {year}', r_title: 'Bon de livraison du traîneau', r_no: 'REÇU N° NP-{year}-1158',
       r_to: 'LIVRÉ À', r_addr: 'ADRESSE', r_addr_v: 'ta maison', r_time: 'ARRIVÉE', r_time_v: '23 h 58, la veille de Noël',
       r_items: 'LIVRÉ', items: ['1 traîneau plein de joie', 'des cadeaux, juste ce qu’il faut', 'biscuits : tous mangés, merci !', 'carottes : croquées par {deer}'],
-      r_sign: 'SIGNÉ', r_role: 'RENNE · ÉQUIPE DE LIVRAISON', st_top: 'LIVRÉ', st_bot: 'PÔLE NORD',
+      r_sign: 'SIGNÉ', r_role: 'RENNE · ÉQUIPE DE LIVRAISON', st_top: 'LIVRÉ',
       t_title: 'Nourriture magique pour rennes', t_text: 'Sème-moi sur la pelouse ce soir : {deer} trouvera ta maison depuis le ciel !',
       t_note: 'AVOINE + VERMICELLES · SANS PAILLETTES',
       c_title: 'Biscuits pour {name}', c_sub: 'SABLÉS AU BEURRE FACILES · ENVIRON 24 · À FAIRE AVEC UN ADULTE', c_need: 'Il te faut', c_do: 'On cuisine',
@@ -1132,7 +1072,7 @@ const SLX = (function () {
       r_kicker: 'POLO NORTE · NOCHEBUENA {year}', r_title: 'Recibo de entrega del trineo', r_no: 'RECIBO N.º NP-{year}-1158',
       r_to: 'ENTREGADO A', r_addr: 'DIRECCIÓN', r_addr_v: 'tu casa', r_time: 'LLEGADA', r_time_v: 'a las 23:58 en Nochebuena',
       r_items: 'ENTREGADO', items: ['1 trineo lleno de alegría', 'regalos, los justos', 'galletas: ¡todas comidas, gracias!', 'zanahorias: las mordisqueó {deer}'],
-      r_sign: 'FIRMADO', r_role: 'RENO · EQUIPO DE REPARTO', st_top: 'ENTREGADO', st_bot: 'POLO NORTE',
+      r_sign: 'FIRMADO', r_role: 'RENO · EQUIPO DE REPARTO', st_top: 'ENTREGADO',
       t_title: 'Comida mágica para renos', t_text: '¡Espárceme en el jardín esta noche y {deer} verá tu casa desde el cielo!',
       t_note: 'AVENA + FIDEOS · SIN PURPURINA',
       c_title: 'Galletas para {name}', c_sub: 'GALLETAS DE MANTEQUILLA FÁCILES · UNAS 24 · CON AYUDA DE UN ADULTO', c_need: 'Necesitas', c_do: '¡A hornear!',
@@ -1147,7 +1087,7 @@ const SLX = (function () {
       r_kicker: 'ПІВНІЧНИЙ ПОЛЮС · СВЯТВЕЧІР {year}', r_title: 'Квитанція про доставку', r_no: 'КВИТАНЦІЯ № NP-{year}-1158',
       r_to: 'ОТРИМУВАЧ', r_addr: 'АДРЕСА', r_addr_v: 'твій дім', r_time: 'ПРИБУТТЯ', r_time_v: 'о 23:58 у Святвечір',
       r_items: 'ДОСТАВЛЕНО', items: ['1 сани, повні радості', 'подарунки, саме скільки треба', 'печиво: все з’їдено, дякуємо!', 'морква: схрумав {deer}'],
-      r_sign: 'ПІДПИС', r_role: 'ОЛЕНЬ · СЛУЖБА ДОСТАВКИ', st_top: 'ДОСТАВЛЕНО', st_bot: 'ПІВНІЧНИЙ ПОЛЮС',
+      r_sign: 'ПІДПИС', r_role: 'ОЛЕНЬ · СЛУЖБА ДОСТАВКИ', st_top: 'ДОСТАВЛЕНО',
       t_title: 'Чарівний корм для оленів', t_text: 'Посип мене на травичку ввечері, і {deer} знайде твій дім з неба!',
       t_note: 'ВІВСЯНКА + ПОСИПКА · БЕЗ БЛИСКІТОК',
       c_title: 'Печиво для {name}', c_sub: 'ПРОСТЕ МАСЛЯНЕ ПЕЧИВО · БЛИЗЬКО 24 ШТУК · РАЗОМ З ДОРОСЛИМ', c_need: 'Тобі знадобиться', c_do: 'Печемо',
@@ -1183,7 +1123,7 @@ const SLX = (function () {
       value: "400 {s}px/1.2 'SL Hand', cursive", vcol: '#3B2A22', vsize: 27,
       body: "400 {s}px/1.4 'SL Hand', cursive", bcol: '#3B2A22',
       sign: "400 {s}px/1.1 'SL Sign', cursive", scol: '#7E1E18', ssize: 64,
-      stamp: '#9B2620', deer: 'b-reindeer', cookie: 'b-cookies', carrot: 'b-carrot', star: 'b-star', gift: 'b-gift' },
+      seal: '#9B2620', deer: 'b-reindeer', cookie: 'b-cookies', carrot: 'b-carrot', star: 'b-star', gift: 'b-gift' },
     npp: { ink: '#262626', accent: '#C8102E', gold: '#1E6B3A', muted: '#1E3A6E', line: '#262626', qr: '#1F2A44', plate: '#FFFFFF',
       kicker: "700 {s}px/1 'NP Caps', sans-serif", kls: '.22em', kcol: '#1E6B3A',
       title: "400 {s}px/1.1 'NP Slab', serif", tcol: '#C8102E', tsize: 40, tstroke: '',
@@ -1191,7 +1131,7 @@ const SLX = (function () {
       value: "400 {s}px/1.2 'NP Type', monospace", vcol: '#262626', vsize: 22,
       body: "400 {s}px/1.4 'NP Type', monospace", bcol: '#262626',
       sign: "400 {s}px/1.2 'NP Sign', cursive", scol: '#8E1022', ssize: 40,
-      stamp: '#C8102E', deer: 'npp-reindeer', cookie: 'npp-gift', carrot: 'npp-holly', star: 'npp-star', gift: 'npp-gift' },
+      seal: '#C8102E', deer: 'npp-reindeer', cookie: 'npp-gift', carrot: 'npp-holly', star: 'npp-star', gift: 'npp-gift' },
     cp: { ink: '#4A1942', accent: '#FF4F9A', gold: '#3CCFB0', muted: '#4A1942', line: '#4A1942', qr: '#4A1942', plate: '#FFFFFF',
       kicker: "900 {s}px/1 'CP Body', sans-serif", kls: '.16em', kcol: '#FF4F9A',
       title: "900 {s}px/1.1 'CP Pop', cursive", tcol: '#FF4F9A', tsize: 48, tstroke: '-webkit-text-stroke:3px #4A1942;paint-order:stroke fill;',
@@ -1199,7 +1139,7 @@ const SLX = (function () {
       value: "800 {s}px/1.2 'CP Body', sans-serif", vcol: '#4A1942', vsize: 24,
       body: "700 {s}px/1.4 'CP Body', sans-serif", bcol: '#4A1942',
       sign: "400 {s}px/1.3 'CP Script', cursive", scol: '#E5263B', ssize: 44,
-      stamp: '#E5263B', deer: 'cp-reindeer', cookie: 'cp-cookie', carrot: 'cp-ginger', star: 'cp-star', gift: 'cp-gift' },
+      seal: '#E5263B', deer: 'cp-reindeer', cookie: 'cp-cookie', carrot: 'cp-ginger', star: 'cp-star', gift: 'cp-gift' },
   }[TH];
   const f = (tpl, s) => tpl.replace('{s}', s);
   const SEC = { a: '', npp: ' npp', cp: ' cp' }[TH];
@@ -1212,15 +1152,10 @@ const SLX = (function () {
     return `<svg class="xa-qr" width="${size}" height="${size}" viewBox="${-q} ${-q} ${n} ${n}" shape-rendering="crispEdges" style="display:block">` +
       `<rect x="${-q}" y="${-q}" width="${n}" height="${n}" fill="#FFFFFF"/><path d="${v.path}" fill="${ink || S.qr}"/></svg>`;
   }
-  function perf(w, h, step, r, fill, extra = '') {    // a perforated stamp edge as an SVG mask
-    const id = 'xp' + (++uid), holes = [];
-    for (let i = 0; i <= Math.floor(w / step); i++) { const x = (i * step + (w % step) / 2).toFixed(1); holes.push(`<circle cx="${x}" cy="0" r="${r}"/><circle cx="${x}" cy="${h}" r="${r}"/>`); }
-    for (let j = 0; j <= Math.floor(h / step); j++) { const y = (j * step + (h % step) / 2).toFixed(1); holes.push(`<circle cx="0" cy="${y}" r="${r}"/><circle cx="${w}" cy="${y}" r="${r}"/>`); }
+  function plate(w, h, fill, extra = '') {    // a plain rounded label (no perforated edge)
     return `<svg width="${w + 10}" height="${h + 10}" viewBox="-5 -5 ${w + 10} ${h + 10}" style="position:absolute;left:-5px;top:-5px;overflow:visible">` +
-      `<defs><mask id="${id}"><rect x="-5" y="-5" width="${w + 10}" height="${h + 10}" fill="#fff"/><g fill="#000">${holes.join('')}</g></mask></defs>` +
-      `<rect width="${w}" height="${h}" fill="${fill}" mask="url(#${id})"/>${extra}</svg>`;
+      `<rect width="${w}" height="${h}" rx="16" fill="${fill}"/>${extra}</svg>`;
   }
-
   /* ---------------- the voice element */
   // QR sizes (svg incl. quiet zone): letter 106 -> modules 2.3 cm (Letter) / 2.2 cm (A4); certificate 100 -> 2.1 / 2.05 cm.
   function voiceLetter(L, lang, d) {
@@ -1234,10 +1169,10 @@ const SLX = (function () {
         `<div class="ab" style="left:${(tw - 106) / 2}px;top:72px">${qr(106)}</div>` +
         art('a-seal', tw / 2 - 31, -40, 62, 67) + `</div>`;
     }
-    if (TH === 'npp') {        // a perforated air-mail stamp in the empty top-left of the letterhead
+    if (TH === 'npp') {        // a rounded scan label in the empty top-left of the letterhead
       const x = 44, y = 40, sw = 150, sh = 176;
       return `<div class="ab xa-voice l-addr" style="left:${x}px;top:${y}px;width:${sw}px;height:${sh}px;transform:rotate(-4deg);filter:drop-shadow(2px 4px 4px rgba(60,30,10,.3))">` +
-        perf(sw, sh, 11.5, 4.4, '#FFFDF6', `<rect x="9" y="9" width="${sw - 18}" height="${sh - 18}" fill="#F3E3D3" stroke="${S.accent}" stroke-width="1.4"/>`) +
+        plate(sw, sh, '#FFFDF6', `<rect x="8" y="8" width="${sw - 16}" height="${sh - 16}" rx="10" fill="#F3E3D3" stroke="${S.accent}" stroke-width="1.6"/>`) +
         `<div class="ab" style="left:${(sw - 106) / 2}px;top:15px">${qr(106)}</div>` +
         fitw('xa-vt', 0, 128, sw, tx(w.scan_cap, lang), 124, `text-align:center;font:700 11.5px/1 'NP Caps', sans-serif;letter-spacing:.08em;color:${S.accent}`) +
         fitw('xa-vs', 0, 145, sw, tx(sub.toUpperCase(), lang), 124, `text-align:center;font:700 8.6px/1 'NP Caps', sans-serif;letter-spacing:.06em;color:#1E3A6E`) +
@@ -1266,10 +1201,10 @@ const SLX = (function () {
         `<div class="ab xa-voice" style="left:${cx - 50}px;top:${cy - 50}px">${qr(100)}</div>` +
         fitw('xa-vt xa-voice', 240, cy + 26, null, tx(w.scan, lang), 200, `font:400 22px/1 'SL Script', cursive;color:${S.accent}`);
     }
-    if (TH === 'npp') {        // the star stamp becomes a voice stamp
+    if (TH === 'npp') {        // the star medal becomes a voice label
       const sx = 662, sy = y(116), sw = 132, sh = 156;
       return `<div class="ab xa-voice" style="left:${sx}px;top:${sy}px;width:${sw}px;height:${sh}px;transform:rotate(6deg);filter:drop-shadow(2px 4px 4px rgba(60,30,10,.3))">` +
-        perf(sw, sh, 11.5, 4.4, '#FFFDF6', `<rect x="9" y="9" width="${sw - 18}" height="${sh - 18}" fill="#F3E3D3" stroke="${S.accent}" stroke-width="1.4"/>`) +
+        plate(sw, sh, '#FFFDF6', `<rect x="8" y="8" width="${sw - 16}" height="${sh - 16}" rx="10" fill="#F3E3D3" stroke="${S.accent}" stroke-width="1.6"/>`) +
         `<div class="ab" style="left:${(sw - 100) / 2}px;top:14px">${qr(100)}</div>` +
         fitw('xa-vt', 0, 124, sw, tx(w.scan_cap, lang), 110, `text-align:center;font:700 10.5px/1 'NP Caps', sans-serif;letter-spacing:.06em;color:${S.accent}`) + `</div>`;
     }
@@ -1296,18 +1231,16 @@ const SLX = (function () {
       `background:#FFFFFF;border-radius:${small ? 22 : 32}px;box-shadow:0 0 0 ${small ? 4 : 6}px #FFC4DE"></div>`;
   }
 
-  /* ---------------- a round rubber stamp with a hoofprint */
-  function hoofStamp(d, top, bottom, rot, col) {
-    const r = d / 2 - 6, c = d / 2, id = 'xh' + (++uid);
-    const ft = Math.min(r * .2, (Math.PI * r * .8) / Math.max(6, top.length) * 1.4), fb = Math.min(r * .18, (Math.PI * r * .9) / Math.max(6, bottom.length) * 1.4);
+  /* ---------------- a round "delivered" seal with a hoofprint (no ring text, no place, no date) */
+  function hoofSeal(d, label, rot, col) {
+    const r = d / 2 - 6, c = d / 2;
     const font = TH === 'npp' ? 'NP Caps' : TH === 'cp' ? 'CP Body' : 'SL Stamp';
-    return `<svg width="${d}" height="${d}" viewBox="0 0 ${d} ${d}" style="transform:rotate(${rot}deg);opacity:.86;overflow:visible">` +
-      `<defs><path id="${id}a" d="M${c - r * .78},${c} A${r * .78},${r * .78} 0 0 1 ${c + r * .78},${c}"/><path id="${id}b" d="M${c - r * .88},${c} A${r * .88},${r * .88} 0 0 0 ${c + r * .88},${c}"/></defs>` +
-      `<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${col}" stroke-width="4"/><circle cx="${c}" cy="${c}" r="${r * .6}" fill="none" stroke="${col}" stroke-width="2"/>` +
-      `<text font-family="${font}" font-weight="900" font-size="${ft.toFixed(1)}" letter-spacing="1.6" fill="${col}"><textPath href="#${id}a" startOffset="50%" text-anchor="middle">${esc(top)}</textPath></text>` +
-      `<text font-family="${font}" font-weight="900" font-size="${fb.toFixed(1)}" letter-spacing="1.4" fill="${col}"><textPath href="#${id}b" startOffset="50%" text-anchor="middle">${esc(bottom)}</textPath></text>` +
-      `<g transform="translate(${c - r * .42},${c - r * .44}) scale(${(r * .84 / 40).toFixed(3)})" fill="${col}">` +
-      `<path d="M19,6 C11,6 7,14 8,23 C9,31 13,35 18,34 C19,26 19,15 19,6 Z"/><path d="M21,6 C29,6 33,14 32,23 C31,31 27,35 22,34 C21,26 21,15 21,6 Z"/></g></svg>`;
+    const n = Math.max(5, label.length), fs = Math.min(r * .2, (r * 1.28 - 1.2 * n) / (0.74 * n));
+    return `<svg width="${d}" height="${d}" viewBox="0 0 ${d} ${d}" style="transform:rotate(${rot}deg);opacity:.88;overflow:visible">` +
+      `<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${col}" stroke-width="4"/><circle cx="${c}" cy="${c}" r="${r - 8}" fill="none" stroke="${col}" stroke-width="1.6"/>` +
+      `<g transform="translate(${(c - 20 * r * 1.05 / 40).toFixed(1)},${(c - r * .22 - 20.5 * r * 1.05 / 40).toFixed(1)}) scale(${(r * 1.05 / 40).toFixed(3)})" fill="${col}">` +
+      `<path d="M19,6 C11,6 7,14 8,23 C9,31 13,35 18,34 C19,26 19,15 19,6 Z"/><path d="M21,6 C29,6 33,14 32,23 C31,31 27,35 22,34 C21,26 21,15 21,6 Z"/></g>` +
+      `<text x="${c}" y="${c + r * .46}" text-anchor="middle" font-family="${font}" font-weight="900" font-size="${fs.toFixed(1)}" letter-spacing="1" fill="${col}">${esc(label)}</text></svg>`;
   }
 
   /* ---------------- sleigh delivery receipt (half page) */
@@ -1333,8 +1266,7 @@ const SLX = (function () {
       fitw('xa-sign', 220, y(446), null, tx(rc.signer, lang), 260, `font:${f(S.sign, S.ssize)};color:${S.scol};white-space:nowrap`) +
       `<div class="ab" style="left:216px;top:${y(500)}px;width:300px;border-top:1.6px solid ${S.line};opacity:.6"></div>` +
       fitw('xa-role', 220, y(506), null, tx(w.r_role, lang), 290, `font:${f(S.label, 10)};letter-spacing:.14em;color:${S.muted};white-space:nowrap`) +
-      art(S.deer, 626, y(150), 160, Math.round(160 * k * (TH === 'a' ? 1.35 : 1)), TH === 'npp' ? 'border-radius:6px;box-shadow:0 0 0 5px #FFFDF6, 0 3px 8px rgba(60,30,10,.3);transform:rotate(4deg)' : '') +
-      `<div class="ab" style="left:612px;top:${y(372)}px">${hoofStamp(150, w.st_top, w.st_bot, -12, S.stamp)}</div>`;
+      art(S.deer, 618, Math.round(y(335) - 176 * k * (TH === 'a' ? 1.35 : 1) / 2), 176, Math.round(176 * k * (TH === 'a' ? 1.35 : 1)), TH === 'npp' ? 'border-radius:6px;box-shadow:0 0 0 5px #FFFDF6, 0 3px 8px rgba(60,30,10,.3);transform:rotate(4deg)' : '');
     return `<div class="pc xa-receipt" style="left:0;top:${top}px;width:850px;height:${hh}px">${body}</div>`;
   }
 
@@ -1634,7 +1566,7 @@ const SLP = (function () {
     'closing': 'close', 'salutation': 'greeting', 'dear': 'greeting', 'reason': 'citation', 'line 1': 'line1',
     'line 2': 'line2', 'address': 'address', 'note': 'text', 'from name': 'from' };
   const SENDER_ALIASES = {"santa claus": "santa", "santa": "santa", "father christmas": "father-christmas", "weihnachtsmann": "weihnachtsmann", "christkind": "christkind", "christkindl": "christkind", "pere noel": "pere-noel", "père noël": "pere-noel", "st nicholas": "st-nicholas", "saint nicholas": "st-nicholas", "st. nicholas": "st-nicholas", "святий миколай": "st-nicholas", "papa noel": "papa-noel", "papá noel": "papa-noel"};
-  const LABEL_KEYS = ["fold_help", "letter_kicker", "place", "cert_kicker", "cert_title", "cert_intro", "cert_role", "env_from", "env_place", "stamp", "postmark_top", "postmark_bottom", "note_head", "note_head_star", "fold", "my_name_is", "and_i_am", "years_old", "this_year_i_was", "traits", "nice_thing", "i_would_love", "leave_out", "leave_items", "promise", "promise_items", "love", "wishes", "draw_here", "star_kind", "starters", "wish_title", "by", "want", "need", "wear", "read", "to", "frm", "kid_addr", "signpost", "kid_stamp", "kid_postmark"];
+  const LABEL_KEYS = ["fold_help", "letter_kicker", "place", "cert_kicker", "cert_title", "cert_intro", "cert_role", "env_from", "env_place", "note_head", "note_head_star", "fold", "my_name_is", "and_i_am", "years_old", "this_year_i_was", "traits", "nice_thing", "i_would_love", "leave_out", "leave_items", "promise", "promise_items", "love", "wishes", "draw_here", "star_kind", "starters", "wish_title", "by", "want", "need", "wear", "read", "to", "frm", "kid_addr", "signpost"];
 
   function clean(line) {
     return line.replace(/\t/g, ' ').replace(/^\s*(?:[-*•>]|\d+[.)])\s+(?=[A-Za-z]+\s*[:|])/, '')
