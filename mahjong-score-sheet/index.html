@@ -101,6 +101,28 @@ table.g.big td { height: 0.66in; }
 .ft .snow { display: inline-flex; gap: 6pt; }
 .box h2 svg, .hd .k svg { margin-right: 2pt; }
 table.g th { background: var(--blushL); border-bottom: 2.6px solid var(--cran); }
+/* Ink-saver (black and white) edition of the Score Sheet & Hand Log pages: same content and layout as hl.css, no colour fills or
+   backgrounds. Only outlines, black text and light greys. Active when <body class="mono"> (build_mono.py and the Maker's
+   "Ink-saver" toggle); hl.js also draws the tiles and decorations as outlines when it is given mono:true. */
+body.mono { --cran: #111; --sage: #2B2B2B; --sageL: #9A9A9A; --sageXL: #fff; --blush: #fff; --blushL: #fff; --navy: #111; --gold: #444;
+  --cream: #fff; --ink: #000; --line: #6B6B6B; }
+body.mono .page { background: #fff; color: #000; }
+body.mono .page::before { display: none; }
+body.mono .page .ft { color: #444; }
+body.mono .page .note, body.mono .page .privacy { color: #222; }
+body.mono .page .rule .why { color: #333; }
+body.mono .page .rule, body.mono .page .goal { border-bottom-color: #BDBDBD; }
+body.mono .page .cover, body.mono .page.cover { background: #fff; }
+body.mono .cover .band { background: linear-gradient(#9A9A9A, #9A9A9A) no-repeat 0.6in 100% / calc(100% - 1.2in) 2px; }
+body.mono .cover .pill { background: #fff; color: #000; border: 2.5px solid #000; padding: 5pt 14pt; }
+body.mono .page table.g th, body.mono .page .mtable th { background: #fff; border-bottom: 2.8px solid #000; color: #000; }
+body.mono .page table.g td.n, body.mono .page .mtable td:first-child { background: #fff; color: #222; }
+body.mono .page table.g tr.ex td { background: #fff; color: #333; }
+body.mono .page table.g tr.tot td { background: #fff; border-top: 2.8px solid #000; }
+body.mono .page table.g th span[style] { color: #444 !important; }
+body.mono .page .seat { background: #fff; border: 1.6px solid #9A9A9A; }
+body.mono .page .privacy { background: #fff; border: 1.6px solid #9A9A9A; }
+body.mono .page .steps .s::before { background: #fff; color: #000; border: 2.5px solid #000; box-sizing: border-box; line-height: calc(0.42in - 5px); }
  
 body { margin: 0; background: #F6EFE4; color: #2E2A33; font: 15px/1.45 Nunito, 'Segoe UI', Arial, sans-serif; }
 .ui { max-width: 980px; margin: 0 auto; padding: 20px 16px 8px; }
@@ -126,6 +148,7 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
 .hint { font-size: 13.5px; color: #5F5A63; margin-top: 6px; }
 .ip { background: #E4EFE5; border-radius: 12px; padding: 10px 12px; font-size: 14px; margin: 6px 0 10px; }
 .msg { margin-top: 10px; font-weight: 700; color: #3E7A5C; } .msg.err { color: #B3412A; }
+.inksaver { font-weight: 700; font-size: 14px; white-space: nowrap; }
 #preview { padding: 14px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
 #preview .page { box-shadow: 0 2px 10px rgba(0,0,0,.14); }
 @media print { body { background: #fff; } .ui { display: none !important; } #preview { padding: 0; gap: 0; display: block; } #preview .page { box-shadow: none; zoom: 1 !important; } }
@@ -181,9 +204,11 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
       <button class="primary" id="make">Make my pages</button>
       <button class="accent" id="print">Print / Save as PDF</button>
       <select id="paper" style="width:auto"><option value="letter">US Letter paper</option><option value="a4">A4 paper</option></select>
+      <label class="inksaver"><input type="checkbox" id="mono"> Ink-saver (black &amp; white, no fills)</label>
       <button class="ghost" id="demo">Try an example</button>
       <button class="ghost" id="clear">Clear everything</button>
     </div>
+    <div class="hint">Ink-saver prints the same pages in black and white with outlines only (no coloured fills or backgrounds), so it uses far less ink.</div>
     <div class="msg" id="msg"></div>
     <div class="hint">To get a PDF file, pick <b>Save as PDF</b> as the printer. Phone: Print → Share → Save to Files (iPhone) or Print → Save as PDF (Android).<br>For personal use and for your own club or group: print as many copies as your group needs. Please don't resell or share the files.</div>
   </div>
@@ -452,7 +477,21 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
    Needs MJT (products/_mahjong-art/tiles.js). */
 (function (root) {
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-  const T = (f, w, rot) => MJT.tile(f, { w: w || '0.62in', rot: rot || 0 });
+  /* Ink-saver edition (d.mono): tiles and decorations are redrawn as grey outlines, no colour fills. */
+  let MONO = false;
+  const lum = h => { h = h.slice(1); if (h.length === 3) h = h.replace(/./g, '$&$&'); const v = [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+  function monoSvg(s) {
+    s = s.replace(/<rect x="3\.2" y="5\.2"[^>]*\/>/g, '');
+    return s.replace(/<([a-zA-Z]+)\b[^>]*>/g, tag => {
+      const name = /^<([a-zA-Z]+)/.exec(tag)[1];
+      if (name === 'text') return tag.replace(/ fill="#[0-9A-Fa-f]{3,6}"/, ' fill="#222"');
+      tag = tag.replace(/ stroke="(#[0-9A-Fa-f]{3,6})"/g, (m, c) => ` stroke="${lum(c) > 215 ? '#C4C4C4' : '#666'}"`);
+      return tag.replace(/ fill="(#[0-9A-Fa-f]{3,6})"/, (m, c) => lum(c) > 215 ? ' fill="#fff"' : (/ stroke="/.test(tag) ? ' fill="none"' : ' fill="none" stroke="#555" stroke-width="1.1"'));
+    });
+  }
+  const M = s => (MONO ? monoSvg(s) : s);
+  const FL = (...a) => M(MJT.flake(...a)), GA = (...a) => M(MJT.garland(...a)), HS = (...a) => M(MJT.hollySprig(...a));
+  const T = (f, w, rot) => M(MJT.tile(f, { w: w || '0.62in', rot: rot || 0 }));
   const PAGES = [
     ['cover', 'Cover'], ['how', 'How to use this book'], ['rules', 'Our House Rules'], ['pay', 'Payment Helper'],
     ['score4', 'Game Night Scoreboard (4 players)'], ['score5', 'Game Night Scoreboard (5 players)'],
@@ -471,13 +510,13 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
   }
   function foot(d, n) {
     const who = d.club ? esc(d.club) : 'Mahjong Score Sheet &amp; Hand Log';
-    return `<div class="ft"><span>${who}</span><span class="snow noqa">${MJT.flake('0.17in')} ${MJT.flake('0.17in', MJT.C.cran)} ${MJT.flake('0.17in')}</span><span>${n}</span></div>`;
+    return `<div class="ft"><span>${who}</span><span class="snow noqa">${FL('0.17in')} ${FL('0.17in', MJT.C.cran)} ${FL('0.17in')}</span><span>${n}</span></div>`;
   }
-  const flakes = side => [1.6, 3.4, 5.2, 7.0, 8.8].map((y, i) => `<span class="xf noqa" style="${side}:${(0.16 + (i % 2) * 0.16).toFixed(2)}in;top:${y + (side === 'right' ? 0.8 : 0)}in">${MJT.flake(`${0.2 + (i % 3) * 0.06}in`, i % 2 ? MJT.C.blushDeep : MJT.C.sageLight)}</span>`).join('');
-  const deco = () => `<div class="xg noqa">${MJT.garland(4)}</div>${flakes('left')}${flakes('right')}` +
-    `<div class="xh l noqa">${MJT.hollySprig('0.6in')}</div><div class="xh r noqa">${MJT.hollySprig('0.6in', true)}</div>`;
-  const page = (cls, inner) => `<section class="page ${cls}">${deco()}${cls === 'cover' ? inner : inner.replace(/<h2>/g, `<h2>${MJT.flake('0.2in', MJT.C.cran)} `)
-    .replace(/<div class="k">/g, `<div class="k">${MJT.flake('0.17in', MJT.C.sage)} `)}</section>`;
+  const flakes = side => [1.6, 3.4, 5.2, 7.0, 8.8].map((y, i) => `<span class="xf noqa" style="${side}:${(0.16 + (i % 2) * 0.16).toFixed(2)}in;top:${y + (side === 'right' ? 0.8 : 0)}in">${FL(`${0.2 + (i % 3) * 0.06}in`, i % 2 ? MJT.C.blushDeep : MJT.C.sageLight)}</span>`).join('');
+  const deco = () => `<div class="xg noqa">${GA(4)}</div>${flakes('left')}${flakes('right')}` +
+    `<div class="xh l noqa">${HS('0.6in')}</div><div class="xh r noqa">${HS('0.6in', true)}</div>`;
+  const page = (cls, inner) => `<section class="page ${cls}">${deco()}${cls === 'cover' ? inner : inner.replace(/<h2>/g, `<h2>${FL('0.2in', MJT.C.cran)} `)
+    .replace(/<div class="k">/g, `<div class="k">${FL('0.17in', MJT.C.sage)} `)}</section>`;
   const kick = d => d.season ? `${esc(d.season)} · Christmas edition` : 'Christmas edition';
 
   function cover(d) {
@@ -612,6 +651,7 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
   }
   function pages(d) {
     d = Object.assign(blank(), d || {});
+    MONO = !!d.mono;
     const on = k => !d.pages || d.pages[k] !== false;
     let h = '';
     if (on('cover')) h += cover(d);
@@ -664,7 +704,7 @@ function data() {
   const d = { club: v('club'), owner: v('owner'), season: v('season'), start: v('start'), end: v('end'), night: v('night'), host: v('host'),
     roster, rules, pie: v('pie'), other: [v('other1'), v('other2')], hands: HL.parseHands($('#hands').value),
     goals: $('#goals').value.split(/\n/).map(s => s.trim()).filter(Boolean).slice(0, 3),
-    logPages: Math.max(1, Math.min(8, +$('#logpages').value || 3)), pages, example: false, scoreCopies: 1 };
+    logPages: Math.max(1, Math.min(8, +$('#logpages').value || 3)), pages, example: false, scoreCopies: 1, mono: $('#mono').checked };
   d.tables = mode === 'tables' && named.length ? Array.from({ length: Math.ceil(named.length / per) }, (_, t) => named.slice(t * per, t * per + per)) : null;
   d.per = per;
   return d;
@@ -696,7 +736,7 @@ function render() {
 function save() {
   try {
     const st = { f: {}, r: {}, roster: $$('.rn').map(x => x.value), pages: $$('.pg').map(c => c.checked),
-      sb: document.querySelector('input[name=sbmode]:checked').value };
+      sb: document.querySelector('input[name=sbmode]:checked').value, mono: $('#mono').checked };
     ['club', 'owner', 'season', 'start', 'end', 'night', 'host', 'pie', 'other1', 'other2', 'hands', 'logpages', 'goals', 'per', 'paper'].forEach(id => st.f[id] = $('#' + id).value);
     RULES.forEach(([k]) => { const c = document.querySelector(`input[name=r_${k}]:checked`); st.r[k] = c ? c.value : ''; });
     localStorage.setItem(KEY, JSON.stringify(st));
@@ -708,10 +748,12 @@ function load(st) {
   (st.pages || []).forEach((v, i) => { if ($$('.pg')[i]) $$('.pg')[i].checked = v; });
   Object.entries(st.r || {}).forEach(([k, v]) => { const c = document.querySelector(`input[name=r_${k}][value="${v}"]`); if (c) c.checked = true; });
   const sb = document.querySelector(`input[name=sbmode][value="${st.sb || 'blank'}"]`); if (sb) sb.checked = true;
+  if (typeof st.mono === 'boolean') $('#mono').checked = st.mono;
 }
 function setPaper() {
   const a4 = $('#paper').value === 'a4';
   document.body.classList.toggle('a4', a4);
+  document.body.classList.toggle('mono', $('#mono').checked);
   $('#pagesize').textContent = a4 ? '@page { size: 210mm 297mm; margin: 0; }' : '@page { size: 8.5in 11in; margin: 0; }';
 }
 const EXAMPLE = { f: { club: 'Holly Lane Mahj Club', owner: 'Sample Player', season: 'Holiday season', start: 'Nov 4', end: 'Jan 27', night: 'Dec 16',
@@ -722,12 +764,13 @@ const EXAMPLE = { f: { club: 'Holly Lane Mahj Club', owner: 'Sample Player', sea
 $('#make').onclick = () => { setPaper(); render(); $('#preview').scrollIntoView({ behavior: 'smooth' }); };
 $('#print').onclick = () => { setPaper(); if (!render()) return; (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => setTimeout(() => window.print(), 300)); };
 $('#paper').onchange = () => { setPaper(); if ($('#preview').innerHTML) render(); else save(); };
+$('#mono').onchange = $('#paper').onchange;
 $('#demo').onclick = () => { load(EXAMPLE); setPaper(); render(); };
 $('#clear').onclick = () => {
   if (!confirm('Clear every field and remove your saved form from this browser?')) return;
   $$('.ui input[type=text], .ui textarea').forEach(x => x.value = ''); $('#logpages').value = 3;
   $$('.pg').forEach(c => c.checked = true); RULES.forEach(([k]) => document.querySelector(`input[name=r_${k}][value=""]`).checked = true);
-  document.querySelector('input[name=sbmode][value=blank]').checked = true;
+  document.querySelector('input[name=sbmode][value=blank]').checked = true; $('#mono').checked = false; setPaper();
   try { localStorage.removeItem(KEY); } catch (e) {}
   $('#preview').innerHTML = ''; $('#msg').textContent = 'Cleared.';
 };
@@ -735,6 +778,7 @@ document.querySelector('.ui').addEventListener('input', save);
 try { const st = JSON.parse(localStorage.getItem(KEY) || 'null'); if (st) load(st); } catch (e) {}
 const q = new URLSearchParams(location.search);
 if (q.get('paper') === 'a4') $('#paper').value = 'a4';
+if (q.get('mono')) $('#mono').checked = true;
 setPaper();
 if (q.get('demo')) $('#demo').onclick(); else render();
 </script>
