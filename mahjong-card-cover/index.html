@@ -73,12 +73,17 @@ body.a4 .page { width: 210mm; height: 297mm; }
 .sq { width: 1in; height: 1in; border: 1pt solid #2E2A33; display: flex; align-items: center; justify-content: center; font: 800 12pt/1.1 Nunito, sans-serif; text-align: center; flex: none; }
 .designs { display: flex; gap: 0.14in; justify-content: center; margin-top: 0.06in; }
 .designs .dp { text-align: center; font: 700 11pt/1.2 Nunito, sans-serif; color: #4D4852; }
+.designs.many { flex-wrap: wrap; gap: 0.03in 0.14in; margin-top: 0.03in; }
+.designs.many .dp { font-size: 10pt; line-height: 1.1; }
 
 .xg { position: absolute; left: 0.5in; right: 0.5in; top: 0.04in; z-index: 3; }
 .xh { position: absolute; bottom: 0.06in; z-index: 3; } .xh.l { left: 0.08in; } .xh.r { right: 0.08in; }
 .xf { position: absolute; z-index: 3; }
 .how { position: relative; z-index: 1; }
 .page.howp::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 1.5in; background: linear-gradient(180deg, #FDF0F2 0, rgba(255,255,255,0) 100%); }
+.howp.many .how h2 { margin: 0.07in 0 0.02in; }
+.howp.many .how p, .howp.many .how li { line-height: 1.3; }
+.howp.many .how .box { margin-top: 0.07in; }
  
 body { margin: 0; background: #F6EFE4; color: #2E2A33; font: 15px/1.45 Nunito, 'Segoe UI', Arial, sans-serif; }
 .ui { max-width: 980px; margin: 0 auto; padding: 20px 16px 8px; }
@@ -433,8 +438,17 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
     { id: 'poinsettia', name: 'Poinsettia Blush', tiles: ['holly', 'flower', 'dot1'], plate: '#3E7A5C' },
     { id: 'snow', name: 'Sage Snow', tiles: ['snow', 'soap', 'windN'], plate: '#24406B' },
     { id: 'stripe', name: 'Candy Stripe', tiles: ['dot5', 'joker', 'bam3'], plate: '#B8324B' },
-    { id: 'garland', name: 'Gold Garland', tiles: ['flower', 'joker', 'holly'], plate: '#C99A2E' }
+    { id: 'garland', name: 'Gold Garland', tiles: ['flower', 'joker', 'holly'], plate: '#C99A2E' },
+    { id: 'plaid', name: 'Buffalo Plaid', tiles: ['windE', 'holly', 'dot3'], plate: '#3E7A5C' },
+    { id: 'forest', name: 'Evergreen Forest', tiles: ['snow', 'bam5', 'windS'], plate: '#3E7A5C' },
+    { id: 'ribbon', name: 'Gift Wrap Ribbon', tiles: ['flower', 'dot8', 'joker'], plate: '#B8324B' },
+    { id: 'stars', name: 'Silent Night Stars', tiles: ['windN', 'dot7', 'soap'], plate: '#24406B' },
+    { id: 'cardinal', name: 'Winter Cardinal', tiles: ['holly', 'bam4', 'flower'], plate: '#B8324B' },
+    { id: 'monogram', name: 'Monogram Wreath', tiles: ['dot2', 'joker', 'snow'], plate: '#3E7A5C' },
+    { id: 'gingerbread', name: 'Gingerbread Icing', tiles: ['bam8', 'flower', 'dot6'], plate: '#8A5530' },
+    { id: 'fairisle', name: 'Fair Isle Knit', tiles: ['dot9', 'windW', 'bam6'], plate: '#24406B' }
   ];
+  const BOTTOM_TILES = ['garland', 'monogram'];   // designs whose top holds the art, so the tiles sit under the plate
   const EASE = 0.125, FLAP = 0.5;
   const GREETINGS = ['Merry & Bright', 'Happy Holidays', 'Christmas Mahj Night', 'Merry Christmas', 'Season’s Greetings', ''];
   function blank() {
@@ -461,6 +475,7 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
       `<div style="position:absolute;inset:0.16in;border:1.4pt solid #ffffff;border-radius:0.1in;opacity:.9"></div></div>`;
     if (id === 'stripe') return `<div class="d" style="background:repeating-linear-gradient(-45deg,#B8324B 0 0.12in,#FBF3E6 0.12in 0.2in,#F2C4CC 0.2in 0.32in,#FBF3E6 0.32in 0.4in)">` +
       `<div style="position:absolute;inset:0.3in;background:#FBF3E6;border-radius:0.12in;box-shadow:0 0 0 1.4pt #3E7A5C"></div></div>`;
+    if (id !== 'garland') return bg2(id, w, h);
     // garland: a gold swag with ornaments across the top
     const sw = w, cols = ['#B8324B', '#3E7A5C', '#24406B', '#C99A2E', '#E59AAA'];
     let orn = '';
@@ -476,6 +491,155 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
       `<path d="${path}" fill="none" stroke="#C99A2E" stroke-width=".03" stroke-dasharray=".05 .06"/>${orn}</svg>` +
       `<div style="position:absolute;left:0.16in;right:0.16in;bottom:0.16in;height:0;border-top:1.2pt solid #C99A2E"></div></div>`;
   }
+  /* The 8 designs added 31.10 (themes chosen by two model reviews, publish-gates-2026-10-31/covers-designs/): flat shapes,
+     the same palette, light ink, the art stays around the name plate. w, h in inches incl. the 0.06 in bleed per side. */
+  const svgWrap = (w, h, s) => `<svg viewBox="0 0 ${w} ${h}" style="position:absolute;inset:0;width:100%;height:100%">${s}</svg>`;
+  const f2 = v => v.toFixed(3);
+  function star(cx, cy, r, col) {
+    let p = [];
+    for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r; p.push(f2(cx + rr * Math.cos(a)) + ',' + f2(cy + rr * Math.sin(a))); }
+    return `<polygon points="${p.join(' ')}" fill="${col}"/>`;
+  }
+  function holly(x, y, s, rot) {   // a holly pair with three berries, s = leaf length in inches
+    const leaf = r => `<path d="M0 0 C .27 -.27 .64 -.36 1 -.18 C .86 -.05 .95 .14 .82 .23 C 1 .32 .91 .5 .73 .5 C .45 .45 .18 .32 0 0Z" transform="rotate(${r}) scale(${s})" fill="#3E7A5C"/>`;
+    return `<g transform="translate(${f2(x)} ${f2(y)}) rotate(${rot || 0})">${leaf(-160)}${leaf(-20)}` +
+      `<circle cx="${f2(-0.04 * s / 0.3)}" cy="${f2(-0.03)}" r="${f2(0.055 * s / 0.3)}" fill="#B8324B"/><circle cx="${f2(0.05 * s / 0.3)}" cy="${f2(-0.05)}" r="${f2(0.055 * s / 0.3)}" fill="#B8324B"/>` +
+      `<circle cx="${f2(0.01)}" cy="${f2(0.05 * s / 0.3)}" r="${f2(0.055 * s / 0.3)}" fill="#B8324B"/></g>`;
+  }
+  function bg2(id, w, h) {
+    const k = (w - 0.12) / 5.125, kh = (h - 0.12) / 4, ks = Math.min(1, k);   // ks: small swatches scale the frames down; real cards keep them
+    if (id === 'plaid') return `<div class="d" style="background:repeating-linear-gradient(90deg,rgba(184,50,75,.40) 0 0.3in,transparent 0.3in 0.6in),` +
+      `repeating-linear-gradient(0deg,rgba(184,50,75,.40) 0 0.3in,transparent 0.3in 0.6in),#FBF3E6">` +
+      `<div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 0.14in,rgba(46,42,51,.10) 0.14in 0.16in,transparent 0.16in 0.3in),` +
+      `repeating-linear-gradient(0deg,transparent 0 0.14in,rgba(46,42,51,.10) 0.14in 0.16in,transparent 0.16in 0.3in)"></div>` +
+      `<div style="position:absolute;inset:0.16in;border:1.4pt solid #FBF3E6;border-radius:0.1in"></div></div>`;
+    if (id === 'forest') {
+      let s = `<path d="M0 ${f2(h - 0.2 * kh)} Q ${f2(w * 0.3)} ${f2(h - 0.34 * kh)} ${f2(w * 0.55)} ${f2(h - 0.24 * kh)} T ${f2(w)} ${f2(h - 0.26 * kh)} V ${f2(h)} H 0Z" fill="#FFFFFF"/>`;
+      const cols = ['#3E7A5C', '#6E9A7A', '#A9C9AE'], n = Math.max(7, Math.round(w / 0.62));
+      const trees = [];
+      for (let i = 0; i < n; i++) {
+        const cx = (i + 0.5) / n * w + (i % 2 ? 0.06 : -0.06) * k, th = (0.62 + ((i * 37) % 5) * 0.08) * k, tw = th * 0.62;
+        trees.push({ cx, th, tw, col: cols[(i * 2) % 3], back: i % 2 });
+      }
+      trees.sort((a, b) => a.back - b.back || 0).reverse();
+      for (const t of trees) {
+        const y0 = h - (t.back ? 0.3 : 0.22) * kh;
+        s += `<rect x="${f2(t.cx - 0.025 * k)}" y="${f2(y0 - 0.08 * k)}" width="${f2(0.05 * k)}" height="${f2(0.1 * k)}" fill="#7A6250"/>`;
+        for (let j = 0; j < 3; j++) {
+          const top = y0 - t.th + j * t.th * 0.26, bot = top + t.th * 0.44, hw = t.tw * (0.3 + 0.17 * j);
+          s += `<polygon points="${f2(t.cx)},${f2(top)} ${f2(t.cx + hw)},${f2(bot)} ${f2(t.cx - hw)},${f2(bot)}" fill="${t.col}"/>`;
+        }
+      }
+      return `<div class="d" style="background:linear-gradient(180deg,#FFFCF4 0,#EEF5EF 55%,#DCEADF 100%)">${flakes(w, h * 0.62, Math.round(w * h * 1.2), '#A9C9AE', 23)}${svgWrap(w, h, s)}</div>`;
+    }
+    if (id === 'ribbon') {
+      const x = 0.86 * k + 0.06, y = h - 0.74 * kh, b = 0.3 * k, s0 = k;
+      const bow = `<g transform="translate(${f2(x)} ${f2(y)}) scale(${f2(s0)})">` +
+        `<path d="M0 0 C -.18 -.42 -.62 -.36 -.52 -.06 C -.46 .1 -.2 .08 0 0Z" fill="#B8324B"/><path d="M0 0 C .18 -.42 .62 -.36 .52 -.06 C .46 .1 .2 .08 0 0Z" fill="#B8324B"/>` +
+        `<path d="M-.04 .03 L -.3 .44 L -.2 .4 L -.15 .5 L .02 .06Z" fill="#9C2840"/><path d="M.04 .03 L .3 .44 L .2 .4 L .15 .5 L -.02 .06Z" fill="#9C2840"/>` +
+        `<path d="M-.4 -.12 C -.3 -.22 -.16 -.16 -.08 -.04" fill="none" stroke="#F2C4CC" stroke-width=".025"/><path d="M.4 -.12 C .3 -.22 .16 -.16 .08 -.04" fill="none" stroke="#F2C4CC" stroke-width=".025"/>` +
+        `<ellipse cx="0" cy="0" rx=".09" ry=".08" fill="#9C2840"/></g>`;
+      const band = `<rect x="${f2(x - b / 2)}" y="0" width="${f2(b)}" height="${f2(h)}" fill="#B8324B"/><rect x="0" y="${f2(y - b / 2)}" width="${f2(w)}" height="${f2(b)}" fill="#B8324B"/>` +
+        `<rect x="${f2(x - b / 2 + 0.04 * k)}" y="0" width="${f2(0.015 * k)}" height="${f2(h)}" fill="#F2C4CC"/><rect x="${f2(x + b / 2 - 0.055 * k)}" y="0" width="${f2(0.015 * k)}" height="${f2(h)}" fill="#F2C4CC"/>` +
+        `<rect x="0" y="${f2(y - b / 2 + 0.04 * k)}" width="${f2(w)}" height="${f2(0.015 * k)}" fill="#F2C4CC"/><rect x="0" y="${f2(y + b / 2 - 0.055 * k)}" width="${f2(w)}" height="${f2(0.015 * k)}" fill="#F2C4CC"/>`;
+      return `<div class="d" style="background:#F1F6F0"><div style="position:absolute;inset:0;background-image:radial-gradient(#C99A2E 1.2pt,transparent 1.5pt),radial-gradient(#A9C9AE 1.2pt,transparent 1.5pt);` +
+        `background-size:0.3in 0.3in;background-position:0 0,0.15in 0.15in;opacity:.8"></div>${svgWrap(w, h, band + bow)}</div>`;
+    }
+    if (id === 'stars') {
+      const fw = 0.06 + 0.36 * ks;
+      let s = `<rect x="${f2(fw - 0.07)}" y="${f2(fw - 0.07)}" width="${f2(w - 2 * fw + 0.14)}" height="${f2(h - 2 * fw + 0.14)}" rx=".06" fill="none" stroke="#C99A2E" stroke-width=".014"/>`;
+      const c = 0.06 + 0.18 * ks, per = [[c, c, w - c, c], [w - c, c, w - c, h - c], [w - c, h - c, c, h - c], [c, h - c, c, c]];
+      let i = 0;
+      for (const [x0, y0, x1, y1] of per) {
+        const L = Math.hypot(x1 - x0, y1 - y0), n = Math.round(L / (0.42 * ks));
+        for (let j = 0; j < n; j++) { const t = j / n; s += star(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, (i++ % 3 ? 0.055 : 0.085) * ks, i % 4 ? '#E3C46A' : '#FFFCF4'); }
+      }
+      for (const [x, y, r] of [[0.75, 0.68, 0.05], [w - 0.75, 0.7, 0.06], [0.7, h - 0.62, 0.045], [w - 0.72, h - 0.6, 0.05], [w / 2 - 1.5 * k, h - 0.7, 0.035], [w / 2 + 1.45 * k, h - 0.72, 0.035]])
+        s += star(x < w / 2 ? 0.06 + (x - 0.06) * ks : w - 0.06 - (w - x - 0.06) * ks, y < h / 2 ? 0.06 + (y - 0.06) * ks : h - 0.06 - (h - y - 0.06) * ks, r * ks, '#C99A2E');
+      return `<div class="d" style="background:#FFFCF4"><div style="position:absolute;inset:0;border:${fw}in solid #24406B"></div>${svgWrap(w, h, s)}</div>`;
+    }
+    if (id === 'cardinal') {
+      const u = 0.0098 * k, y1 = h - 0.46 * kh, bx = w - 1.12 * k - 44 * u, by = y1 - 0.01 * kh - 79 * u;
+      const bird = `<g transform="translate(${f2(bx)} ${f2(by)}) scale(${u.toFixed(5)})">` +
+        `<polygon points="58,50 98,74 90,84 54,60" fill="#8E2238"/><ellipse cx="45" cy="53" rx="27" ry="21" fill="#B8324B"/>` +
+        `<circle cx="28" cy="33" r="15" fill="#B8324B"/><polygon points="22,22 33,2 41,25" fill="#B8324B"/>` +
+        `<path d="M37 46 Q 62 40 76 60 Q 56 68 40 58Z" fill="#8E2238"/><path d="M11 28 Q 22 23 29 35 Q 22 45 11 41Z" fill="#2E2A33"/>` +
+        `<polygon points="3,35 15,29 15,41" fill="#E8962E"/><circle cx="22" cy="31" r="2" fill="#FFFCF4"/>` +
+        `<path d="M40 72 L 39 79 M49 72 L 49 79" stroke="#5A4636" stroke-width="2.6" stroke-linecap="round"/></g>`;
+      let br = `<path d="M${f2(w + 0.05)} ${f2(y1 - 0.06 * kh)} Q ${f2(w - 1.1 * k)} ${f2(y1 + 0.02 * kh)} ${f2(w - 2.2 * k)} ${f2(y1 - 0.2 * kh)}" fill="none" stroke="#7A6250" stroke-width="${f2(0.045 * k)}" stroke-linecap="round"/>`;
+      for (let i = 0; i < 9; i++) {
+        const t = i / 8, x = w + 0.05 - t * (2.25 * k), yy = y1 - 0.06 * kh + t * 0.04 * kh - t * t * 0.2 * kh;
+        for (const a of [-55, -25, 25, 55]) br += `<line x1="${f2(x)}" y1="${f2(yy)}" x2="${f2(x + 0.13 * k * Math.sin(a * Math.PI / 180))}" y2="${f2(yy - 0.13 * k * Math.cos(a * Math.PI / 180) * (i % 2 ? 1 : -0.8))}" stroke="#3E7A5C" stroke-width="${f2(0.018 * k)}" stroke-linecap="round"/>`;
+      }
+      br += holly(w - 2.05 * k, y1 - 0.2 * kh, 0.26 * k, 10) + holly(0.52 * k, h - 0.5 * kh, 0.3 * k, -15);
+      return `<div class="d" style="background:linear-gradient(170deg,#FFFCF4,#F4ECDF)">${flakes(w, h, Math.round(w * h * 1.3), '#C9D9CC', 31)}` +
+        `<div style="position:absolute;inset:0.16in;border:1.2pt solid #B8324B;border-radius:0.1in;opacity:.55"></div>${svgWrap(w, h, br + bird)}</div>`;
+    }
+    if (id === 'monogram') return `<div class="d" style="background:radial-gradient(circle at 50% 18%,#FFFFFF 0,transparent 42%),linear-gradient(180deg,#F4F8F2,#E4EFE5)">` +
+      `<div style="position:absolute;inset:0;background-image:radial-gradient(#ffffff 1.1pt,transparent 1.3pt);background-size:0.22in 0.22in;opacity:.9"></div>` +
+      `<div style="position:absolute;inset:0.16in;border:1.6pt solid #3E7A5C;border-radius:0.1in"></div><div style="position:absolute;inset:0.22in;border:0.7pt solid #3E7A5C;border-radius:0.07in"></div></div>`;
+    if (id === 'gingerbread') {
+      const rim = 0.06 + 0.32 * ks, base = 0.06 + 0.23 * ks, amp = 0.06 * ks, per = 0.22 * ks;
+      const pts = [], W2 = w - 2 * base, H2 = h - 2 * base, P = 2 * (W2 + H2);
+      for (let s = 0; s <= P + 1e-6; s += 0.01 * ks) {
+        let x, y, nx, ny;
+        if (s < W2) { x = base + s; y = base; nx = 0; ny = 1; }
+        else if (s < W2 + H2) { x = w - base; y = base + s - W2; nx = -1; ny = 0; }
+        else if (s < 2 * W2 + H2) { x = w - base - (s - W2 - H2); y = h - base; nx = 0; ny = -1; }
+        else { x = base; y = h - base - (s - 2 * W2 - H2); nx = 1; ny = 0; }
+        const o = amp * Math.abs(Math.sin(Math.PI * s / per));
+        pts.push(f2(x + nx * o) + ',' + f2(y + ny * o));
+      }
+      let s = `<polygon points="${pts.join(' ')}" fill="none" stroke="#FFFFFF" stroke-width="${f2(0.04 * ks)}" stroke-linejoin="round"/>`;
+      const d = 0.06 + 0.11 * ks, per2 = [[d, d, w - d, d], [w - d, d, w - d, h - d], [w - d, h - d, d, h - d], [d, h - d, d, d]];
+      for (const [x0, y0, x1, y1] of per2) {
+        const n = Math.round(Math.hypot(x1 - x0, y1 - y0) / (0.3 * ks));
+        for (let j = 0; j < n; j++) { const t = j / n; s += `<circle cx="${f2(x0 + (x1 - x0) * t)}" cy="${f2(y0 + (y1 - y0) * t)}" r="${f2(0.03 * ks)}" fill="#FFFFFF"/>`; }
+      }
+      for (const [x, y, c] of [[rim + 0.16 * ks, rim + 0.16 * ks, '#B8324B'], [w - rim - 0.16 * ks, rim + 0.16 * ks, '#3E7A5C'], [rim + 0.16 * ks, h - rim - 0.16 * ks, '#3E7A5C'], [w - rim - 0.16 * ks, h - rim - 0.16 * ks, '#B8324B']])
+        s += `<circle cx="${f2(x)}" cy="${f2(y)}" r="${f2(0.06 * ks)}" fill="${c}"/><circle cx="${f2(x - 0.018 * ks)}" cy="${f2(y - 0.018 * ks)}" r="${f2(0.018 * ks)}" fill="#FFFFFF"/>`;
+      return `<div class="d" style="background:#FFF8EC"><div style="position:absolute;inset:0;border:${rim}in solid #B97E4D"></div>${svgWrap(w, h, s)}</div>`;
+    }
+    if (id === 'fairisle') {
+      const c = 0.06 * k, cols = Math.ceil(w / c) + 1;
+      const px = (i, j, col) => `<rect x="${f2(i * c)}" y="${f2(j)}" width="${f2(c + 0.002)}" height="${f2(c + 0.002)}" fill="${col}"/>`;
+      let s = '';
+      // top: a navy rule and a cranberry zigzag
+      const t0 = 0.07;
+      for (let i = 0; i < cols; i++) { s += px(i, t0, '#24406B'); const z = [0, 1, 2, 1][i % 4]; s += px(i, t0 + c * (2 + z), '#B8324B'); }
+      // bottom: navy rules, a row of stepped diamonds (cranberry) with sage crosses between them
+      const yb = h - 0.07 - c, top = yb - 12 * c;
+      for (let i = 0; i < cols; i++) { s += px(i, yb, '#24406B') + px(i, top, '#24406B'); if (i % 2) s += px(i, yb - 1.5 * c, '#B8324B') + px(i, top + 1.5 * c, '#B8324B'); }
+      const cy = top + 6 * c;
+      for (let m = 0; m * 12 * c < w + 12 * c; m++) {
+        const cx = m * 12;
+        for (let dx = -4; dx <= 4; dx++) for (let dy = -4; dy <= 4; dy++) {
+          const a = Math.abs(dx) + Math.abs(dy);
+          if (a === 4 || a <= 1) s += `<rect x="${f2((cx + dx) * c)}" y="${f2(cy + (dy - 0.5) * c)}" width="${f2(c + 0.002)}" height="${f2(c + 0.002)}" fill="#B8324B"/>`;
+        }
+        for (const [dx, dy] of [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]]) s += `<rect x="${f2((cx + 6 + dx) * c)}" y="${f2(cy + (dy - 0.5) * c)}" width="${f2(c + 0.002)}" height="${f2(c + 0.002)}" fill="#3E7A5C"/>`;
+      }
+      return `<div class="d" style="background:#FBF3E6">${svgWrap(w, h, s)}</div>`;
+    }
+    return `<div class="d" style="background:#FBF3E6"></div>`;
+  }
+  function initials(n) { return String(n || '').split(/[\s\-]+/).filter(Boolean).map(x => x.replace(/[^\p{L}]/gu, '')[0] || '').join('').slice(0, 3).toUpperCase(); }
+  function wreath(k, top, name) {   // the Monogram Wreath: a holly ring, the initials (or a blank circle to write them in) inside
+    const R = 0.4, n = 32;
+    let s = '';
+    for (let i = 0; i < n; i++) {
+      const a = i / n * 2 * Math.PI, x = 0.56 + R * Math.cos(a), y = 0.56 + R * Math.sin(a), r = a * 180 / Math.PI + (i % 2 ? 60 : 120);
+      s += `<path d="M0 0 C .05 -.05 .12 -.06 .17 -.03 C .15 0 .16 .03 .14 .05 C .08 .06 .03 .04 0 0Z" transform="translate(${f2(x)} ${f2(y)}) rotate(${r.toFixed(1)}) scale(1.3)" fill="${i % 3 ? '#3E7A5C' : '#6E9A7A'}"/>`;
+    }
+    for (const a of [30, 150, 250, 300]) { const t = a * Math.PI / 180; for (const [dx, dy] of [[0, 0], [0.035, 0.02], [0.005, 0.04]]) s += `<circle cx="${f2(0.56 + R * Math.cos(t) + dx)}" cy="${f2(0.56 + R * Math.sin(t) + dy)}" r=".026" fill="#B8324B"/>`; }
+    s += `<circle cx=".56" cy=".56" r=".29" fill="#FFFCF4" stroke="#C99A2E" stroke-width=".012"/>`;
+    s += `<path d="M.56 .96 C .44 .9 .36 .98 .42 1.04 C .46 1.07 .52 1.02 .56 .97 C .6 1.02 .66 1.07 .7 1.04 C .76 .98 .68 .9 .56 .96Z" fill="#B8324B"/>`;
+    const ini = initials(name), fs = [0, 34, 26, 20][ini.length] || 20;
+    const txt = ini ? `<div class="mono" style="position:absolute;left:0;right:0;top:0;height:${f2(1.12 * k)}in;display:flex;align-items:center;justify-content:center;` +
+      `font:700 calc(${fs}pt * var(--k))/1 Fraunces,Georgia,serif;color:#B8324B;letter-spacing:.02em">${esc(ini)}</div>` : '';
+    return `<div class="wr noqa" style="position:absolute;left:50%;transform:translateX(-50%);top:${f2(top)}in;width:${f2(1.12 * k)}in;height:${f2(1.12 * k)}in">` +
+      `<svg viewBox="0 0 1.12 1.12" style="width:100%;height:100%;display:block;overflow:visible">${s}</svg>${txt}</div>`;
+  }
   function tilesRow(des, k, top) {
     const w = (0.6 * k).toFixed(3) + 'in';
     const rot = [-8, 0, 8], dy = [0.06, 0, 0.06];
@@ -484,9 +648,9 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
   function nameLine(n, style) { if (!n) return ''; return style === 'owner' ? `${esc(n)}’s Card` : esc(n); }
   function front(d, des, W, H, name) {
     const k = W / 5.125, kh = H / 4;
-    const garland = des.id === 'garland';
-    const tilesTop = garland ? H - 0.95 * k - 0.24 * kh : (des.id === 'stripe' ? 0.36 * kh : 0.3 * kh);
-    const plateTop = garland ? 0.98 * kh : 1.36 * kh;
+    const garland = BOTTOM_TILES.includes(des.id), mono = des.id === 'monogram';
+    const tilesTop = garland ? H - 0.95 * k - 0.24 * kh : ({ stripe: 0.36, stars: 0.4, gingerbread: 0.42, fairisle: 0.4 }[des.id] || 0.3) * kh;
+    const plateTop = mono ? 1.24 * kh : garland ? 0.98 * kh : 1.36 * kh;
     const pw = Math.min(W * 0.8, 4.1 * k);
     const nm = nameLine(name, d.nameStyle);
     const len = t => String(t || '').replace(/&[^;]+;/g, 'x').length;
@@ -497,7 +661,7 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
         (d.club ? `<div class="cl fit" style="font-size:calc(${(12 * fitC).toFixed(1)}pt * var(--k))">${esc(d.club)}</div>` : '')
       : `${d.greeting ? `<div class="gr">${esc(d.greeting)}</div>` : ''}<div class="bl">This card belongs to</div><div class="wl"></div><div class="bl">${d.club ? '' : 'Club'}</div>` +
         (d.club ? `<div class="cl fit" style="font-size:calc(${(12 * fitC).toFixed(1)}pt * var(--k))">${esc(d.club)}</div>` : '<div class="wl" style="margin-bottom:0"></div>');
-    return tilesRow(des, k, tilesTop) +
+    return (mono ? wreath(k, 0.1 * kh, name) : '') + tilesRow(des, k, tilesTop) +
       `<div class="plate" style="--pc:${des.plate};top:${plateTop}in;width:${pw}in">${body}</div>`;
   }
   function back(d, des, W, H) {
@@ -543,22 +707,24 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
       `</div><div class="legend"><span><i></i>cut</span><span><i class="dash"></i>fold</span><span><i class="glue"></i>glue flap: fold back, glue onto the back panel</span></div></section>`;
   }
   function howPage(d) {
-    const sw = (des) => `<div class="dp noqa">${panel(blank(), des, 1.42, 1.11, 'front', '', { marks: false })}<div style="margin-top:3pt">${esc(des.name)}</div></div>`;
+    const many = DESIGNS.length > 6, SW = many ? 0.95 : 1.42;
+    const sw = (des) => `<div class="dp noqa" style="width:${SW}in">${panel(blank(), des, SW, SW * 0.78, 'front', '', { marks: false })}<div style="margin-top:2pt">${esc(des.name)}</div></div>`;
+    const n2 = 2 * DESIGNS.length, WORDS = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
     const fl = side => [1.4, 3.6, 5.8, 8.0].map((y, i) => `<span class="xf noqa" style="${side}:0.14in;top:${y + (side === 'right' ? 1 : 0)}in">${MJT.flake('0.24in', i % 2 ? MJT.C.blushDeep : MJT.C.sageLight)}</span>`).join('');
-    return `<section class="page howp" style="padding:0.66in 0.5in 0.36in"><div class="xg noqa">${MJT.garland(4)}</div>${fl('left')}${fl('right')}` +
+    return `<section class="page howp${many ? ' many' : ''}" style="padding:0.66in 0.5in 0.36in"><div class="xg noqa">${MJT.garland(4)}</div>${fl('left')}${fl('right')}` +
       `<div class="xh l noqa">${MJT.hollySprig('0.6in')}</div><div class="xh r noqa">${MJT.hollySprig('0.6in', true)}</div><div class="how"><div class="k">Christmas designs · printable</div><h1>Mahjong Card Covers &amp; Sleeves</h1>` +
-      `<p>Four Christmas designs, each as a <b>cover insert</b> and a <b>paper sleeve</b>, in two card sizes. Write names on the lines, or type them in the Maker.</p>` +
-      `<div class="designs">${DESIGNS.map(sw).join('')}</div>` +
+      `<p>${WORDS[DESIGNS.length] || DESIGNS.length} Christmas designs, each as a <b>cover insert</b> and a <b>paper sleeve</b>, in two card sizes. Write names on the lines, or type them in the Maker.</p>` +
+      `<div class="designs${many ? ' many' : ''}">${DESIGNS.map(sw).join('')}</div>` +
       `<h2>${MJT.flake('0.2in', MJT.C.cran)} 1. Measure your card first</h2><div style="display:flex;gap:0.22in;align-items:flex-start"><div style="flex:1">` +
-      `<table class="sizes"><tr><th>Pages</th><th>For a card of</th></tr><tr><td>Standard: p. 2–9</td><td>${SIZES.std.label}</td></tr>` +
-      `<tr><td>Large print: p. 10–17</td><td>${SIZES.lp.label}</td></tr></table>` +
+      `<table class="sizes"><tr><th>Pages</th><th>For a card of</th></tr><tr><td>Standard: p. 2–${1 + n2}</td><td>${SIZES.std.label}</td></tr>` +
+      `<tr><td>Large print: p. ${2 + n2}–${1 + 2 * n2}</td><td>${SIZES.lp.label}</td></tr></table>` +
       `<p style="margin-top:5pt">A different size? Type your card's width and height in the Maker: it draws covers and sleeves to match, as long as they fit on one sheet.</p></div>` +
       `<div class="sq">1 inch<br>test square</div></div>` +
       `<h2>${MJT.flake('0.2in', MJT.C.cran)} 2. Print</h2><p>Print at <b>Actual size / 100%</b> (not "Fit"), then measure the 1-inch square. Light card stock (65–80 lb / 175–215 gsm) works best.</p>` +
       `<h2>${MJT.flake('0.2in', MJT.C.cran)} 3. Cover insert</h2><p>Cut on the solid line. Slip it into a clear card holder (not included) in front of your card. The back panel (return-to details) is optional.</p>` +
       `<h2>${MJT.flake('0.2in', MJT.C.cran)} 4. Paper sleeve</h2><ol><li>Cut around the outer solid line.</li><li>Fold on the dashed lines: the back panel folds behind the cover, the two side flaps fold back.</li>` +
       `<li>Glue the flaps onto the back panel. Keep the top open.</li><li>Slide your card in from the top.</li></ol>` +
-      `<div class="box"><p style="margin:0">Our own designs and tile drawings: no logos, no card pictures, no card text. Measure your card before you print a stack.</p></div>` +
+      `<div class="box"><p style="margin:0">Our own designs and tile drawings: no logos, no card pictures, no card text.${many ? '' : ' Measure your card before you print a stack.'}</p></div>` +
       `</div><div class="pf"><span>MakeTogetherStudio · Mahjong Card Covers</span><span>Print at 100%</span></div></section>`;
   }
   function sizeList(d) {
@@ -644,7 +810,7 @@ function setPaper() {
   $('#pagesize').textContent = a4 ? '@page { size: 210mm 297mm; margin: 0; }' : '@page { size: 8.5in 11in; margin: 0; }';
 }
 const EXAMPLE = { f: { names: 'Sample Name\nAnother Player', club: 'Holly Lane Mahj Club', greet: 'Merry & Bright', greet2: '', cw: '', ch: '', bn: '', bp: '' },
-  dg: [true, true, false, false], sz: 'std', ns: 'owner', p: [true, true, false] };
+  dg: CC.DESIGNS.map((_, i) => i < 2), sz: 'std', ns: 'owner', p: [true, true, false] };
 $('#make').onclick = () => { setPaper(); if (render()) $('#preview').scrollIntoView({ behavior: 'smooth' }); };
 $('#print').onclick = () => { setPaper(); if (!render()) return; (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => setTimeout(() => window.print(), 300)); };
 $('#paper').onchange = () => { setPaper(); if ($('#preview').innerHTML) render(); else save(); };
