@@ -1360,7 +1360,8 @@ function make() {
 
 $('#make').onclick = make;
 $('#demo').onclick = () => { $('#src').value = EXAMPLE; make(); };
-$('#print').onclick = () => { if (!$('#pv').innerHTML && !make()) return; setTimeout(() => window.print(), 500); };
+$('#print').onclick = () => { delete document.body.dataset.ready; if (!make()) return; const t0 = Date.now();
+  (function wait() { if (document.body.dataset.ready === '1' || Date.now() - t0 > 4000) setTimeout(() => window.print(), 200); else setTimeout(wait, 50); })(); };
 ['#paper', '#ink', '#kidstyle', '#i-letter', '#i-cert', '#i-env', '#i-note', '#i-kids', '#i-all', '#i-voice', '#i-receipt', '#i-food', '#rname'].forEach(id =>
   $(id).addEventListener('change', () => { if ($('#pv').innerHTML) make(); }));
 try { const saved = localStorage.getItem('mts-santa-letter'); if (saved) $('#src').value = saved; } catch (e) {}
