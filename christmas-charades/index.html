@@ -401,7 +401,7 @@ function setPaper() {
 
 $('#make').onclick = render;
 $('#demo').onclick = () => { $('#src').value = EXAMPLE; render(); };
-$('#print').onclick = () => { if (!$('#preview').innerHTML && !render()) return; setTimeout(() => window.print(), 300); };
+$('#print').onclick = () => { if (!render()) return; setTimeout(() => window.print(), 300); };
 $('#paper').onchange = setPaper;
 try { const saved = localStorage.getItem('swai-charades-cards'); if (saved) $('#src').value = saved; } catch (e) {}
 $('#src').addEventListener('input', () => { try { localStorage.setItem('swai-charades-cards', $('#src').value); } catch (e) {} });

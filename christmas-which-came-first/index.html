@@ -759,7 +759,7 @@ $('#fexample').onclick = fillExample;
 $('#fclear').onclick = () => { document.querySelectorAll('#facts input[type=text]').forEach(x => x.value = ''); $('#mix').checked = false; saveForm(); $('#fmsg').textContent = ''; chips(); };
 $('#facts').addEventListener('input', e => { saveForm(); if (e.target.id === 'fnames' || e.target.id === 'fpet') chips(); });
 $('#demo').onclick = () => { $('#src').value = EXAMPLE; $('#lang').value = 'auto'; LAST = 'paste'; render(); };
-$('#print').onclick = () => { if (!$('#preview').innerHTML && !render()) return; setTimeout(() => window.print(), 300); };
+$('#print').onclick = () => { if (!(LAST === 'form' ? fromForm() : render())) return; setTimeout(() => window.print(), 300); };
 $('#paper').onchange = setPaper;
 $('#lang').onchange = () => { chips(); if ($('#preview').innerHTML) render(); };
 $('#cert').onchange = () => { if ($('#preview').innerHTML) render(); };
@@ -772,7 +772,7 @@ try {
 } catch (e) {}
 chips();
 try { const saved = localStorage.getItem('mts-wcf-src'); if (saved) $('#src').value = saved; } catch (e) {}
-$('#src').addEventListener('input', () => { try { localStorage.setItem('mts-wcf-src', $('#src').value); } catch (e) {} });
+$('#src').addEventListener('input', () => { LAST = 'paste'; try { localStorage.setItem('mts-wcf-src', $('#src').value); } catch (e) {} });
 const q = new URLSearchParams(location.search);
 if (q.get('paper') === 'a4') { $('#paper').value = 'a4'; setPaper(); }
 if (q.get('lang') && QZ_LABELS[q.get('lang')]) { $('#lang').value = q.get('lang'); chips(); }

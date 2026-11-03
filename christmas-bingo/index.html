@@ -792,7 +792,7 @@ details { margin-top: 12px; } summary { cursor: pointer; font-weight: 700; color
 <script>
 const C = window.BG_CONTENT, EXAMPLE = "BINGO: Mia & Leo's Christmas Bingo\nSTYLE: pictures\nGRID: 4\nFREE: none\nCARDS: 14\nPLAYERS: Mia, Leo, Grandma, Grandpa\nLANGUAGE: en\n---\nITEMS:\n🐶 Pepper\n🍪 Grandma's gingerbread\n🎄 Christmas tree\n🎁 Present\n⛄ Snowman\n🎅 Santa hat\n🦌 Reindeer\n🧦 Stocking\n🍬 Candy cane\n☕ Hot cocoa\n🔔 Bell\n⭐ Star\n❄️ Snowflake\n🧤 Mitten\n🔴 Ornament\n🧣 Leo's scarf\n🐧 Penguin\n🛷 Sled\n💡 Lights\n🌲 Pine cone\n🎶 Carols\n🥛 Milk for Santa\n🧸 Teddy bear\n🎀 Bow", READY = {"little": "BINGO: Christmas Picture Bingo\nSTYLE: pictures\nGRID: 4\nFREE: none\nCARDS: 30\n---\nITEMS:\n[tree] Christmas tree\n[gift] Present\n[snowman] Snowman\n[santahat] Santa hat\n[deer] Reindeer\n[stocking] Stocking\n[candycane] Candy cane\n[gingerbread] Gingerbread\n[cup] Hot cocoa\n[lights] Lights\n[bell] Bell\n[star] Star\n[snowflake] Snowflake\n[mitten] Mitten\n[ornament] Ornament\n[holly] Holly\n[cookie] Cookie\n[sled] Sled\n[wreath] Wreath\n[penguin] Penguin\n[scarf] Scarf\n[beanie] Winter hat\n[sweater] Sweater\n[pinecone] Pine cone", "words": "BINGO: Christmas Word Bingo\nSTYLE: words\nGRID: 5\nFREE: default\nCARDS: 30\n---\nITEMS:\nChristmas tree\nPresent\nSnowman\nSnowflake\nReindeer\nSanta hat\nStocking\nCandy cane\nGingerbread\nHot cocoa\nMittens\nScarf\nSleigh\nJingle bell\nWreath\nHolly\nOrnament\nStar\nElf\nNorth Pole\nCookies\nMilk\nTwinkle lights\nWrapping paper\nBow\nSnowball\nSled\nPenguin\nPolar bear\nPine cone\nPajamas\nCarols\nIce skates\nChimney\nSnow angel\nTinsel\nSnow globe\nNutcracker\nSweater\nAdvent calendar", "party": "BINGO: Christmas Party Bingo\nSTYLE: phrases\nGRID: 5\nFREE: default\nCARDS: 30\n---\nITEMS:\nSomeone in a Santa hat\nReindeer antlers\nLight-up sweater\nMatching pajamas\nGroup selfie\nSomeone says “Ho ho ho!”\nChristmas sweater\nA bow on someone’s head\nHoliday playlist\nCookie decorating\nHot cocoa with marshmallows\nCandy cane\nSparkly outfit\nFestive earrings\nSomeone hums a carol\nGingerbread house\nGift exchange\nSecret Santa reveal\nRed and green outfit\nSomeone mentions snow\nChristmas socks\nElf hat\nTwinkle lights\nA plate of cookies\nPhoto by the tree\nMini tree on a desk\nOffice plant in tinsel\nA Christmas card\nSomeone in a scarf\nPaper snowflake\nWrapping paper everywhere\nSomeone says “Merry Christmas!”\nHoliday treat swap\nSomeone arrives with a gift\nA pile of presents\nStar on the tree\nCandy cane in a mug\nSnow globe\nA holiday story\nLast-minute gift wrap"};
 const $ = s => document.querySelector(s);
-let salt = 0, lastKey = '';
+let salt = 0, lastKey = '', last = 'text';
 
 function fromText(raw) {
   const p = BG.parse(raw);
@@ -815,6 +815,7 @@ function formCfg() {
     players: $('#f-players').value.split(/[\n,;]/).map(s => s.trim()).filter(Boolean) };
 }
 function make(useText) {
+  last = useText ? 'text' : 'form';
   const msg = $('#msg'), pv = $('#preview');
   document.body.removeAttribute('data-ready');
   let warn = [];
@@ -863,11 +864,12 @@ $('#make2').onclick = () => make(false);
 $('#demo').onclick = () => { $('#src').value = EXAMPLE; salt = 0; make(true); };
 $('#ready').onchange = () => { const k = $('#ready').value; if (!k) return; $('#src').value = READY[k]; salt = 0; make(true); $('#ready').value = ''; };
 $('#mix').onclick = () => { salt += 1; make(false); };
-$('#print').onclick = () => { if (!$('#preview').innerHTML && !make(true)) return; setTimeout(() => window.print(), 400); };
+$('#formbox').addEventListener('input', () => { last = 'form'; });
+$('#print').onclick = () => { if (!make(!$('#preview').innerHTML || last === 'text')) return; setTimeout(() => window.print(), 400); };
 $('#paper').onchange = setPaper;
 $('#per').onchange = () => { if ($('#preview').innerHTML) make(false); };
 try { const saved = localStorage.getItem('mts-bingo-src-christmas-bingo'); if (saved) $('#src').value = saved; } catch (e) {}
-$('#src').addEventListener('input', () => { try { localStorage.setItem('mts-bingo-src-christmas-bingo', $('#src').value); } catch (e) {} });
+$('#src').addEventListener('input', () => { last = 'text'; try { localStorage.setItem('mts-bingo-src-christmas-bingo', $('#src').value); } catch (e) {} });
 const q = new URLSearchParams(location.search);
 if (q.get('paper') === 'a4') { $('#paper').value = 'a4'; setPaper(); }
 if (q.get('per') === '2') { $('#per').value = '2'; }
