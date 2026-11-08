@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ava &amp; Noah · Emerald Vow save the date demo</title>
+<meta name="description" content="Live demo of the Emerald Vow save the date website template by Make Together Studio, with a sample couple.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#013A31">
+<link rel="icon" href="assets/icon-192.png">
+<link rel="stylesheet" href="site.css">
+<style>.hero .eyebrow{display:block;margin-top:6px}.hero .line{font-style:italic;color:var(--muted);margin-top:10px;font-size:20px}
+.hero .fan{width:130px;margin:2px auto 6px}.addr{display:grid;gap:22px;max-width:980px;margin:0 auto}
+@media (min-width:900px){.addr{grid-template-columns:1fr 1.1fr;align-items:start}}
+.addr .rsvp-card{max-width:none}.addr .seal{width:120px;margin:0 auto 10px}
+.sr-status{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.addr h2{font-size:36px;letter-spacing:0;line-height:1.15}.formbox{background:#fff;border:1px solid var(--gold);border-radius:4px;padding:6px 22px 24px}</style>
+</head><body>
+<a class="skip" href="#address">Skip to the address form</a>
+<div class="demo-bar" role="note">Live demo · sample couple · addresses here are not sent. <a href="#about">About this demo</a></div>
+<main>
+<section class="hero" id="top" aria-label="Save the date"><div class="card frame">
+  <div class="art"><img class="gate" src="assets/gate.webp" alt="Painted garden gate under an arch of roses" width="900" height="905"></div>
+  <div class="text">
+    <p class="caps eyebrow">save the date</p>
+    <h1 class="script">Ava &amp; Noah</h1>
+    <img class="fan" src="assets/divider.webp" alt="" width="520" height="96">
+    <p class="date">September 18, 2027</p>
+    <p class="venue">Hollow Creek Farm<br>Hudson Valley, New York</p>
+    <p class="line">Formal invitation to follow</p>
+  </div>
+</div></section>
+
+<section class="dark" id="countdown"><div class="wrap">
+  <div class="head"><img class="divider" src="assets/divider-dark.webp" alt="" width="520" height="96"><p class="caps">until we say I do</p><h2>Counting the days</h2></div>
+  <p class="date-big">09 · 18 · 2027</p>
+  <div class="count" aria-label="Countdown to the wedding"><div><b>0</b><span>days</span></div><div><b>0</b><span>hours</span></div><div><b>0</b><span>minutes</span></div><div><b>0</b><span>seconds</span></div></div>
+  <div class="btns on-dark"><a class="btn outline" href="#" data-sample="In your site, this opens Google Calendar with your date and place filled in.">Add to calendar</a></div>
+</div></section>
+
+<section id="photos"><div class="wrap center">
+  <div class="head"><img class="divider" src="assets/divider.webp" alt="" width="520" height="96"><p class="caps">a few favorites</p><h2>Photos</h2></div>
+  <div class="photos"><img src="assets/photo-1.webp" alt="The couple kiss in a green field in front of red barns" width="600" height="800"><img src="assets/photo-2.webp" alt="The couple smile at each other in a meadow below the mountains" width="600" height="800"><img src="assets/photo-3.webp" alt="The groom kisses the bride on the forehead in a meadow" width="600" height="800"></div>
+  <p class="small">Sample photos (real stock photos from Pexels). Add your own, or delete this section: the design works without photos.</p>
+</div></section>
+
+<section class="sage" id="address" aria-labelledby="addr-h"><div class="wrap addr">
+ <div class="rsvp-card frame">
+  <img class="seal" src="assets/seal.webp" alt="" width="360" height="363">
+  <h2 id="addr-h">May we send you an invitation?</h2>
+  <p style="margin-top:10px">Share your mailing address in the form. It goes privately to us, and only to us.</p>
+  <p style="margin-top:14px"><a class="link" href="sms:+15550100142">Call or text: (555) 010-0142</a></p>
+ </div>
+ <div class="formbox">
+  <p class="sr-status status" id="addr-status" role="status" aria-live="polite" style="font-size:18px"></p>
+  <form id="addr-form" novalidate>
+    <div><label for="f-name">Your names, as on the envelope</label>
+      <input type="text" id="f-name" name="name" autocomplete="name" aria-describedby="err-name">
+      <p class="err" id="err-name" hidden>Please type your names.</p></div>
+    <div><label for="f-address">Mailing address</label>
+      <textarea id="f-address" name="address" autocomplete="street-address" aria-describedby="err-address"></textarea>
+      <p class="err" id="err-address" hidden>Please type your mailing address.</p></div>
+    <div><label for="f-email">Email (optional)</label><input type="text" id="f-email" name="email" autocomplete="email" inputmode="email"></div>
+    <button class="btn solid" id="send" type="submit">Send my address</button>
+    <p class="demo-note">Demo: your address stays in this browser and is not sent to anyone.</p>
+  </form>
+  <div class="panel" id="addr-done" hidden>
+    <h3 id="done-title" tabindex="-1"></h3>
+    <ul id="done-list"></ul>
+    <button class="btn outline" id="change" type="button">Change my address</button>
+    <p class="demo-note">Demo: this address stayed in your browser. On your site, addresses go only to you.</p>
+  </div>
+  <div class="panel error" id="addr-fail" hidden>
+    <h3 id="fail-title" tabindex="-1">We couldn&#x27;t send your address. Check your connection and try again, or call or text us.</h3>
+    <button class="btn solid" id="retry" type="button">Try again</button>
+  </div>
+ </div>
+</div></section>
+</main>
+
+<footer>
+  <p class="script">Ava &amp; Noah</p>
+  <p style="font-size:24px;font-weight:600">September 18, 2027</p>
+  <p>Hollow Creek Farm · Hudson Valley, New York</p>
+  <p style="margin-top:14px">Share your photos with #AvaAndNoah</p>
+  <p style="font-style:italic;color:var(--champ);margin-top:10px">See you at the garden gate.</p>
+  <p class="credit">Emerald Vow · designed by Make Together Studio</p>
+  <div class="about" id="about"><p><b>About this demo.</b> This page shows the Emerald Vow save the date website template with
+  a fictional sample couple. The template itself is a one-page Canva website with the same sections and words, edited and
+  published in a free Canva account. In the demo, the address form keeps your answer in this browser only and sample buttons
+  tell you what they open; on a couple's own site, the form is a Canva form and the addresses arrive in their own Canva
+  account. The garden gate, flowers and seal are artwork made with an AI image tool; the frames, divider and layout are made in code.</p></div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script>window.EV_CFG={"when": "2027-09-18T16:00:00-04:00", "storage": "mts-emerald-vow-std-demo", "t": {"sending": "Sending\u2026", "send": "Send my address", "thanks": "Thank you, {name}. Your invitation will find you.", "updated": "Updated, {name}. We'll use your newest address.", "offline": "We couldn't send your address. Check your connection and try again, or call or text us."}};</script>
+<script src="std.js"></script>
+</body></html>

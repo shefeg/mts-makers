@@ -1,0 +1,182 @@
+/* Emerald Vow wedding website (live demo). Mobile first; every text >= 16 px; every text colour >= 4.5:1 on its ground. */
+@font-face{font-family:"Cormorant Garamond";src:url(fonts/CormorantGaramond-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Cormorant Garamond";src:url(fonts/CormorantGaramond-SemiBold.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Cormorant Garamond";src:url(fonts/CormorantGaramond-Italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Pinyon Script";src:url(fonts/PinyonScript-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+:root{--emerald:#013A31;--emerald2:#06473C;--ivory:#F7F1E6;--champ:#FAD882;--gold:#A9874E;--label:#6B5326;--muted:#35574E;
+  --sage:#E4EADF;--rule:#D8C49B;--sage2:#A7B5A0;--blush:#D8B7B2;--serif:"Cormorant Garamond",Georgia,serif;--script:"Pinyon Script",cursive}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{font-family:var(--serif);font-size:20px;line-height:1.5;color:var(--emerald);background:var(--ivory);-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit}
+.script{font-family:var(--script);font-weight:400;line-height:1.15}
+.caps{font-size:16px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--label)}
+.on-dark .caps,.dark .caps{color:var(--champ)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.skip{position:absolute;left:-999px;top:0;background:var(--ivory);color:var(--emerald);padding:8px 14px;font-size:18px;z-index:50}
+.skip:focus{left:8px}
+:focus-visible{outline:3px solid var(--champ);outline-offset:3px;box-shadow:0 0 0 6px var(--emerald)}
+
+/* demo bar: says what this page is */
+.demo-bar{background:var(--ivory);color:var(--emerald);font-size:16px;line-height:1.3;text-align:center;padding:6px 12px;border-bottom:1px solid var(--gold)}
+.demo-bar a{font-weight:600}
+
+/* stepped double-rule frame (9-slice SVG) */
+.frame{position:relative}
+.frame::before{content:"";position:absolute;inset:8px;border:24px solid transparent;border-image:url(assets/frame.svg) 36 stretch;pointer-events:none}
+.dark .frame::before,.frame.on-dark::before{border-image-source:url(assets/frame-on-dark.svg)}
+
+/* buttons */
+.btn{display:flex;align-items:center;justify-content:center;min-height:52px;padding:10px 22px;border-radius:6px;font:600 21px/1.2 var(--serif);
+  letter-spacing:.02em;text-decoration:none;border:2px solid var(--emerald);cursor:pointer;width:100%;max-width:320px;margin:0 auto}
+.btn.solid{background:var(--emerald);color:var(--ivory)}
+.btn.outline{background:transparent;color:var(--emerald)}
+.dark .btn.outline,.on-dark .btn.outline{color:var(--ivory);border-color:var(--champ)}
+.dark .btn.solid{background:var(--champ);color:var(--emerald);border-color:var(--champ)}
+.btn:hover{filter:brightness(1.08)}
+.link{display:inline-block;font-weight:600;font-size:20px;text-underline-offset:4px;padding:6px 4px}
+.btns{display:grid;gap:12px;justify-items:center}
+.row-btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.row-btns .btn{width:auto;min-width:200px;margin:0}
+
+/* hero: the first screen at 390 x 844 holds names, date, venue, RSVP, weekend details and the phone link */
+.hero{background:var(--emerald);padding:12px 12px 16px}
+.hero .card{background:var(--ivory);border-radius:4px;padding:26px 22px 22px;text-align:center;max-width:560px;margin:0 auto}
+.hero .divider{width:150px;margin:0 auto 4px}
+.hero .gate{height:clamp(110px,24svh,230px);width:auto;margin:0 auto}
+.hero h1{font-size:clamp(50px,15vw,66px);margin:6px 0 4px;color:var(--emerald)}
+.hero .date{font-size:23px;font-weight:600}
+.hero .venue{font-size:20px;line-height:1.35}
+.hero .btns{margin-top:14px;gap:10px}
+.hero .eyebrow{display:none}
+.hero .text{position:relative;z-index:1}
+@media (max-height:700px){.hero .gate{height:clamp(90px,18svh,150px)}.hero h1{font-size:48px}}
+/* desktop: the same tall invitation card as the Canva master (centred on the emerald field), not a different layout */
+@media (min-width:900px){.hero{padding:28px 24px}.hero .card{max-width:460px}}
+
+section{padding:56px 0}
+section.dark{background:var(--emerald);color:var(--ivory)}
+section.sage{background:var(--sage)}
+.head{text-align:center;margin-bottom:28px}
+.head .divider{width:170px;margin:0 auto 8px}
+.head h2{font-size:40px;line-height:1.15;font-weight:600;margin-top:6px}
+.head h2.script{font-weight:400;font-size:56px}
+.lead{max-width:640px;margin:0 auto;text-align:center}
+.center{text-align:center}
+
+/* countdown */
+.count{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:560px;margin:0 auto 26px}
+.count div{border:1px solid var(--champ);border-radius:4px;padding:10px 4px;text-align:center}
+.count b{display:block;font-size:34px;font-weight:600;color:var(--ivory);line-height:1.1}
+.count span{font-size:16px;letter-spacing:.03em;text-transform:uppercase;color:var(--champ);font-weight:600}
+.date-big{font-size:28px;text-align:center;font-weight:600;margin-bottom:22px;letter-spacing:.08em}
+
+/* story */
+.story{position:relative;max-width:700px;margin:0 auto;text-align:center;padding-bottom:70px}
+.story p{margin-bottom:16px}
+.story .sign{font-size:48px}
+.story .corner{position:absolute;width:120px;left:0;bottom:-46px}
+@media (min-width:900px){.story .corner{width:170px;left:-150px;bottom:-30px}}
+
+/* the weekend: large schedule */
+.day{max-width:720px;margin:0 auto 26px}
+.day h3{display:flex;gap:12px;align-items:baseline;justify-content:space-between;border-bottom:2px solid var(--emerald);padding-bottom:6px;margin-bottom:4px}
+.day h3 .caps{font-size:17px}
+.day h3 .d{font-size:21px;font-weight:600}
+.ev{display:grid;grid-template-columns:118px 1fr;gap:4px 16px;padding:14px 0;border-bottom:1px solid var(--rule,#D8C49B)}
+.ev .t{font-size:24px;font-weight:600;line-height:1.2}
+.ev .w b{display:block;font-size:24px;font-weight:600;line-height:1.2}
+.ev .w span{display:block;font-size:19px;color:var(--muted)}
+.ev .w .link{font-size:18px;padding:4px 0}
+@media (min-width:700px){.ev{grid-template-columns:170px 1fr}.ev .t{font-size:30px}.ev .w b{font-size:28px}}
+
+/* travel */
+.cards{display:grid;gap:18px}
+@media (min-width:900px){.cards{grid-template-columns:repeat(3,1fr)}}
+.tcard{background:var(--ivory);border:1px solid var(--gold);border-radius:4px;padding:22px 20px;text-align:center}
+.tcard h3{font-size:27px;font-weight:600;margin-bottom:8px}
+.tcard .btns{margin-top:14px}
+
+/* dress code */
+.swatches{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:22px 0 16px}
+.sw{text-align:center}
+.sw i{display:block;width:62px;height:62px;border-radius:50%;margin:0 auto 6px;border:2px solid var(--champ)}
+.sw span{font-size:17px;font-weight:600;letter-spacing:.06em;color:var(--ivory)}
+
+/* party */
+.party{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;max-width:720px;margin:0 auto;text-align:center}
+@media (min-width:700px){.party{grid-template-columns:repeat(3,1fr)}}
+.party b{display:block;font-size:23px;font-weight:600}
+.party span{font-size:17px;letter-spacing:.12em;text-transform:uppercase;color:var(--label);font-weight:600}
+
+/* faq */
+.faq{max-width:720px;margin:0 auto}
+.faq details{border-bottom:1px solid var(--gold);padding:4px 0}
+.faq summary{cursor:pointer;font-size:23px;font-weight:600;padding:12px 32px 12px 0;list-style:none;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:6px;top:8px;font-size:28px}
+.faq details[open] summary::after{content:"–"}
+.faq p{padding:0 0 14px}
+
+/* rsvp: entry block, form, sending, error, confirmation, correction */
+.rsvp-card{background:var(--ivory);max-width:560px;margin:0 auto;padding:34px 26px 30px;text-align:center;border-radius:4px}
+.rsvp-card .gate{width:170px;margin:0 auto 6px}
+.rsvp-card h2{font-size:48px;font-weight:600;letter-spacing:.04em}
+.rsvp-card .deadline{font-size:22px;margin:6px 0 18px}
+.rsvp-card .small{font-size:17px;color:var(--muted);margin-top:14px}
+form{text-align:left;margin-top:22px;display:grid;gap:16px}
+form[hidden],.panel[hidden]{display:none}
+label,legend{font-weight:600;font-size:20px;display:block;margin-bottom:4px}
+input[type=text],input[type=number],select,textarea{width:100%;font:400 20px/1.3 var(--serif);color:var(--emerald);background:#fff;
+  border:2px solid var(--muted);border-radius:6px;padding:10px 12px;min-height:50px}
+textarea{min-height:84px}
+fieldset{border:0}
+.choice{display:flex;align-items:center;gap:10px;font-weight:400;font-size:20px;margin:6px 0;padding:6px 0;cursor:pointer}
+.choice input{width:24px;height:24px;accent-color:var(--emerald)}
+.err{color:#8A1C1C;font-size:18px;font-weight:600;margin-top:4px}
+.err[hidden]{display:none}
+[aria-invalid=true]{border-color:#8A1C1C !important}
+.status{min-height:0}
+.panel{background:#fff;border:2px solid var(--emerald);border-radius:6px;padding:20px;margin-top:20px;text-align:left}
+.panel h3{font-size:26px;font-weight:600;margin-bottom:8px}
+.panel ul{list-style:none;margin:8px 0 14px}
+.panel li{padding:4px 0;border-bottom:1px solid #E6DCC8}
+.panel.error{border-color:#8A1C1C}
+.demo-note{font-size:17px;color:var(--muted);font-style:italic;margin-top:10px}
+.spinner{display:inline-block;width:20px;height:20px;border:3px solid var(--sage2);border-top-color:var(--emerald);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-3px;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation:none}}
+
+footer{background:var(--emerald);color:var(--ivory);text-align:center;padding:52px 20px 40px}
+footer .script{font-size:60px}
+footer p{margin:6px 0}
+footer .credit{font-size:17px;color:var(--champ);margin-top:22px}
+footer .about{max-width:640px;margin:22px auto 0;font-size:17px;line-height:1.45;text-align:left;border-top:1px solid var(--champ);padding-top:16px}
+
+/* sample-link note */
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);max-width:92vw;background:var(--emerald);color:var(--ivory);
+  border:2px solid var(--champ);border-radius:8px;padding:12px 18px;font-size:18px;z-index:40;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.toast[hidden]{display:none}
+
+/* optional opening (only in builds with the opening switched on) */
+.opening{position:fixed;inset:0;z-index:60;background:var(--emerald);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px}
+.opening .doors{position:absolute;inset:0;display:flex}
+.opening .doors i{flex:1;background:var(--emerald2);transition:transform .9s cubic-bezier(.6,.05,.3,1)}
+.opening .doors i:first-child{border-right:1px solid var(--champ)}
+.opening.open .doors i:first-child{transform:translateX(-101%)}
+.opening.open .doors i:last-child{transform:translateX(101%)}
+.opening .seal{width:150px;position:relative;z-index:2;transition:opacity .4s,transform .6s}
+.opening.open .seal{opacity:0;transform:scale(.8)}
+.opening .btn{position:relative;z-index:2;max-width:260px}
+.opening .skipo{position:relative;z-index:2;color:var(--ivory);font-size:19px}
+.opening.open .btn,.opening.open .skipo{opacity:0;transition:opacity .3s}
+@media (prefers-reduced-motion:reduce){.opening .doors i,.opening .seal{transition:none}}
+#if-yes:not([hidden]){display:grid;gap:16px}
+@media (max-width:899px){.hero .card{min-height:calc(100svh - 84px);display:flex;flex-direction:column;justify-content:center}}
+@media (max-width:359px){.count{grid-template-columns:repeat(2,1fr)}}
+.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:960px;margin:0 auto 14px}
+.photos img{width:100%;aspect-ratio:3/4;object-fit:cover;border:1px solid var(--rule);border-radius:2px}
+@media (max-width:599px){.photos{grid-template-columns:1fr 1fr}.photos img:first-child{grid-column:1/-1;aspect-ratio:4/3}}
+#photos .small{font-size:17px;color:var(--muted);max-width:640px;margin:0 auto}
