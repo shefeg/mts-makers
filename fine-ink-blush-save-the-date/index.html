@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Margot &amp; Theo · Fine Ink &amp; Blush save the date demo</title>
+<meta name="description" content="Live demo of the Fine Ink &amp; Blush save the date website template by Make Together Studio, with a sample couple.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#FBF6EA">
+<link rel="icon" href="assets/icon-192.png">
+<link rel="stylesheet" href="site.css">
+<style>.hero .std{width:100%;max-width:330px;margin:0 auto 4px}.hero .line{font-style:italic;color:var(--muted);margin-top:12px;font-size:18px}
+.addr{display:grid;gap:22px;max-width:980px;margin:0 auto}@media (min-width:900px){.addr{grid-template-columns:1fr 1.1fr;align-items:start}}
+.addr .rsvp-card{max-width:none}.addr h2{font-size:34px;line-height:1.15}.formbox{background:#fff;border:1.5px solid var(--ink);border-radius:18px;padding:6px 22px 24px}</style>
+</head><body>
+<div class="opening" id="opening" role="dialog" aria-modal="true" aria-label="Opening" hidden><p class="caps">save the date</p><p class="to">to the wedding of</p><p class="names">Margot &amp; Theo</p><div class="env" aria-hidden="true"><img class="closed" src="assets/envelope-bow.webp" alt=""><img class="open" src="assets/envelope-open.webp" alt=""></div><button class="btn solid" id="open-btn" type="button">Open</button><a class="skipo" href="#top" id="skip-open">Skip</a></div><a class="skip" href="#address">Skip to the address form</a>
+<div class="demo-bar" role="note">Live demo · sample couple · addresses here are not sent. <a href="#about">About</a> · <a href="#" data-replay>Replay the opening</a></div>
+<main>
+<section class="hero" id="top" aria-label="Save the date">
+  <div class="side l" aria-hidden="true"><img src="assets/side-left.webp" alt="" width="380" height="1096"></div>
+  <div class="side r" aria-hidden="true"><img src="assets/side-right.webp" alt="" width="380" height="1096"></div>
+  <div class="card">
+    <img class="std" src="assets/std-top.webp" alt="Ink drawing of an envelope tied with a blush ribbon bow, two clinking coupes and an olive sprig" width="820" height="437">
+    <p class="caps eyebrow">save the date</p>
+    <h1 class="names">Margot &amp; Theo</h1>
+    <p class="date">June 12, 2027</p>
+    <p class="venue">Willow Hill Orchard · Sonoma, California</p>
+    <div class="btns"><a class="btn solid" href="https://calendar.google.com/calendar/r/eventedit?action=TEMPLATE&amp;dates=20270612T230000Z/20270613T050000Z&amp;text=Margot+%26+Theo+wedding&amp;location=Willow+Hill+Orchard%2C+Sonoma%2C+California" target="_blank" rel="noopener">Add to calendar</a>
+      <a class="btn outline" href="#address">Share your address</a></div>
+    <p class="line">Formal invitation to follow</p>
+  </div>
+</section>
+
+<section class="tint" id="countdown"><div class="wrap">
+  <div class="head"><img class="art" src="assets/clock.webp" alt="" width="420" height="420"><p class="caps">until we say I do</p><h2>Counting the days</h2></div>
+  <p class="date-big">06 · 12 · 2027</p>
+  <div class="count" aria-label="Countdown to the wedding"><div><b>0</b><span>days</span></div><div><b>0</b><span>hours</span></div><div><b>0</b><span>minutes</span></div><div><b>0</b><span>seconds</span></div></div>
+  <div class="btns"><a class="btn outline" href="https://calendar.google.com/calendar/r/eventedit?action=TEMPLATE&amp;dates=20270612T230000Z/20270613T050000Z&amp;text=Margot+%26+Theo+wedding&amp;location=Willow+Hill+Orchard%2C+Sonoma%2C+California" target="_blank" rel="noopener">Add to calendar</a></div>
+</div></section>
+
+<section id="photos"><div class="wrap center">
+  <div class="head"><img class="art" src="assets/camera.webp" alt="" width="420" height="420"><p class="caps">a few favorites</p><h2>Photos</h2></div>
+  <div class="frames"><figure><img src="assets/frame-oval-vine.webp" alt="" width="420" height="420"><figcaption>your photo</figcaption></figure><figure><img src="assets/frame-arch.webp" alt="" width="420" height="420"><figcaption>your photo</figcaption></figure><figure><img src="assets/frame-wreath-bow.webp" alt="" width="420" height="420"><figcaption>your photo</figcaption></figure></div>
+  <p class="small">Optional: drop your photos into the frames in Canva, or delete this section.</p>
+</div></section>
+
+<section class="tint" id="address" aria-labelledby="addr-h"><div class="wrap addr">
+ <div class="rsvp-card">
+  <img class="art" src="assets/dog-envelope.webp" alt="" width="420" height="420">
+  <h2 id="addr-h">May we send you an invitation?</h2>
+  <p style="margin-top:10px">Share your mailing address in the form. It goes privately to us, and only to us.</p>
+  <p style="margin-top:12px"><a class="link" href="sms:+15550100186">Call or text: (555) 010-0186</a></p>
+ </div>
+ <div class="formbox">
+  <p class="sr-status" id="addr-status" role="status" aria-live="polite"></p>
+  <form id="addr-form" novalidate>
+    <div><label for="f-name">Your names, as on the envelope</label>
+      <input type="text" id="f-name" name="name" autocomplete="name" aria-describedby="err-name">
+      <p class="err" id="err-name" hidden>Please type your names.</p></div>
+    <div><label for="f-address">Mailing address</label>
+      <textarea id="f-address" name="address" autocomplete="street-address" aria-describedby="err-address"></textarea>
+      <p class="err" id="err-address" hidden>Please type your mailing address.</p></div>
+    <div><label for="f-email">Email (optional)</label><input type="text" id="f-email" name="email" autocomplete="email" inputmode="email"></div>
+    <button class="btn solid" id="send" type="submit">Send my address</button>
+    <p class="demo-note">Demo: your address stays in this browser and is not sent to anyone.</p>
+  </form>
+  <div class="panel" id="addr-done" hidden>
+    <h3 id="done-title" tabindex="-1"></h3>
+    <ul id="done-list"></ul>
+    <button class="btn outline" id="change" type="button">Change my address</button>
+    <p class="demo-note">Demo: this address stayed in your browser. On your site, addresses go only to you.</p>
+  </div>
+  <div class="panel error" id="addr-fail" hidden>
+    <h3 id="fail-title" tabindex="-1">We couldn&#x27;t send your address. Check your connection and try again, or call or text us.</h3>
+    <button class="btn solid" id="retry" type="button">Try again</button>
+  </div>
+ </div>
+</div></section>
+</main>
+<footer>
+  <p class="names">Margot &amp; Theo</p>
+  <p style="font-size:22px;font-weight:600">June 12, 2027</p>
+  <p>Willow Hill Orchard · Sonoma, California</p>
+  <p style="margin-top:12px">Share your photos with #MargotAndTheo</p>
+  <p style="font-style:italic;color:var(--pale);margin-top:8px">See you under the pear trees.</p>
+  <p class="credit">Fine Ink &amp; Blush · designed by Make Together Studio</p>
+  <div class="about" id="about"><p><b>About this demo.</b> This page shows the Fine Ink &amp; Blush save the date website template with a fictional sample couple. The template itself is a one-page Canva website with the same sections and words, edited and published in a free Canva account. In Canva the opening is a still envelope section with an Open button, which you can delete; this demo animates it. Add to calendar opens Google Calendar with the sample date filled in. The address form here keeps your answer in this browser only; on a couple's own site the form is a Canva form and the addresses arrive in their own Canva account. The illustrations were made with an AI image tool from our own prompts; the layout is made in code.</p>
+  <p style="margin-top:10px"><a href="#" data-replay>Replay the opening</a></p></div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script>window.FIB_CFG={"when": "2027-06-12T16:00:00-07:00", "opening": true, "storage": "mts-fine-ink-blush-std-demo", "t": {"sending": "Sending\u2026", "send": "Send my address", "thanks": "Thank you, {name}. Your invitation will find you.", "updated": "Updated, {name}. We'll use your newest address.", "offline": "We couldn't send your address. Check your connection and try again, or call or text us."}};</script>
+<script src="std.js"></script>
+</body></html>
