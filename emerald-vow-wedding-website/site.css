@@ -29,14 +29,15 @@ a{color:inherit}
 .dark .frame::before,.frame.on-dark::before{border-image-source:url(assets/frame-on-dark.svg)}
 
 /* buttons */
-.btn{display:flex;align-items:center;justify-content:center;min-height:52px;padding:10px 22px;border-radius:6px;font:600 21px/1.2 var(--serif);
-  letter-spacing:.02em;text-decoration:none;border:2px solid var(--emerald);cursor:pointer;width:100%;max-width:320px;margin:0 auto}
+.btn{display:flex;align-items:center;justify-content:center;min-height:52px;padding:10px 22px;border-radius:6px;font:600 18px/1.2 var(--serif);
+  letter-spacing:.18em;text-transform:uppercase;text-decoration:none;border:2px solid var(--emerald);cursor:pointer;width:100%;max-width:320px;margin:0 auto}
 .btn.solid{background:var(--emerald);color:var(--ivory)}
 .btn.outline{background:transparent;color:var(--emerald)}
 .dark .btn.outline,.on-dark .btn.outline{color:var(--ivory);border-color:var(--champ)}
 .dark .btn.solid{background:var(--champ);color:var(--emerald);border-color:var(--champ)}
 .btn:hover{filter:brightness(1.08)}
-.link{display:inline-block;font-weight:600;font-size:20px;text-underline-offset:4px;padding:6px 4px}
+#change{font-size:16px;letter-spacing:.12em;padding:10px 12px;white-space:nowrap}
+.link{display:inline-block;font-weight:400;font-size:20px;letter-spacing:.04em;text-decoration:none;padding:6px 4px}
 .btns{display:grid;gap:12px;justify-items:center}
 .row-btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
 .row-btns .btn{width:auto;min-width:200px;margin:0}
@@ -89,7 +90,7 @@ section.sage{background:var(--sage)}
 .ev .t{font-size:24px;font-weight:600;line-height:1.2}
 .ev .w b{display:block;font-size:24px;font-weight:600;line-height:1.2}
 .ev .w span{display:block;font-size:19px;color:var(--muted)}
-.ev .w .link{font-size:18px;padding:4px 0}
+.ev .w .link{font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;border:1.5px solid var(--emerald);border-radius:4px;padding:5px 12px;margin-top:6px}
 @media (min-width:700px){.ev{grid-template-columns:170px 1fr}.ev .t{font-size:30px}.ev .w b{font-size:28px}}
 
 /* travel */
