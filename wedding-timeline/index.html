@@ -96,6 +96,10 @@ h2{font-size:44px;line-height:1.1;margin-bottom:6px}
 .rl{font:inherit;font-size:12px;letter-spacing:.06em;border:1px solid var(--rule);background:#fff;color:var(--label);border-radius:999px;padding:3px 9px;min-height:28px;cursor:pointer}
 .rl[aria-pressed=true]{background:var(--dark);border-color:var(--dark);color:var(--on-dark);font-weight:600}
 .rl[aria-pressed=true]::before{content:"✓ "}
+.tl-bar{position:sticky;top:-20px;z-index:3;margin:-20px -22px 14px;padding:12px 22px;background:#fffdf8;border-bottom:1px solid var(--rule);border-radius:6px 6px 0 0}
+.tl-bar .btn{width:100%}
+.reanch{margin:3px 6px 0;font-size:14.5px;font-style:italic;color:var(--warn);line-height:1.3}
+.reanch[hidden],.badge[hidden]{display:none}
 .who{margin:0 0 14px}
 .who .hint{margin:6px 0 0}
 
@@ -169,6 +173,7 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
   [data-pane]{display:none}
   body[data-tab=setup] [data-pane=setup],body[data-tab=steps] [data-pane=steps],body[data-tab=timeline] [data-pane=timeline]{display:block}
   #timeline{position:static;max-height:none;overflow:visible}
+  .tl-bar{display:none}
   .btn.next{display:flex;width:100%;margin-top:14px}
   .fields{grid-template-columns:1fr}
   .row{grid-template-columns:auto minmax(0,1fr);padding:10px 0}
@@ -188,7 +193,7 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
 /* ---------- print: only the sheet */
 @media print{
   html,body{background:#fff!important;font-size:11.5pt;padding:0}
-  .top,.tabs,.col-edit,.actions,.credit,.toast,dialog,#warn,.who{display:none!important}
+  .top,.tabs,.col-edit,.actions,.credit,.toast,dialog,#warn,.who,.tl-bar{display:none!important}
   .grid{display:block;margin:0;padding:0;max-width:none}
   [data-pane=timeline]{display:block!important}
   #timeline{position:static;max-height:none;overflow:visible;border:0;padding:0;margin:0;background:#fff}
@@ -261,6 +266,7 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
   </div>
 
   <section id="timeline" class="panel paper" data-pane="timeline" aria-live="polite">
+    <div class="tl-bar"><button type="button" class="btn" id="printTop">Print or save as PDF</button></div>
     <div class="who">
       <div class="seg" role="radiogroup" aria-label="Sheet for"><button type="button" data-who="all"></button><button type="button" data-who="party"></button><button type="button" data-who="vendors"></button></div>
       <p class="hint" id="whoHint"></p>
@@ -286,7 +292,7 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
   <label class="btn ghost file">Open a backup file<input type="file" id="restore" accept=".json,application/json"></label>
   <button type="button" class="btn ghost danger" id="reset">Start over</button>
 </footer>
-<p class="credit">Wedding Day Timeline Maker 1.4 · Make Together Studio · <span id="saved">saved on this device</span></p>
+<p class="credit">Wedding Day Timeline Maker 1.5 · Make Together Studio · <span id="saved">saved on this device</span></p>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <dialog id="aiDlg" aria-labelledby="aiTitle">
@@ -353,6 +359,14 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
       out.items.push(it);
       return it;
     };
+    /* An alongside row hangs on a step. If that step is switched off (or set to 0 minutes) the row is still on, so it is placed
+       anyway instead of vanishing: a row hanging on a step after the ceremony runs right after the ceremony (it takes its own
+       minutes and moves the rest of the day later); one hanging on a step before it goes before the first step of the day. */
+    const live = r => r.part === "ceremony" || active(r);
+    const rootOf = r => { let x = r, g = 0; while (x && x.kind === "alongside" && g++ < 10) x = rows.find(y => y.id === x.ref); return x && x.kind === "step" ? x : null; };
+    const orphanOf = r => { if (r.kind !== "alongside" || !r.on || r.rel === "sunset_before") return null; const root = rootOf(r); return root && !live(root) ? root : null; };
+    const moved = (it, root, where) => { it.moved = { root: root.name, state: root.on ? "zero" : "off", where: where }; return it; };
+    out.moved = [];
     let t = C;
     for (let i = before.length - 1; i >= 0; i--) {
       const r = before[i];
@@ -364,6 +378,15 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
     const cm = cer ? clampMin(cer.minutes) : 0;
     if (cer) put(cer, C, C + cm, rows.indexOf(cer));
     t = C + cm;
+    for (const r of rows) {
+      const root = orphanOf(r);
+      if (!root || root.part !== "after") continue;
+      const m = clampMin(r.minutes);
+      const it = moved(put(r, t, t + m, rows.indexOf(r)), root, "after");
+      it.kind = "step";
+      out.moved.push(it);
+      t += m;
+    }
     for (const r of after) {
       if (!active(r)) continue;
       const m = clampMin(r.minutes);
@@ -374,32 +397,44 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
     out.start = Math.min.apply(null, mains.map(i => i.start));
     out.end = Math.max.apply(null, mains.map(i => i.end));
     const sunset = parseTime(state.sunset);
+    const first = Math.min.apply(null, out.items.filter(i => i.part === "before" || i.part === "ceremony").map(i => i.start));
     for (const r of rows) {
-      if (r.kind !== "alongside" || !r.on) continue;
-      const m = clampMin(r.minutes);
-      const off = clampMin(r.offset);
-      if (r.rel === "sunset_before") {
-        if (sunset === null) continue;
-        let s = sunset - off;
-        // the reception runs from the end of the ceremony to the end of the day; a sunset after midnight is not a thing
-        const recStart = C + cm, recEnd = out.end;
-        if (s < recStart || s + m > recEnd) { out.warnings.push("sunset_outside"); continue; }
-        put(r, s, s + m, rows.indexOf(r));
-        continue;
-      }
-      let ref = out.byId[r.ref], rel = r.rel, off2 = off;
-      if (!ref) {
-        // it hangs on an alongside row that is switched off (couple photos after family photos):
-        // take that row's place instead, so switching family photos off never drops the couple photos silently
-        const pr = rows.find(x => x.id === r.ref);
-        if (pr && pr.kind === "alongside" && !pr.on && pr.rel === "start_of" && out.byId[pr.ref] && out.byId[pr.ref].kind === "step") {
-          ref = out.byId[pr.ref]; rel = "start_of"; off2 = clampMin(pr.offset);
+      const root = orphanOf(r);
+      if (!root || root.part !== "before") continue;
+      const off = clampMin(r.offset), m = clampMin(r.minutes);
+      const s0 = r.rel === "before_start" ? first - off : first + off;
+      out.moved.push(moved(put(r, s0, r.rel === "before_start" ? s0 : s0 + m, rows.indexOf(r)), root, "before"));
+    }
+    /* the rest hang on a step that is on. A row that hangs on a switched-off alongside row takes that row's place (couple photos after
+       family photos, family photos off), however long the chain; a row whose parent comes later in the list waits for the next pass. */
+    let pending = rows.filter(r => r.kind === "alongside" && r.on && !out.byId[r.id]);
+    for (let pass = 0; pass < 8 && pending.length; pass++) {
+      const left = [];
+      for (const r of pending) {
+        const m = clampMin(r.minutes);
+        let off = clampMin(r.offset);
+        if (r.rel === "sunset_before") {
+          if (sunset === null) continue;
+          let s = sunset - off;
+          // the reception runs from the end of the ceremony to the end of the day; a sunset after midnight is not a thing
+          const recStart = C + cm, recEnd = out.end;
+          if (s < recStart || s + m > recEnd) { out.warnings.push("sunset_outside"); continue; }
+          put(r, s, s + m, rows.indexOf(r));
+          continue;
         }
+        let x = r, rel = r.rel, ref = out.byId[r.ref], g = 0;
+        while (!ref && g++ < 10) {
+          const pr = rows.find(y => y.id === x.ref);
+          if (!pr || pr.kind !== "alongside" || pr.on) break;
+          x = pr; rel = pr.rel; off = clampMin(pr.offset); ref = out.byId[pr.ref];
+        }
+        if (!ref) { left.push(r); continue; }
+        if (rel === "before_start") put(r, ref.start - off, ref.start - off, rows.indexOf(r));
+        else if (rel === "start_of") put(r, ref.start + off, ref.start + off + m, rows.indexOf(r));
+        else if (rel === "after") put(r, ref.end, ref.end + m, rows.indexOf(r));
       }
-      if (!ref) continue;                                 // the step it hangs on is switched off
-      if (rel === "before_start") put(r, ref.start - off2, ref.start - off2, rows.indexOf(r));
-      else if (rel === "start_of") put(r, ref.start + off2, ref.start + off2 + m, rows.indexOf(r));
-      else if (rel === "after") put(r, ref.end, ref.end + m, rows.indexOf(r));
+      if (left.length === pending.length) break;
+      pending = left;
     }
     // photos that hang on the cocktail hour must end inside it
     for (const it of out.items) {
@@ -417,11 +452,36 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
       }
     }
     out.start = Math.min.apply(null, out.items.map(i => i.start));
+    if (out.moved.length) out.warnings.push("reanchored");
     if (out.start < 360) out.warnings.push("early");
     if (out.end > 1440) out.warnings.push("midnight");
     const rank = it => (it.kind === "alongside" ? 1 : 0);
     out.items.sort((a, b) => a.start - b.start || rank(a) - rank(b) || a.order - b.order);
     return out;
+  }
+
+  /* The sentences that say where a moved row went (see compute): {byId: the text under one row in the Steps list,
+     notes: one sentence per switched-off step for the timeline note and the planning-help prompt}. Pure text.
+     all = true: every moved row (the Steps list shows all rows), else only those on the sheet in view. */
+  function movedText(res, all) {
+    const why = m => m.root + " is " + (m.state === "zero" ? "set to 0 minutes" : "switched off");
+    const join = a => a.length > 1 ? a.slice(0, -1).join(", ") + " and " + a[a.length - 1] : a[0];
+    const groups = {}, byId = {};
+    for (const it of (all ? Object.keys(res.byId).map(k => res.byId[k]) : res.items)) {
+      if (!it.moved) continue;
+      byId[it.id] = why(it.moved) + ": this " + (it.moved.where === "after" ? "now runs after the ceremony, before the next step, and moves the rest of the day later."
+        : "is now placed at the start of the day.");
+      const k = it.moved.where + "|" + why(it.moved);
+      (groups[k] = groups[k] || []).push(it);
+    }
+    const notes = Object.keys(groups).map(k => {
+      const its = groups[k], m = its[0].moved, many = its.length > 1;
+      const names = join(its.map(i => "\u201c" + i.name + "\u201d"));
+      return why(m) + ", so " + names + (m.where === "after" ? (many ? " now run in order" : " now runs") + " after the ceremony, before the next step, and "
+        + (many ? "move" : "moves") + " the rest of the day later."
+        : (many ? " are" : " is") + " placed at the start of the day.");
+    });
+    return { byId: byId, notes: notes };
   }
 
   /* the timeline as plain text (for a message or a notes app) */
@@ -492,7 +552,7 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
     }
     const off = (opts.offNames || []);
     day.push("Steps switched off: " + (off.length ? off.join("; ") : "none"));
-    const w = res.warnings.map(k => notes[k]).filter(Boolean);
+    const w = res.warnings.map(k => notes[k]).filter(Boolean).concat(opts.extraNotes || []);
     day.push("Maker notes: " + (w.length ? w.join(" ") : "none"));
     const q = (opts.question || "").trim();
     return ai.prompt.replace("{TASK}", function () { return task.instruction; })
@@ -500,7 +560,7 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
       .replace("{QUESTION}", function () { return q || "(none: use the task above)"; });
   }
 
-  const api = { parseTime: parseTime, fmt: fmt, compute: compute, asText: asText, asCsv: asCsv, clampMin: clampMin, aiPrompt: aiPrompt };
+  const api = { movedText: movedText, parseTime: parseTime, fmt: fmt, compute: compute, asText: asText, asCsv: asCsv, clampMin: clampMin, aiPrompt: aiPrompt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.WTM_CORE = api;
 })(typeof window !== "undefined" ? window : this);
@@ -536,6 +596,12 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
     return { v: 1, names: "", date: "", venue: "", ceremony: "16:00", sunset: "", clock: g.clock, paper: g.paper, who: "all", rows: defaultRows() };
   }
 
+  function hangsOnStep(r, rows) {                          // an alongside row must lead, through other alongside rows, to a step
+    let x = r, g = 0;
+    while (x && x.kind === "alongside" && g++ < 10) x = rows.find(y => y.id === x.ref);
+    return !!x && x.kind === "step";
+  }
+
   function valid(s) {
     const str = v => v === undefined || v === null || typeof v === "string";
     const ok = s && typeof s === "object" && s.v === 1 && Array.isArray(s.rows) && s.rows.length > 0 &&
@@ -543,6 +609,7 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
       s.rows.every(r => r && typeof r === "object" && typeof r.id === "string" && typeof r.name === "string" &&
         (r.kind === "step" || r.kind === "alongside")) &&
       s.rows.filter(r => r.kind === "step" && r.part === "ceremony").length === 1 &&
+      s.rows.every(r => r.kind !== "alongside" || r.rel === "sunset_before" || hangsOnStep(r, s.rows)) &&
       CORE.parseTime(s.ceremony) !== null;
     if (!ok) return false;
     // normalise what an older or hand-edited file may lack, so nothing later trips over it
@@ -657,6 +724,7 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
 
   function renderRows(res) {
     const box = $("#rows");
+    const mv = CORE.movedText(res, true).byId;
     const focus = document.activeElement && document.activeElement.closest(".row") ?
       { id: document.activeElement.closest(".row").dataset.id, cls: document.activeElement.className, pos: document.activeElement.selectionStart } : null;
     let html = "", last = null;
@@ -682,8 +750,9 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
           `<label class="sw" title="On or off"><input type="checkbox" class="on" ${r.on ? "checked" : ""} aria-label="Use this step"><span></span></label>`}
         <div class="mid">
           <textarea class="nm" rows="1" maxlength="60" aria-label="Step name">${esc(r.name)}</textarea>
-          <div class="meta"><b class="when">${esc(w)}</b>${along ? `<span class="badge">alongside</span>` : ""}<span class="roles" role="group" aria-label="Also on the sheets for">${ROLES.map(k =>
+          <div class="meta"><b class="when">${esc(w)}</b>${along ? `<span class="badge"${res.byId[r.id] && res.byId[r.id].moved && res.byId[r.id].moved.where === "after" ? " hidden" : ""}>alongside</span>` : ""}<span class="roles" role="group" aria-label="Also on the sheets for">${ROLES.map(k =>
             `<button type="button" class="rl" data-role="${k}" aria-pressed="${r.roles.indexOf(k) >= 0}" title="Show on the ${esc(T.printouts[k].label.toLowerCase())} sheet">${ROLE_BTN[k]}</button>`).join("")}</span>${r.tip ? ` <span class="tip">${esc(r.tip)}</span>` : ""}</div>
+          <p class="reanch" role="note"${mv[r.id] ? "" : " hidden"}>${esc(mv[r.id] || "")}</p>
           <input class="note" type="text" maxlength="80" value="${esc(r.note || "")}" placeholder="Note: who or where (optional)" aria-label="Note">
         </div>
         ${r.rel === "sunset_before" ? `<div class="mins"><span class="sunset-note">${S.sunset ? "" : "add a sunset time"}</span>${num}</div>` : num}
@@ -715,7 +784,7 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
       const r = rowOf(e.target);
       if (e.target.classList.contains("nm")) {
         if (/[\r\n]/.test(e.target.value)) e.target.value = e.target.value.replace(/[\r\n]+/g, " ");
-        r.name = e.target.value; grow(e.target); save(); renderTimeline();
+        r.name = e.target.value; grow(e.target); save(); renderTimeline(); updateWhen();
       }
       else if (e.target.classList.contains("note")) { r.note = e.target.value; save(); renderTimeline(); }
       else if (e.target.classList.contains("mn") || e.target.classList.contains("off")) {
@@ -772,9 +841,15 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
 
   function updateWhen() {
     const res = CORE.compute(S);
+    const mv = CORE.movedText(res, true).byId;
     document.querySelectorAll("#rows .row").forEach(el => {
       const r = S.rows.find(x => x.id === el.dataset.id);
       el.querySelector(".when").textContent = when(res, r);
+      const rn = el.querySelector(".reanch");
+      rn.textContent = mv[r.id] || "";
+      rn.hidden = !mv[r.id];
+      const bd = el.querySelector(".badge"), it = res.byId[r.id];
+      if (bd) bd.hidden = !!(it && it.moved && it.moved.where === "after");
       el.classList.toggle("over", !!(res.byId[r.id] && res.byId[r.id].over));
     });
   }
@@ -806,7 +881,7 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
     $("#pNames").classList.toggle("placeholder", !S.names.trim());
     $("#pMeta").innerHTML = [S.date, S.venue].map(x => (x || "").trim()).filter(Boolean).map(x => `<span>${esc(x)}</span>`).join('<i aria-hidden="true"> · </i>');
     const W = { early: T.notes.early, midnight: T.notes.midnight, photos_long: T.notes.photos_long, sunset_outside: T.notes.sunset_outside };
-    $("#warn").innerHTML = res.warnings.filter(w => W[w]).map(w => `<p>${esc(W[w])}</p>`).join("");
+    $("#warn").innerHTML = res.warnings.filter(w => W[w]).map(w => `<p>${esc(W[w])}</p>`).concat(CORE.movedText(res).notes.map(n => `<p>${esc(n)}</p>`)).join("");
     let html = "";
     for (const it of res.items) {
       const a = CORE.fmt(it.start, S.clock);
@@ -856,7 +931,7 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
   }
 
   function bindActions() {
-    $("#print").addEventListener("click", () => { renderAll(); window.print(); });
+    ["#print", "#printTop"].forEach(id => $(id).addEventListener("click", () => { renderAll(); window.print(); }));
     bindAi();
     $("#copy").addEventListener("click", async () => {
       const h = T.printouts[S.who].heading;
@@ -904,7 +979,7 @@ dialog textarea{width:100%;font:15px/1.4 ui-monospace,monospace}
     const res = forSheet(CORE.compute(S));
     const offNames = S.rows.filter(r => !r.on).map(r => r.name);
     return CORE.aiPrompt(T.ai, T.notes, S, res, { task: AI.task, personal: $("#aiPersonal").checked, question: $("#aiQ").value,
-      sheet: T.printouts[S.who].label, offNames: offNames });
+      sheet: T.printouts[S.who].label, offNames: offNames, extraNotes: CORE.movedText(res).notes });
   }
   function aiRender() {
     document.querySelectorAll("#aiTasks button").forEach(b => b.setAttribute("aria-checked", String(b.dataset.task === AI.task)));
