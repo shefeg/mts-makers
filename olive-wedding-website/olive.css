@@ -64,7 +64,7 @@ section.dark{background:var(--olive) url(assets/linen-dark.jpg) center/cover;col
 .count b{display:block;font-size:36px;font-weight:400;color:var(--on-dark);line-height:1.1}
 .count span{font-size:16px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-dark);font-weight:600}
 .date-big{font-size:30px;text-align:center;letter-spacing:.18em;margin-bottom:24px}
-@media (max-width:359px){.count{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:379px){.count{grid-template-columns:repeat(2,1fr)}}
 
 /* the two of you */
 .profile{display:grid;gap:26px;max-width:960px;margin:0 auto;align-items:center}
