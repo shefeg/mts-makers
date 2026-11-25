@@ -402,7 +402,7 @@ function huntPage(name, o) {
   cells = shuffle(cells, r);
   // key row: the letters to find, with a box for the count
   const ku = 4.2, kStep = Math.min(26, (a.x1 - a.x0) / letters.length);
-  let body = `<text x="${a.x0}" y="${a.y0 + 2}" font-size="4.6" font-weight="800" fill="${c.sub}">Find these letters. Count them and write the number in the box.</text>`;
+  let body = wrapText('Find these letters. Count them and write the number in the box.', a.x0, a.y0 + 2, 4.4, a.x1 - a.x0, 5.2, `font-weight="800" fill="${c.sub}"`) + ``;
   letters.forEach((ch, i) => {
     const g = glyph(ch), x = a.x0 + i * kStep + kStep / 2 - g.w * ku / 2;
     body += drawWord(ch, x, a.y0 + 17, ku, { mode: 'solid', starts: 'none', c, color: c.accent, w: 1.5 });
@@ -420,7 +420,7 @@ function buildPage(name, o) {
   const a = area(o), c = o.c, r = rng('build|' + name), chars = [...name].filter(ch => !' -\''.includes(ch) && glyph(ch));
   const n = chars.length, perRow = Math.min(n, 8), s = Math.min(26, (a.x1 - a.x0) / perRow - 2.5), u = s * .25;
   const rowsN = Math.ceil(n / perRow);
-  let body = `<text x="${a.x0}" y="${a.y0 + 2}" font-size="4.6" font-weight="800" fill="${c.sub}">1. Cut out the letter squares at the bottom.  2. Glue them in order on the matching letters.</text>`;
+  let body = wrapText('1. Cut out the letter squares at the bottom.  2. Glue them in order on the matching letters.', a.x0, a.y0 + 2, 4.4, a.x1 - a.x0, 5.2, `font-weight="800" fill="${c.sub}"`) + ``;
   const place = (i, y0) => { const row = Math.floor(i / perRow), col = i % perRow, inRow = Math.min(perRow, n - row * perRow), w = inRow * (s + 2.5) - 2.5; return [(a.x0 + a.x1) / 2 - w / 2 + col * (s + 2.5), y0 + row * (s + 4)]; };
   chars.forEach((ch, i) => {
     const [x, y] = place(i, a.y0 + 10), g = glyph(ch);
@@ -459,7 +459,7 @@ function rainbowPage(name, o) {
 function countPage(name, o) {
   const a = area(o), c = o.c, r = rng('count|' + name), chars = [...name].filter(ch => glyph(ch) && !' -\''.includes(ch)), n = chars.length;
   const per = Math.min(n, 10), s = Math.min(22, (a.x1 - a.x0) / per - 2), u = s * .25, rowsC = Math.ceil(n / per);
-  let body = `<text x="${a.x0}" y="${a.y0 + 2}" font-size="4.6" font-weight="800" fill="${c.sub}">Trace each letter, then color its box. How many letters are in your name?</text>`;
+  let body = wrapText('Trace each letter, then color its box. How many letters are in your name?', a.x0, a.y0 + 2, 4.4, a.x1 - a.x0, 5.2, `font-weight="800" fill="${c.sub}"`) + ``;
   chars.forEach((ch, i) => { const inRow = Math.min(per, n - Math.floor(i / per) * per), x = (a.x0 + a.x1) / 2 - (inRow * (s + 2) - 2) / 2 + (i % per) * (s + 2), yb = a.y0 + 8 + Math.floor(i / per) * (s + 3), g = glyph(ch); body += `<rect x="${f(x)}" y="${f(yb)}" width="${f(s)}" height="${f(s)}" rx="2.5" fill="#fff" stroke="${c.ink}" stroke-width=".6"/>` + drawWord(ch, x + s / 2 - g.w * u / 2, yb + s * .7, u, { mode: 'grey', starts: 'none', c, w: Math.max(1.4, u * .3) }); });
   const qy = a.y0 + 8 + rowsC * (s + 3) + 13;
   body += `<text x="${a.x0}" y="${f(qy)}" font-size="6" font-weight="800" fill="${c.title}">My name has</text><rect x="${a.x0 + 42}" y="${f(qy - 9)}" width="18" height="13" rx="2.5" fill="#fff" stroke="${c.ink}" stroke-width=".6"/><text x="${a.x0 + 64}" y="${f(qy)}" font-size="6" font-weight="800" fill="${c.title}">letters.</text>`;
