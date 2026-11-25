@@ -279,7 +279,7 @@ function rng(seed) { let h = 2166136261; for (const ch of seed) { h ^= ch.codePo
 function shuffle(a, r) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 // ---- pages ----
-const PAGES = [['trace', 'Trace my name'], ['letters', 'Letter by letter'], ['warmup', 'Pen control warm-up'], ['initial', 'Initial to colour'],
+const PAGES = [['trace', 'Trace my name'], ['letters', 'Letter by letter'], ['warmup', 'Pen control warm-up'], ['initial', 'Initial to color'],
   ['hunt', 'Letter hunt'], ['build', 'Build my name (cut and glue)'], ['rainbow', 'Rainbow writing'], ['count', 'Count and match'],
   ['sleeve', 'Dry-erase page'], ['cert', 'Certificate']];
 function frame(o, title, sub, body) {
@@ -346,7 +346,7 @@ function lettersPages(name, o) {
         body += drawWord(ch, x, base, u, { mode, starts: j === 0 ? 'none' : starts, dot: o.dot, c, color: c.accent, w: Math.max(1.2, u * .16) });
       }
     });
-    const sub = `${esc(name)} · The coloured letter shows the shape. Trace the dotted ones, then try the last two from the green dot.`;
+    const sub = `${esc(name)} · The colored letter shows the shape. Trace the dotted ones, then try the last two from the green dot.`;
     pages.push(frame(o, 'Letter by letter', sub, body));
   }
   return pages;
@@ -390,7 +390,7 @@ function initialPage(name, o) {
   body += `<text x="${f((a.x0 + a.x1) / 2)}" y="${f(ty)}" font-size="9" font-weight="900" text-anchor="middle" fill="${c.title}">${esc(g.ch)} is for ${esc(name)}</text>`;
   const u2 = Math.min(o.u, (a.y1 - ty - 10) / (PITCH)), b2 = ty + 8 + (HEADROOM + 2) * u2;
   if (b2 + u2 < a.y1 + 2) { body += guides(a.x0, a.x1, b2, u2, c); body += rowOf(g.ch, a.x0 + u2 * .3, a.x1, b2, u2, { mode: o.style, starts: o.starts ? 'small' : 'none', dot: o.dot, c }, o.starts ? { mode: o.style, starts: 'full', dot: o.dot, c } : null); }
-  return [frame(o, 'Colour my letter', `${esc(name)} · Colour the big letter, the stars and the hearts. Then trace the letter below.`, body)];
+  return [frame(o, 'Color my letter', `${esc(name)} · Color the big letter, the stars and the hearts. Then trace the letter below.`, body)];
 }
 function huntPage(name, o) {
   const a = area(o), c = o.c, r = rng('hunt|' + name), letters = [...new Set([...name].filter(ch => glyph(ch) && !' -\''.includes(ch)))];
@@ -450,16 +450,16 @@ function rainbowPage(name, o) {
   const a = area(o), c = o.c, u = fitU(name, 16, (a.x1 - a.x0) / 1.04 - 8), x = (a.x0 + a.x1) / 2 - layout(name).w * u / 2, base = a.y0 + 14 + (HEADROOM + 2) * u;
   let body = guides(a.x0, a.x1, base, u, c) + drawWord(name, x, base, u, { mode: 'grey', starts: o.starts && u >= 10 ? 'full' : 'none', dot: o.dot, c, w: Math.max(3, u * .32) });
   const sy = base + u + 16, cols = o.mono ? ['#fff', '#fff', '#fff'] : ['#F28B82', '#FBD46D', '#8AB4F8'];
-  body += `<text x="${a.x0}" y="${f(sy)}" font-size="4.6" font-weight="800" fill="${c.sub}">Trace the big name 3 times, with a new colour each time.</text>`;
-  ['1st colour', '2nd colour', '3rd colour'].forEach((t, i) => { const cx = a.x0 + 20 + i * 55; body += `<circle cx="${cx}" cy="${f(sy + 15)}" r="8" fill="${o.mono ? '#fff' : '#fff'}" stroke="${c.ink}" stroke-width=".6"/><circle cx="${cx}" cy="${f(sy + 15)}" r="2" fill="${cols[i]}" stroke="none"/><text x="${cx + 11}" y="${f(sy + 17)}" font-size="4.2" fill="${c.sub}">${t}</text>`; });
+  body += `<text x="${a.x0}" y="${f(sy)}" font-size="4.6" font-weight="800" fill="${c.sub}">Trace the big name 3 times, with a new color each time.</text>`;
+  ['1st color', '2nd color', '3rd color'].forEach((t, i) => { const cx = a.x0 + 20 + i * 55; body += `<circle cx="${cx}" cy="${f(sy + 15)}" r="8" fill="${o.mono ? '#fff' : '#fff'}" stroke="${c.ink}" stroke-width=".6"/><circle cx="${cx}" cy="${f(sy + 15)}" r="2" fill="${cols[i]}" stroke="none"/><text x="${cx + 11}" y="${f(sy + 17)}" font-size="4.2" fill="${c.sub}">${t}</text>`; });
   const u2 = fitU(name, Math.min(o.u, 8.5), a.x1 - a.x0), rows = Math.max(1, Math.floor((a.y1 - (sy + 32)) / (PITCH * u2)));
   for (let i = 0; i < rows; i++) { const b = sy + 32 + i * PITCH * u2 + (HEADROOM + 2) * u2; body += guides(a.x0, a.x1, b, u2, c) + rowOf(name, a.x0 + u2 * .3, a.x1, b, u2, { mode: o.style, starts: o.starts ? 'small' : 'none', dot: o.dot, c }); }
-  return [frame(o, 'Rainbow writing', `${esc(name)} · Big letters, three colours.`, body)];
+  return [frame(o, 'Rainbow writing', `${esc(name)} · Big letters, three colors.`, body)];
 }
 function countPage(name, o) {
   const a = area(o), c = o.c, r = rng('count|' + name), chars = [...name].filter(ch => glyph(ch) && !' -\''.includes(ch)), n = chars.length;
   const per = Math.min(n, 10), s = Math.min(22, (a.x1 - a.x0) / per - 2), u = s * .25, rowsC = Math.ceil(n / per);
-  let body = `<text x="${a.x0}" y="${a.y0 + 2}" font-size="4.6" font-weight="800" fill="${c.sub}">Trace each letter, then colour its box. How many letters are in your name?</text>`;
+  let body = `<text x="${a.x0}" y="${a.y0 + 2}" font-size="4.6" font-weight="800" fill="${c.sub}">Trace each letter, then color its box. How many letters are in your name?</text>`;
   chars.forEach((ch, i) => { const inRow = Math.min(per, n - Math.floor(i / per) * per), x = (a.x0 + a.x1) / 2 - (inRow * (s + 2) - 2) / 2 + (i % per) * (s + 2), yb = a.y0 + 8 + Math.floor(i / per) * (s + 3), g = glyph(ch); body += `<rect x="${f(x)}" y="${f(yb)}" width="${f(s)}" height="${f(s)}" rx="2.5" fill="#fff" stroke="${c.ink}" stroke-width=".6"/>` + drawWord(ch, x + s / 2 - g.w * u / 2, yb + s * .7, u, { mode: 'grey', starts: 'none', c, w: Math.max(1.4, u * .3) }); });
   const qy = a.y0 + 8 + rowsC * (s + 3) + 13;
   body += `<text x="${a.x0}" y="${f(qy)}" font-size="6" font-weight="800" fill="${c.title}">My name has</text><rect x="${a.x0 + 42}" y="${f(qy - 9)}" width="18" height="13" rx="2.5" fill="#fff" stroke="${c.ink}" stroke-width=".6"/><text x="${a.x0 + 64}" y="${f(qy)}" font-size="6" font-weight="800" fill="${c.title}">letters.</text>`;
@@ -496,7 +496,7 @@ function certPage(name, o) {
   const u = fitU(name, 16, W - 70), x = W / 2 - layout(name).w * u / 2, base = 112 + (HEADROOM + 2) * u;
   body += guides(30, W - 30, base, u, c) + drawWord(name, x, base, u, { mode: 'solid', starts: 'none', c, color: o.mono ? '#222' : '#2E9E5B', w: Math.max(2.2, u * .2) });
   const ly = base + u + 34;
-  body += `<text x="${W / 2}" y="${f(ly - 14)}" font-size="5.2" text-anchor="middle" fill="${c.sub}">Well done! You practised every letter of your name.</text>`;
+  body += `<text x="${W / 2}" y="${f(ly - 14)}" font-size="5.2" text-anchor="middle" fill="${c.sub}">Well done! You practiced every letter of your name.</text>`;
   body += `<line x1="34" x2="${W / 2 - 10}" y1="${f(ly + 14)}" y2="${f(ly + 14)}" stroke="${c.ink}" stroke-width=".5"/><text x="34" y="${f(ly + 20)}" font-size="4.2" fill="${c.sub}">Date</text>`;
   body += `<line x1="${W / 2 + 10}" x2="${W - 34}" y1="${f(ly + 14)}" y2="${f(ly + 14)}" stroke="${c.ink}" stroke-width=".5"/><text x="${W / 2 + 10}" y="${f(ly + 20)}" font-size="4.2" fill="${c.sub}">Signed</text>`;
   void a;
