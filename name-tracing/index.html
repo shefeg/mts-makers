@@ -252,7 +252,7 @@ function drawWord(text, x0, base, u, st) {
         const n = isDot ? 0 : Math.max(1, Math.round(len / sp));
         for (let i = 0; i <= n; i++) {
           const p = isDot ? pts[0] : at(pts, cl, len * i / n);
-          if (!isDot && placed.some(q => Math.hypot(q[0] - p[0], q[1] - p[1]) < sp * .62)) continue;
+          if (!isDot && placed.some(q => Math.hypot(q[0] - p[0], q[1] - p[1]) < (st.hollow ? rr * 2.15 : sp * .62))) continue;
           placed.push(p);
           dots += `<circle cx="${f(p[0])}" cy="${f(p[1])}" r="${f(isDot ? Math.max(rr, u * (isMark ? .06 : .07)) : rr)}"/>`;
         }
@@ -446,7 +446,7 @@ function warmupPage(name, o) {
       const sh = [Array.from({ length: 73 }, (_, k) => [cxs[0] + R * Math.cos(-Math.PI / 2 - k * Math.PI / 36), cy + R * Math.sin(-Math.PI / 2 - k * Math.PI / 36)]),
         [[cxs[1] - R, cy - R], [cxs[1] - R, cy + R], [cxs[1] + R, cy + R], [cxs[1] + R, cy - R], [cxs[1] - R, cy - R]],
         [[cxs[2], cy - R], [cxs[2] - R * 1.1, cy + R], [cxs[2] + R * 1.1, cy + R], [cxs[2], cy - R]],
-        Array.from({ length: 81 }, (_, k) => { const t = k / 80 * 2 * Math.PI; return [cxs[3] + R * .062 * 16 * Math.pow(Math.sin(t), 3), cy - R * .062 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) - R * .1]; })];
+        Array.from({ length: 81 }, (_, k) => { const t = Math.PI + k / 80 * 2 * Math.PI; return [cxs[3] + R * .062 * 16 * Math.pow(Math.sin(t), 3), cy - R * .062 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) - R * .1]; })];
       sh.forEach(pl => { const dense = []; for (let k = 1; k < pl.length; k++) { const [x1, y1] = pl[k - 1], [x2, y2] = pl[k], m = Math.max(1, Math.ceil(Math.hypot(x2 - x1, y2 - y1) / .4)); for (let q = 0; q < m; q++) dense.push([x1 + (x2 - x1) * q / m, y1 + (y2 - y1) * q / m]); } dense.push(pl[pl.length - 1]);
         body += dottedPolyline(dense, st) + `<circle cx="${f(dense[0][0])}" cy="${f(dense[0][1])}" r="${f(Math.max(2.2, o.dot.r * 1.6))}" fill="${c.start}"/>`; });
       return;
@@ -508,7 +508,7 @@ function huntPage(name, o) {
     body += `<rect x="${f(cx + .8)}" y="${f(cy + .8)}" width="${f(cell - 1.6)}" height="${f(cell - 1.6)}" rx="3" fill="${i % 2 ? c.soft : '#fff'}" stroke="${c.desc}" stroke-width=".4"/>`;
     body += drawWord(ch, cx + cell / 2 - g.w * gu / 2, cy + cell * .66, gu, { mode: 'solid', starts: 'none', c, w: 1.4 });
   });
-  return [frame(o, 'Letter hunt', `${esc(name)} · Circle every letter of your name.`, body)];
+  return [frame(o, 'Letter hunt', `${esc(name)} · Circle every ${esc(letters.join(', '))} you can find in the grid.`, body)];
 }
 function buildPage(name, o) {
   // letter squares to glue on; hyphens and apostrophes are printed in place, spaces stay as gaps
@@ -554,7 +554,7 @@ function rainbowPage(name, o) {
   ['1st color', '2nd color', '3rd color'].forEach((t, i) => { const cx = a.x0 + 20 + i * 55; body += `<circle cx="${cx}" cy="${f(sy + 15)}" r="8" fill="${o.mono ? '#fff' : '#fff'}" stroke="${c.ink}" stroke-width=".6"/><circle cx="${cx}" cy="${f(sy + 15)}" r="2" fill="${cols[i]}" stroke="none"/><text x="${cx + 11}" y="${f(sy + 17)}" font-size="4.2" fill="${c.sub}">${t}</text>`; });
   const u2 = fitU(name, Math.min(o.u, 8.5), a.x1 - a.x0), rows = Math.max(1, Math.floor((a.y1 - (sy + 32)) / (PITCH * u2)));
   for (let i = 0; i < rows; i++) { const b = sy + 32 + i * PITCH * u2 + (HEADROOM + 2) * u2; body += guides(a.x0, a.x1, b, u2, c) + rowOf(name, a.x0 + u2 * .3, a.x1, b, u2, { mode: o.style, starts: o.starts ? 'small' : 'none', dot: o.dot, c }); }
-  return [frame(o, 'Rainbow writing', `${esc(name)} · Big letters, three colors.`, body)];
+  return [frame(o, 'Rainbow writing', `${esc(name)} · Trace the big name 3 times in 3 colors, then trace the dotted names below.`, body)];
 }
 function countPage(name, o) {
   const a = area(o), c = o.c, r = rng('count|' + name), chars = [...name].filter(ch => glyph(ch) && /\p{L}/u.test(ch)), n = chars.length;
@@ -622,7 +622,7 @@ function linesPage(name, o) {
     const base = a.y0 + i * pitch + (HEADROOM + 2) * u;
     body += guides(a.x0, a.x1, base, u, c) + drawWord(name, a.x0 + u * .3, base, u, { mode: i < n - 2 ? o.style : 'startonly', starts: o.starts ? 'small' : 'none', dot: o.dot, c });
   }
-  return [frame(o, 'Write on the lines', `${esc(name)} · Trace the name at the start of each line, then write it again in the space after it, as many times as fits.`, body)];
+  return [frame(o, 'Write on the lines', `${esc(name)} · Trace the dotted name, then copy it on the same line. Rows with only green dots: write your name alone.`, body)];
 }
 function shapePts(kind, cx, cy, R) {
   const P0 = k => k;
@@ -631,7 +631,7 @@ function shapePts(kind, cx, cy, R) {
   else if (kind === 'square') pl = [[cx - R, cy - R], [cx - R, cy + R], [cx + R, cy + R], [cx + R, cy - R], [cx - R, cy - R]];
   else if (kind === 'triangle') pl = [[cx, cy - R], [cx - R * 1.1, cy + R], [cx + R * 1.1, cy + R], [cx, cy - R]];
   else if (kind === 'star') pl = Array.from({ length: 11 }, (_, k) => { const an = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? R * .45 : R * 1.05; return [cx + rr * Math.cos(an), cy + rr * Math.sin(an) + R * .08]; });
-  else if (kind === 'heart') pl = Array.from({ length: 81 }, (_, k) => { const t = k / 80 * 2 * Math.PI; return [cx + R * .062 * 16 * Math.pow(Math.sin(t), 3), cy - R * .062 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) - R * .1]; });
+  else if (kind === 'heart') pl = Array.from({ length: 81 }, (_, k) => { const t = Math.PI + k / 80 * 2 * Math.PI; return [cx + R * .062 * 16 * Math.pow(Math.sin(t), 3), cy - R * .062 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) - R * .1]; });
   else pl = [[cx - R * 1.4, cy - R * .8], [cx - R * 1.4, cy + R * .8], [cx + R * 1.4, cy + R * .8], [cx + R * 1.4, cy - R * .8], [cx - R * 1.4, cy - R * .8]];
   void P0;
   const dense = [];
@@ -711,13 +711,14 @@ function findPage(name, o) {
 function missingPage(name, o) {
   const a = area(o), c = o.c, lay = layout(name), idx = lay.items.map((it, i) => /\p{L}/u.test(it.g.ch) ? i : -1).filter(i => i >= 0);
   const u = fitU(name, Math.min(o.u, 9.5), a.x1 - a.x0), pitch = PITCH * u + 4, n = Math.min(idx.length, Math.max(1, Math.floor((a.y1 - a.y0) / pitch)));
-  let body = '';
+  const order = shuffle(idx, rng('miss|' + name)); let body = '';
   for (let k = 0; k < n; k++) {
-    const miss = idx[(k * 2 + (idx.length > 2 ? 1 : 0)) % idx.length], base = a.y0 + k * pitch + (HEADROOM + 2) * u, x0 = a.x0 + u * .3;
+    const miss = order[k % order.length], base = a.y0 + k * pitch + (HEADROOM + 2) * u, x0 = a.x0 + u * .3;
     body += guides(a.x0, a.x1, base, u, c);
     lay.items.forEach((it, i) => {
       const x = x0 + it.x * u;
-      if (i === miss) body += `<rect x="${f(x - u * .1)}" y="${f(base - 2.05 * u)}" width="${f(it.g.w * u + u * .2)}" height="${f(2.05 * u + (/[gjpqy]/.test(it.g.ch) ? u : 0))}" rx="1.5" fill="none" stroke="${c.arrow}" stroke-width=".5" stroke-dasharray="1.6 1.2"/>`;
+      const tall = it.g.ch !== it.g.ch.toLowerCase() || /[bdfhklt]/.test(it.g.ch), top = base - (tall ? 2.05 : 1.1) * u, bw = Math.max(it.g.w * u + u * .2, u * .9);
+      if (i === miss) body += `<rect x="${f(x + it.g.w * u / 2 - bw / 2)}" y="${f(top)}" width="${f(bw)}" height="${f(base - top + (/[gjpqy]/.test(it.g.ch) ? u : .3))}" rx="1.5" fill="none" stroke="${c.arrow}" stroke-width=".5" stroke-dasharray="1.6 1.2"/>`;
       else body += drawWord(it.g.ch, x, base, u, { mode: 'solid', starts: 'none', c, color: c.ink, w: Math.max(1, u * .14) });
     });
   }
