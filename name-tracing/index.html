@@ -337,19 +337,21 @@ const PAGES = [['trace', 'Trace my name'], ['caps', 'Capital letters'], ['small'
   ['about', 'All about me'], ['sleeve', 'Dry-erase page'], ['cert', 'Certificate']];
 function frame(o, title, sub, body) {
   const [W, H] = PAPER[o.paper], c = o.c, M = 13;
-  const head = `<text x="${M}" y="${M + 9}" font-size="9" font-weight="900" fill="${c.title}">${esc(title)}</text>` +
-    wrapText(sub, M, M + 16.5, 4.4, W - 2 * M - 4, 5.4, `font-weight="700" fill="${c.sub}"`) +
-    `<g transform="translate(${f(W - M - 9)} ${M + 5})">${star(0, 0, 4.6, c.accent, o.mono ? '#fff' : '#F7C948')}</g>`;
+  const head = `<text x="${M}" y="${M + 10}" font-size="11" font-weight="900" fill="${c.title}">${esc(title)}</text>` +
+    wrapText(sub, M, M + 18, 4.4, W - 2 * M - 4, 5.4, `font-weight="700" fill="${c.sub}"`) +
+    `<g transform="translate(${f(W - M - 9)} ${M + 6})">${star(0, 0, 4.6, c.accent, o.mono ? '#fff' : '#F7C948')}</g>`;
   const foot = `<text x="${f(W / 2)}" y="${f(H - 7)}" font-size="2.9" text-anchor="middle" fill="${c.foot}">MakeTogetherStudio · Name Tracing Maker · for home and classroom use</text>`;
   return `<div class="page ${o.paper}"><svg xmlns="http://www.w3.org/2000/svg" width="${W}mm" height="${H}mm" viewBox="0 0 ${W} ${H}" font-family="Nunito, Arial, sans-serif"><rect width="${W}" height="${H}" fill="#fff"/>${head}${body}${foot}</svg></div>`;
 }
+const OVERFLOW = [];
 function wrapText(t, x, y, size, width, lh, attrs) {   // t is already escaped; ~0.52 em per character in Nunito bold
   if (!t) return '';
   const max = Math.floor(width / (size * .52)), words = t.split(' '), lines = [''];
   words.forEach(w => { const cur = lines[lines.length - 1]; if ((cur + ' ' + w).trim().length > max && cur) lines.push(w); else lines[lines.length - 1] = (cur + ' ' + w).trim(); });
+  if (lines.length > 2) OVERFLOW.push(lines.join(' '));
   return lines.slice(0, 2).map((l, i) => `<text x="${f(x)}" y="${f(y + i * lh)}" font-size="${size}" ${attrs}>${l}</text>`).join('');
 }
-function area(o) { const [W, H] = PAPER[o.paper], M = 13; return { x0: M + 2, x1: W - M - 2, y0: M + 29, y1: H - M - 4, W, H }; }
+function area(o) { const [W, H] = PAPER[o.paper], M = 13; return { x0: M + 2, x1: W - M - 2, y0: M + 31, y1: H - M - 4, W, H }; }
 function star(cx, cy, r, stroke, fill) {
   const p = []; for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; p.push(f(cx + rr * Math.cos(a)) + ' ' + f(cy + rr * Math.sin(a))); }
   return `<path d="M${p.join('L')}Z" fill="${fill}" stroke="${stroke}" stroke-width="${f(Math.max(.5, r * .1))}" stroke-linejoin="round"/>`;
@@ -772,7 +774,7 @@ function pages(d) {
   return out;
 }
 function pagesFor(name, d) { return pages(Object.assign({}, d, { names: [name] })); }
-root.NT = { pages, pagesFor, check, MIN_U, PAGES, applyCase, unsupported, layout, glyph, clean, SIZES, DOTS, PAPER, _G: G };
+root.NT = { OVERFLOW, pages, pagesFor, check, MIN_U, PAGES, applyCase, unsupported, layout, glyph, clean, SIZES, DOTS, PAPER, _G: G };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
 <script>
