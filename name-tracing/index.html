@@ -313,7 +313,7 @@ function drawWord(text, x0, base, u, st) {
   if (under) s += `<g fill="none" stroke="${c.ink}" stroke-width="${f(sw + 1.4)}" stroke-linecap="round" stroke-linejoin="round">${under}</g><g fill="none" stroke="#fff" stroke-width="${f(sw)}" stroke-linecap="round" stroke-linejoin="round">${under.replace(/<circle([^>]*) r="([\d.]+)"/g, (m, a, r) => `<circle${a} r="${f(+r - .7)}" fill="#fff"`)}</g>`;
   if (lines) s += `<g fill="none" stroke="${st.mode === 'grey' ? c.grey : st.mode === 'solid' ? (st.color || c.ink) : c.dot}" stroke-width="${f(st.mode === 'dash' ? st.dot.r * 1.1 : sw)}" stroke-linecap="round" stroke-linejoin="round">${lines}</g>`;
   if (accents) s += accents;
-  if (dots) s += `<g fill="${st.mode === 'faint' ? c.faint : c.dot}">${dots}</g>`;
+  if (dots) s += st.hollow ? `<g fill="#fff" stroke="${c.ink}" stroke-width=".6">${dots}</g>` : `<g fill="${st.mode === 'faint' ? c.faint : c.dot}">${dots}</g>`;
   if (leads) s += leads;
   if (marks) s += `<g font-family="Nunito, Arial, sans-serif">${marks}</g>`;
   return s;
@@ -330,9 +330,11 @@ function rng(seed) { let h = 2166136261; for (const ch of seed) { h ^= ch.codePo
 function shuffle(a, r) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 // ---- pages ----
-const PAGES = [['trace', 'Trace my name'], ['letters', 'Letter by letter'], ['warmup', 'Pen control warm-up'], ['initial', 'Initial to color'],
-  ['hunt', 'Letter hunt'], ['build', 'Build my name (cut and glue)'], ['rainbow', 'Rainbow writing'], ['count', 'Count and match'],
-  ['sleeve', 'Dry-erase page'], ['cert', 'Certificate']];
+const PAGES = [['trace', 'Trace my name'], ['caps', 'Capital letters'], ['small', 'Small letters'], ['letters', 'Letter by letter'],
+  ['lines', 'Write on the lines'], ['warmup', 'Pen control warm-up'], ['shapes', 'Shape tracing'], ['initial', 'Initial to color'],
+  ['colorname', 'Color my name'], ['dotname', 'Dot my name'], ['hunt', 'Letter hunt'], ['find', 'Find my name'], ['missing', 'Missing letters'],
+  ['build', 'Build my name (cut and glue)'], ['puzzle', 'Name puzzle (cut)'], ['rainbow', 'Rainbow writing'], ['count', 'Count and match'],
+  ['about', 'All about me'], ['sleeve', 'Dry-erase page'], ['cert', 'Certificate']];
 function frame(o, title, sub, body) {
   const [W, H] = PAPER[o.paper], c = o.c, M = 13;
   const head = `<text x="${M}" y="${M + 9}" font-size="9" font-weight="900" fill="${c.title}">${esc(title)}</text>` +
@@ -371,7 +373,8 @@ function rowOf(text, x0, x1, base, u, st, firstSt, startonlyLast) {   // the nam
   }
   return s;
 }
-function tracePage(name, o) {
+function tracePage(name, o, title = 'Trace my name', text = name) {
+  const shown = name; name = text;
   const a = area(o), u = fitU(name, o.u, a.x1 - a.x0), c = o.c, n = Math.max(4, Math.floor((a.y1 - a.y0) / (PITCH * u)));
   const pitch = (a.y1 - a.y0) / n, st = { mode: o.style, starts: o.starts ? 'small' : 'none', dot: o.dot, c }, w = words(o);
   // rows: model (numbered starts) → traced → (faint) → start dots only → on your own
@@ -385,9 +388,9 @@ function tracePage(name, o) {
     else if (kind === 'faint') body += rowOf(name, x, a.x1, base, u, { mode: 'faint', starts: o.starts ? 'small' : 'none', dot: o.dot, c });
     else body += rowOf(name, x, a.x1, base, u, st, kind === 'model' && o.starts ? Object.assign({}, st, { starts: 'full' }) : null);
   });
-  const sub = o.starts ? `${esc(name)} · Start at ${w.start} and follow the arrows. Then trace the ${w.traced} lines. Next: only the start dots. Last line: on your own.`
-    : `${esc(name)} · Trace the ${w.traced} letters, then the light ones. Last line: write it on your own.`;
-  return [frame(o, 'Trace my name', sub, body)];
+  const sub = o.starts ? `${esc(shown)} · Start at ${w.start} and follow the arrows. Then trace the ${w.traced} lines. Next: only the start dots. Last line: on your own.`
+    : `${esc(shown)} · Trace the ${w.traced} letters, then the light ones. Last line: write it on your own.`;
+  return [frame(o, title, sub, body)];
 }
 function lettersPages(name, o) {
   const seen = [], c = o.c, w = words(o);
@@ -604,7 +607,153 @@ function certPage(name, o) {
   void a;
   return [frame(o, 'Certificate', '', body)];
 }
-const MAKE = { trace: tracePage, letters: lettersPages, warmup: warmupPage, initial: initialPage, hunt: huntPage, build: buildPage, rainbow: rainbowPage, count: countPage, sleeve: sleevePage, cert: certPage };
+
+// ---- the 10 extra activities (25.11, feature parity with 20-page rival packs) ----
+const allDrawn = t => [...t].every(ch => glyph(ch));
+function capsPage(name, o) { const t = name.toUpperCase(); return tracePage(name, o, 'Capital letters', allDrawn(t) ? t : name); }
+function smallPage(name, o) { const t = name.toLowerCase(); return tracePage(name, o, 'Small letters', allDrawn(t) ? t : name); }
+function linesPage(name, o) {
+  // write on the lines: each line starts with the name to trace, the rest is for writing it again
+  const a = area(o), c = o.c, w = words(o), u = fitU(name, Math.min(o.u, 8.5), (a.x1 - a.x0) * .5), pitch = PITCH * u + 3, n = Math.max(3, Math.floor((a.y1 - a.y0) / pitch));
+  let body = '';
+  for (let i = 0; i < n; i++) {
+    const base = a.y0 + i * pitch + (HEADROOM + 2) * u;
+    body += guides(a.x0, a.x1, base, u, c) + drawWord(name, a.x0 + u * .3, base, u, { mode: i < n - 2 ? o.style : 'startonly', starts: o.starts ? 'small' : 'none', dot: o.dot, c });
+  }
+  return [frame(o, 'Write on the lines', `${esc(name)} · Trace the name at the start of each line, then write it again in the space after it, as many times as fits.`, body)];
+}
+function shapePts(kind, cx, cy, R) {
+  const P0 = k => k;
+  let pl;
+  if (kind === 'circle') pl = Array.from({ length: 73 }, (_, k) => [cx + R * Math.cos(-Math.PI / 2 - k * Math.PI / 36), cy + R * Math.sin(-Math.PI / 2 - k * Math.PI / 36)]);
+  else if (kind === 'square') pl = [[cx - R, cy - R], [cx - R, cy + R], [cx + R, cy + R], [cx + R, cy - R], [cx - R, cy - R]];
+  else if (kind === 'triangle') pl = [[cx, cy - R], [cx - R * 1.1, cy + R], [cx + R * 1.1, cy + R], [cx, cy - R]];
+  else if (kind === 'star') pl = Array.from({ length: 11 }, (_, k) => { const an = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? R * .45 : R * 1.05; return [cx + rr * Math.cos(an), cy + rr * Math.sin(an) + R * .08]; });
+  else if (kind === 'heart') pl = Array.from({ length: 81 }, (_, k) => { const t = k / 80 * 2 * Math.PI; return [cx + R * .062 * 16 * Math.pow(Math.sin(t), 3), cy - R * .062 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) - R * .1]; });
+  else pl = [[cx - R * 1.4, cy - R * .8], [cx - R * 1.4, cy + R * .8], [cx + R * 1.4, cy + R * .8], [cx + R * 1.4, cy - R * .8], [cx - R * 1.4, cy - R * .8]];
+  void P0;
+  const dense = [];
+  for (let k = 1; k < pl.length; k++) { const [x1, y1] = pl[k - 1], [x2, y2] = pl[k], m = Math.max(1, Math.ceil(Math.hypot(x2 - x1, y2 - y1) / .4)); for (let q = 0; q < m; q++) dense.push([x1 + (x2 - x1) * q / m, y1 + (y2 - y1) * q / m]); }
+  dense.push(pl[pl.length - 1]);
+  return dense;
+}
+function shapesPage(name, o) {
+  const a = area(o), c = o.c, kinds = ['circle', 'square', 'triangle', 'rectangle', 'star', 'heart'], h = (a.y1 - a.y0) / kinds.length, R = Math.min(12, h * .34);
+  const st = { mode: o.style === 'grey' ? 'grey' : o.style, starts: 'none', dot: o.dot, c, w: 2.2 }, per = 4, step = (a.x1 - a.x0) / per;
+  let body = '';
+  kinds.forEach((k, i) => {
+    const cy = a.y0 + i * h + h / 2;
+    for (let j = 0; j < per; j++) {
+      const pts = shapePts(k, a.x0 + step * (j + .5), cy, R);
+      if (j === 0) body += `<path d="${polyD(pts)}" fill="none" stroke="${c.accent}" stroke-width="1.6" stroke-linejoin="round"/>`;
+      else body += dottedPolyline(pts, j === per - 1 ? Object.assign({}, st, { c: Object.assign({}, c, { dot: c.faint, grey: c.faint }) }) : st) + `<circle cx="${f(pts[0][0])}" cy="${f(pts[0][1])}" r="${f(Math.max(1.8, o.dot.r * 1.4))}" fill="${c.start}"/>`;
+    }
+  });
+  return [frame(o, 'Shape tracing', `For ${esc(name)} · The first shape shows how it looks. Start at ${words(o).dotStart} and trace the others.`, body)];
+}
+function colorNamePage(name, o) {
+  const a = area(o), c = o.c, lay = layout(name), u = Math.min(26, (a.x1 - a.x0 - 10) / (lay.w + .6)), sw = u * .27;
+  const base = a.y0 + 8 + (HEADROOM * .6 + 2) * u + sw / 2, x = (a.x0 + a.x1) / 2 - lay.w * u / 2;
+  let body = drawWord(name, x, base, u, { mode: 'outline', starts: 'none', c, w: sw });
+  const by = base + u * 1.1 + sw / 2 + 12;
+  [[a.x0 + 8, a.y0 + 4, 's'], [a.x1 - 8, a.y0 + 4, 'h'], [a.x0 + 8, by - 6, 'h'], [a.x1 - 8, by - 6, 's']].forEach(([dx, dy, k]) => body += k === 's' ? star(dx, dy, 5.5, c.ink, '#fff') : heart(dx, dy, 5, c.ink));
+  body += `<text x="${f(a.x0)}" y="${f(by + 6)}" font-size="5.2" font-weight="800" fill="${c.title}">Draw yourself here:</text>`;
+  body += `<rect x="${f(a.x0)}" y="${f(by + 10)}" width="${f(a.x1 - a.x0)}" height="${f(Math.max(30, a.y1 - by - 12))}" rx="6" fill="#fff" stroke="${c.ink}" stroke-width=".6"/>`;
+  return [frame(o, 'Color my name', `${esc(name)} · Color every letter of your name. Use a new color for each letter if you like.`, body)];
+}
+function dotPage(name, o) {
+  const a = area(o), c = o.c, lay = layout(name), w = a.x1 - a.x0 - 8;
+  const row = (t, u, top) => { const r = Math.max(2.6, u * .12), base = top + 2 * u + r, L = layout(t);
+    return { svg: drawWord(t, (a.x0 + a.x1) / 2 - L.w * u / 2, base, u, { mode: 'dots', starts: 'none', dot: { r, sp: r * 2.25 }, noScale: true, hollow: true, c }), bottom: base + (/[gjpqy]/.test(t) ? u : 0) + r }; };
+  const u1 = Math.min(26, w / (lay.w + .4));
+  if (u1 < 14) {   // long names: one dotted letter per box, so circles never pile up
+    const ls = [...name].filter(ch => /\p{L}/u.test(ch)), cols = Math.min(4, ls.length), rows = Math.ceil(ls.length / cols);
+    const cw = w / cols, chh = Math.min(62, (a.y1 - a.y0 - 30) / rows), u = Math.min(16, chh / 3.3, ...ls.map(ch => (cw - 6) / (layout(ch).w + .3)));
+    let body = '';
+    ls.forEach((ch, i) => { const x = a.x0 + 4 + (i % cols) * cw, y = a.y0 + 6 + Math.floor(i / cols) * chh, r = Math.max(2.4, u * .13), L = layout(ch);
+      body += `<rect x="${f(x + 1)}" y="${f(y)}" width="${f(cw - 2)}" height="${f(chh - 3)}" rx="4" fill="none" stroke="${c.desc}" stroke-width=".4"/>`;
+      body += drawWord(ch, x + cw / 2 - L.w * u / 2, y + (chh - 3) / 2 + (/[gjpqy]/.test(ch) ? 0 : u * .5) + (ch === ch.toUpperCase() || /[bdfhklt]/.test(ch) ? u * .5 : 0), u, { mode: 'dots', starts: 'none', dot: { r, sp: r * 2.25 }, noScale: true, hollow: true, c }); });
+    body += wrapText('Dab each circle with a dot marker, a sticker or a fingertip of paint. Go in name order, box by box.', a.x0, a.y1 - 12, 4.4, a.x1 - a.x0, 5.2, `font-weight="800" fill="${c.sub}"`);
+    return [frame(o, 'Dot my name', `${esc(name)} · One letter in each box. Fill every circle.`, body)];
+  }
+  const r1 = row(name, u1, a.y0 + 10);
+  const first = [...name].find(ch => /\p{L}/u.test(ch)), room = a.y1 - 16 - (r1.bottom + 14), u2 = Math.min(40, room / 2.6, w / (layout(first).w + .4));
+  let body = r1.svg + (u2 > 12 ? row(first, u2, r1.bottom + 14).svg : '');
+  body += wrapText(`Dab each circle with a dot marker, a sticker or a fingertip of paint. Go along each line of the letter, one circle at a time.`, a.x0, a.y1 - 12, 4.4, a.x1 - a.x0, 5.2, `font-weight="800" fill="${c.sub}"`);
+  return [frame(o, 'Dot my name', `${esc(name)} · Fill every circle, letter by letter. Then dot your big first letter.`, body)];
+}
+function findPage(name, o) {
+  // find my name: the name among look-alikes (shuffled, one letter changed, one letter missing, two letters swapped)
+  const a = area(o), c = o.c, r = rng('find|' + name), chars = [...name], L = chars.filter(ch => /\p{L}/u.test(ch));
+  const up = name === name.toUpperCase();
+  const pool = [...(up ? 'ABCDEFGHKLMNOPRSTUVWZ' : 'abcdefghkmnoprstuvwz')].filter(ch => glyph(ch) && !chars.includes(ch));
+  const tries = [];
+  const mk = [
+    () => { const s2 = shuffle(chars, r); return s2.join(''); },
+    () => { const i = Math.floor(r() * chars.length); if (!/\p{L}/u.test(chars[i])) return ''; const t = chars.slice(); t[i] = i === 0 && !up ? pool[Math.floor(r() * pool.length)].toUpperCase() : pool[Math.floor(r() * pool.length)]; return t.join(''); },
+    () => { const i = 1 + Math.floor(r() * Math.max(1, chars.length - 1)); return chars.slice(0, i).concat(chars.slice(i + 1)).join(''); },
+    () => { const i = 1 + Math.floor(r() * Math.max(1, chars.length - 2)); const t = chars.slice(); [t[i], t[i + 1]] = [t[i + 1], t[i]]; return t.join(''); },
+  ];
+  for (let k = 0; k < 400 && tries.length < 16; k++) { const d = mk[k % 4](); if (d && d !== name && allDrawn(d) && /\p{L}/u.test(d)) tries.push(d); }
+  const good = L.length > 1 ? 8 : 6, cells = shuffle(Array.from({ length: good }, () => name).concat(tries.slice(0, 24 - good)), r);
+  const cols = 4, rows = Math.ceil(cells.length / cols), cw = (a.x1 - a.x0) / cols, ch = Math.min(30, (a.y1 - a.y0 - 14) / rows);
+  const u = Math.min(5.5, ...cells.map(t => (cw - 8) / (layout(t).w + .3)));
+  let body = wrapText(`Circle every box that says ${esc(name)}. How many did you find?`, a.x0, a.y0 + 2, 4.4, a.x1 - a.x0, 5.2, `font-weight="800" fill="${c.sub}"`);
+  cells.forEach((t, i) => {
+    const x = a.x0 + (i % cols) * cw, y = a.y0 + 10 + Math.floor(i / cols) * ch, lw = layout(t).w * u;
+    body += `<rect x="${f(x + 1.5)}" y="${f(y + 1.5)}" width="${f(cw - 3)}" height="${f(ch - 3)}" rx="4" fill="${(i + Math.floor(i / cols)) % 2 ? c.soft : '#fff'}" stroke="${c.desc}" stroke-width=".5"/>`;
+    body += drawWord(t, x + cw / 2 - lw / 2, y + ch / 2 + u * .7, u, { mode: 'solid', starts: 'none', c, w: Math.max(1, u * .2) });
+  });
+  return [frame(o, 'Find my name', `${esc(name)} · Some boxes have your name. Some only look like it!`, body)];
+}
+function missingPage(name, o) {
+  const a = area(o), c = o.c, lay = layout(name), idx = lay.items.map((it, i) => /\p{L}/u.test(it.g.ch) ? i : -1).filter(i => i >= 0);
+  const u = fitU(name, Math.min(o.u, 9.5), a.x1 - a.x0), pitch = PITCH * u + 4, n = Math.min(idx.length, Math.max(1, Math.floor((a.y1 - a.y0) / pitch)));
+  let body = '';
+  for (let k = 0; k < n; k++) {
+    const miss = idx[(k * 2 + (idx.length > 2 ? 1 : 0)) % idx.length], base = a.y0 + k * pitch + (HEADROOM + 2) * u, x0 = a.x0 + u * .3;
+    body += guides(a.x0, a.x1, base, u, c);
+    lay.items.forEach((it, i) => {
+      const x = x0 + it.x * u;
+      if (i === miss) body += `<rect x="${f(x - u * .1)}" y="${f(base - 2.05 * u)}" width="${f(it.g.w * u + u * .2)}" height="${f(2.05 * u + (/[gjpqy]/.test(it.g.ch) ? u : 0))}" rx="1.5" fill="none" stroke="${c.arrow}" stroke-width=".5" stroke-dasharray="1.6 1.2"/>`;
+      else body += drawWord(it.g.ch, x, base, u, { mode: 'solid', starts: 'none', c, color: c.ink, w: Math.max(1, u * .14) });
+    });
+  }
+  return [frame(o, 'Missing letters', `${esc(name)} · One letter is missing in each name. Write it in the dashed box.`, body)];
+}
+function puzzlePage(name, o) {
+  const a = area(o), c = o.c, lay = layout(name), u = Math.min(20, (a.x1 - a.x0 - 16) / (lay.w + .6)), cols = o.mono ? ['#222'] : ['#E4572E', '#2E9E5B', '#2F6F8F', '#C9962E', '#8E5BB5', '#D64A7C'];
+  const x0 = (a.x0 + a.x1) / 2 - lay.w * u / 2, top = a.y0 + 14, h = (HEADROOM * .5 + 2 + 1) * u + 6, base = top + 3 + (HEADROOM * .5 + 2) * u;
+  let body = `<rect x="${f(x0 - u * .4)}" y="${f(top)}" width="${f(lay.w * u + u * .8)}" height="${f(h)}" rx="2" fill="${c.tile}" stroke="${c.ink}" stroke-width=".55" stroke-dasharray="2.2 1.6"/>`;
+  let li = 0;
+  lay.items.forEach((it, i) => {
+    if (it.g.ch !== ' ') body += drawWord(it.g.ch, x0 + it.x * u, base, u, { mode: 'solid', starts: 'none', c, color: cols[li++ % cols.length], w: Math.max(1.6, u * .2) });
+    const nx = lay.items[i + 1];
+    if (nx && /\p{L}/u.test(nx.g.ch)) {   // zigzag cut between this letter and the next
+      const cx = x0 + (it.x + it.g.w + nx.x) / 2 * u, zz = [];
+      for (let k = 0; k <= 8; k++) zz.push([cx + (k % 2 ? 1.6 : -1.6), top + h * k / 8]);
+      body += `<path d="${polyD(zz)}" fill="none" stroke="${c.ink}" stroke-width=".55" stroke-dasharray="2.2 1.6"/>`;
+    }
+  });
+  const ty = top + h + 12;
+  body += scissors(a.x0 + 2, ty - 1, c) + wrapText('Cut along the dashed lines. Mix up the pieces, then put your name back together. Glue it here:', a.x0 + 14, ty, 4.4, a.x1 - a.x0 - 14, 5.2, `font-weight="800" fill="${c.sub}"`);
+  body += `<rect x="${f(x0 - u * .4)}" y="${f(ty + 10)}" width="${f(lay.w * u + u * .8)}" height="${f(h)}" rx="2" fill="#fff" stroke="${c.top}" stroke-width=".6"/>`;
+  return [frame(o, 'Name puzzle', `${esc(name)} · Grown-ups: please do the cutting with young children.`, body)];
+}
+function aboutPage(name, o) {
+  const a = area(o), c = o.c, u = fitU(name, 7, (a.x1 - a.x0) * .62), lab = (y, t) => `<text x="${f(a.x0)}" y="${f(y)}" font-size="6" font-weight="900" fill="${c.title}">${t}</text>`;
+  let y = a.y0 + 8, body = lab(y, 'My name is');
+  let base = y + 4 + (HEADROOM + 2) * u;
+  body += guides(a.x0, a.x1, base, u, c) + drawWord(name, a.x0 + u * .3, base, u, { mode: o.style, starts: o.starts ? 'small' : 'none', dot: o.dot, c });
+  const blank = (t, after) => { y = base + u + 12; body += lab(y, t); base = y + 4 + (HEADROOM + 2) * 6; body += guides(a.x0, a.x1, base, 6, c); if (after) body += `<text x="${f(a.x1 - 30)}" y="${f(base - 1)}" font-size="5.5" font-weight="800" fill="${c.sub}">${after}</text>`; };
+  blank('I am', 'years old.');
+  blank('My favorite color is');
+  blank('I like to');
+  y = base + 6 + 12;
+  body += lab(y, 'This is me!') + `<rect x="${f(a.x0)}" y="${f(y + 4)}" width="${f(a.x1 - a.x0)}" height="${f(Math.max(30, a.y1 - y - 4))}" rx="6" fill="#fff" stroke="${c.ink}" stroke-width=".6"/>`;
+  return [frame(o, 'All about me', `${esc(name)} · Trace your name, write the answers (a grown-up can help), then draw yourself.`, body)];
+}
+const MAKE = { caps: capsPage, small: smallPage, lines: linesPage, shapes: shapesPage, colorname: colorNamePage, dotname: dotPage, find: findPage, missing: missingPage, puzzle: puzzlePage, about: aboutPage, trace: tracePage, letters: lettersPages, warmup: warmupPage, initial: initialPage, hunt: huntPage, build: buildPage, rainbow: rainbowPage, count: countPage, sleeve: sleevePage, cert: certPage };
 // One typed name → {name (as printed), ok, why, capMM (capital height on the trace page), shrunk}
 function check(raw, d) {
   const name = applyCase(raw, d.caseMode), bad = unsupported(name), [W] = PAPER[d.paper] || PAPER.letter, width = W - 30;
