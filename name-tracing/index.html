@@ -12,7 +12,7 @@ body { margin: 0; background: #F2F7F8; color: #2B3A4A; font: 15px/1.45 Nunito, '
 .panel h2 { font: 900 19px/1.2 Nunito, sans-serif; color: #2E9E5B; margin: 0 0 8px; }
 .usteps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .step { background: #EAF4F6; border-radius: 12px; padding: 10px 12px; font-size: 14px; } .step b { color: #2F6F8F; }
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 16px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; } .grid > div { min-width: 0; }
 label.l, .lbl { display: block; font-weight: 800; font-size: 14px; color: #2F6F8F; margin-bottom: 4px; }
 select, textarea { width: 100%; box-sizing: border-box; padding: 9px 11px; border: 2px solid #D5DEE4; border-radius: 10px; font: 700 16px Nunito, sans-serif; background: #fff; color: #2B3A4A; }
 textarea { min-height: 120px; line-height: 1.5; resize: vertical; }
@@ -28,8 +28,8 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
 .page { width: 8.5in; height: 11in; overflow: hidden; } .page.a4 { width: 210mm; height: 297mm; } .page svg { display: block; }
 @media print { body { background: #fff; } .ui { display: none !important; } #preview { padding: 0; gap: 0; display: block; }
   #preview .page { box-shadow: none; zoom: 1 !important; break-after: page; page-break-after: always; } #preview .page:last-child { break-after: auto; page-break-after: auto; } }
-@media (max-width: 720px) { .usteps, .grid { grid-template-columns: 1fr; } }
-@media screen and (max-width: 860px) { #preview { align-items: flex-start; padding-left: 8px; } #preview .page { zoom: .42; } }
+@media (max-width: 720px) { .usteps, .grid { grid-template-columns: minmax(0, 1fr); } .opts label { white-space: normal; } }
+@media screen and (max-width: 860px) { #preview { align-items: flex-start; padding-left: 8px; } }
 </style><meta name="robots" content="noindex, nofollow">
 </head>
 <body>
@@ -40,15 +40,15 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
     <div class="usteps">
       <div class="step"><b>1</b> Type the name. Several children? Put one name on each line.</div>
       <div class="step"><b>2</b> Pick the letter size, the dot size and the pages. The preview below changes as you type.</div>
-      <div class="step"><b>3</b> Tap <b>Print / Save as PDF</b>. Choose <b>Actual size / 100%</b>.</div>
+      <div class="step"><b>3</b> Pick US Letter or A4 below, then tap <b>Print / Save as PDF</b>. In the print window choose the same paper, <b>Actual size / 100%</b>, and turn off headers and footers.</div>
     </div>
-    <div class="hint">🔒 Nothing you type leaves this device: no account, no upload. The form is kept only in this browser, so it is still here next time. <b>Clear everything</b> removes it.</div>
+    <div class="hint" id="privacy">🔒 Nothing you type leaves this device: no account, no upload. The form is kept only in this browser, so it is usually still here next time. <b>Clear everything</b> removes it.</div>
   </div>
   <div class="panel"><h2>Names</h2>
     <div class="grid">
-      <div><label class="l" for="names">One name per line (up to 40 names, 24 letters each)</label>
-        <textarea id="names" spellcheck="false" autocomplete="off" autocapitalize="words" placeholder="Emma&#10;Liam"></textarea>
-        <div class="hint">First names work best. A long name or a first and last name is made smaller so it fits on the line.</div></div>
+      <div><label class="l" for="names">One name per line (up to 40 names, 24 characters each)</label>
+        <textarea id="names" spellcheck="false" autocomplete="off" autocapitalize="words" placeholder="Type your child's name here"></textarea>
+        <div class="hint">Several children or a class? Put each name on its own line, like:<br><b>Emma</b><br><b>Liam</b><br>First names work best: a long name is printed smaller so it fits on the line.</div></div>
       <div><label class="l" for="case">Letters</label>
         <select id="case"><option value="first">First letter capital: Emma</option><option value="upper">All capitals: EMMA</option><option value="lower">All small letters: emma</option><option value="asis">Exactly as I typed</option></select>
         <label class="l" for="size" style="margin-top:10px">Letter size</label>
@@ -66,11 +66,11 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
       <button class="primary" id="print">Print / Save as PDF</button>
       <select id="paper" style="width:auto"><option value="letter">US Letter paper</option><option value="a4">A4 paper</option></select>
       <label class="opts"><input type="checkbox" id="mono"> Ink-saver (black and grey only)</label>
-      <button class="ghost" id="demo">Try an example</button>
+      <button class="ghost" id="demo">Show an example (Emma)</button>
       <button class="ghost" id="clear">Clear everything</button>
     </div>
     <div class="msg" id="msg"></div>
-    <div class="hint">To get a PDF file, pick <b>Save as PDF</b> as the printer. Phone: Print → Share → Save to Files (iPhone) or Print → Save as PDF (Android).<br>For your own family and your own classroom: print as many copies as you need. Please don't resell or share the Maker or the pages.</div>
+    <div class="hint">To get a PDF file, pick <b>Save as PDF</b> as the printer. Phone: in the print window, iPhone: Share → Save to Files; Android: choose Save as PDF as the printer. Print at <b>Actual size / 100%</b> on the paper you picked above.<br>For your own family and your own classroom: print as many copies as you need. Please don't resell or share the Maker or the pages.</div>
   </div>
 </div>
 <div id="preview"></div>
@@ -82,8 +82,8 @@ button { border: 0; border-radius: 999px; padding: 12px 20px; font: 800 15px Nun
 'use strict';
 const L = (a, b, c, d) => ['L', a, b, c, d], A = (cx, cy, rx, ry, a0, a1) => ['A', cx, cy, rx, ry, a0, a1], P = (x, y) => ['P', x, y];
 const G = {
-  A: [2, [[L(1, -2, 0, 0)], [L(1, -2, 2, 0)], [L(.4, -.8, 1.6, -.8)]]],
-  B: [1.45, [[L(0, -2, 0, 0)], [L(0, -2, .85, -2), A(.85, -1.5, .5, .5, -90, 90), L(.85, -1, 0, -1)], [L(0, -1, .95, -1), A(.95, -.5, .5, .5, -90, 90), L(.95, 0, 0, 0)]]],
+  A: [2, [[L(1, -2, 0, 0)], [L(1, -2, 2, 0)], [L(.5, -1, 1.5, -1)]]],
+  B: [1.45, [[L(0, -2, 0, 0)], [L(0, -2, .85, -2), A(.85, -1.5, .5, .5, -90, 90), L(.85, -1, 0, -1), L(0, -1, .95, -1), A(.95, -.5, .5, .5, -90, 90), L(.95, 0, 0, 0)]]],
   C: [1.85, [[A(1, -1, 1, 1, -40, -320)]]],
   D: [1.7, [[L(0, -2, 0, 0)], [L(0, -2, .7, -2), A(.7, -1, 1, 1, -90, 90), L(.7, 0, 0, 0)]]],
   E: [1.3, [[L(0, -2, 0, 0)], [L(0, -2, 1.3, -2)], [L(0, -1, 1.1, -1)], [L(0, 0, 1.3, 0)]]],
@@ -91,15 +91,15 @@ const G = {
   G: [2, [[A(1, -1, 1, 1, -40, -360), L(2, -1, 1.2, -1)]]],
   H: [1.6, [[L(0, -2, 0, 0)], [L(1.6, -2, 1.6, 0)], [L(0, -1, 1.6, -1)]]],
   I: [1, [[L(.5, -2, .5, 0)], [L(0, -2, 1, -2)], [L(0, 0, 1, 0)]]],
-  J: [1.3, [[L(1.3, -2, 1.3, -.65), A(.65, -.65, .65, .65, 0, 170)]]],
+  J: [1.85, [[L(1.3, -2, 1.3, -.65), A(.65, -.65, .65, .65, 0, 170)], [L(.75, -2, 1.85, -2)]]],
   K: [1.4, [[L(0, -2, 0, 0)], [L(1.4, -2, 0, -1), L(0, -1, 1.4, 0)]]],
   L: [1.2, [[L(0, -2, 0, 0), L(0, 0, 1.2, 0)]]],
   M: [1.9, [[L(0, -2, 0, 0)], [L(0, -2, .95, 0), L(.95, 0, 1.9, -2), L(1.9, -2, 1.9, 0)]]],
   N: [1.5, [[L(0, -2, 0, 0)], [L(0, -2, 1.5, 0), L(1.5, 0, 1.5, -2)]]],
-  O: [2, [[A(1, -1, 1, 1, -90, -450)]]],
+  O: [2, [[A(1, -1, 1, 1, -60, -420)]]],
   P: [1.35, [[L(0, -2, 0, 0)], [L(0, -2, .85, -2), A(.85, -1.5, .5, .5, -90, 90), L(.85, -1, 0, -1)]]],
-  Q: [2.05, [[A(1, -1, 1, 1, -90, -450)], [L(1.25, -.55, 2.05, .15)]]],
-  R: [1.45, [[L(0, -2, 0, 0)], [L(0, -2, .85, -2), A(.85, -1.5, .5, .5, -90, 90), L(.85, -1, 0, -1)], [L(.6, -1, 1.45, 0)]]],
+  Q: [2.05, [[A(1, -1, 1, 1, -60, -420)], [L(1.25, -.55, 2.05, .15)]]],
+  R: [1.45, [[L(0, -2, 0, 0)], [L(0, -2, .85, -2), A(.85, -1.5, .5, .5, -90, 90), L(.85, -1, 0, -1), L(0, -1, 1.45, 0)]]],
   S: [1.5, [[A(.75, -1.5, .7, .5, -30, -270), A(.75, -.5, .75, .5, -90, 150)]]],
   T: [1.6, [[L(.8, -2, .8, 0)], [L(0, -2, 1.6, -2)]]],
   U: [1.5, [[L(0, -2, 0, -.75), A(.75, -.75, .75, .75, 180, 0), L(1.5, -.75, 1.5, -2)]]],
@@ -108,27 +108,27 @@ const G = {
   X: [1.5, [[L(0, -2, 1.5, 0)], [L(1.5, -2, 0, 0)]]],
   Y: [1.6, [[L(0, -2, .8, -1)], [L(1.6, -2, .8, -1), L(.8, -1, .8, 0)]]],
   Z: [1.5, [[L(0, -2, 1.5, -2), L(1.5, -2, 0, 0), L(0, 0, 1.5, 0)]]],
-  a: [1, [[A(.5, -.5, .5, .5, -20, -380)], [L(1, -1, 1, 0)]]],
-  b: [1, [[L(0, -2, 0, 0)], [A(.5, -.5, .5, .5, 180, 540)]]],
+  a: [1, [[A(.5, -.5, .5, .5, -20, -380), L(.97, -.67, 1, -1), L(1, -1, 1, 0)]]],
+  b: [1, [[L(0, -2, 0, 0), L(0, 0, 0, -.5), A(.5, -.5, .5, .5, 180, 540)]]],
   c: [.95, [[A(.5, -.5, .5, .5, -40, -320)]]],
-  d: [1, [[A(.5, -.5, .5, .5, -20, -380)], [L(1, -2, 1, 0)]]],
+  d: [1, [[A(.5, -.5, .5, .5, -20, -380), L(.97, -.67, 1, -2), L(1, -2, 1, 0)]]],
   e: [1, [[L(0, -.5, 1, -.5), A(.5, -.5, .5, .5, 0, -320)]]],
   f: [1.05, [[A(.75, -1.6, .4, .4, -30, -180), L(.35, -1.6, .35, 0)], [L(0, -1, .75, -1)]]],
-  g: [1, [[A(.5, -.5, .5, .5, -20, -380)], [L(1, -1, 1, .6), A(.6, .6, .4, .4, 0, 165)]]],
-  h: [1, [[L(0, -2, 0, 0)], [A(.5, -.5, .5, .5, 180, 360), L(1, -.5, 1, 0)]]],
+  g: [1, [[A(.5, -.5, .5, .5, -20, -380), L(.97, -.67, 1, -1), L(1, -1, 1, .6), A(.6, .6, .4, .4, 0, 165)]]],
+  h: [1, [[L(0, -2, 0, 0), L(0, 0, 0, -.5), A(.5, -.5, .5, .5, 180, 360), L(1, -.5, 1, 0)]]],
   i: [.3, [[L(.15, -1, .15, 0)], [P(.15, -1.45)]]],
   j: [.85, [[L(.85, -1, .85, .6), A(.45, .6, .4, .4, 0, 165)], [P(.85, -1.45)]]],
   k: [.95, [[L(0, -2, 0, 0)], [L(.95, -1, 0, -.45), L(0, -.45, .95, 0)]]],
   l: [.3, [[L(.15, -2, .15, 0)]]],
-  m: [1.6, [[L(0, -1, 0, 0)], [A(.4, -.6, .4, .4, 180, 360), L(.8, -.6, .8, 0)], [A(1.2, -.6, .4, .4, 180, 360), L(1.6, -.6, 1.6, 0)]]],
-  n: [1, [[L(0, -1, 0, 0)], [A(.5, -.5, .5, .5, 180, 360), L(1, -.5, 1, 0)]]],
-  o: [1, [[A(.5, -.5, .5, .5, -90, -450)]]],
-  p: [1, [[L(0, -1, 0, 1)], [A(.5, -.5, .5, .5, 180, 540)]]],
-  q: [1, [[A(.5, -.5, .5, .5, -20, -380)], [L(1, -1, 1, 1)]]],
-  r: [.8, [[L(0, -1, 0, 0)], [A(.45, -.55, .45, .45, 180, 310)]]],
+  m: [1.6, [[L(0, -1, 0, 0), L(0, 0, 0, -.6), A(.4, -.6, .4, .4, 180, 360), L(.8, -.6, .8, 0), L(.8, 0, .8, -.6), A(1.2, -.6, .4, .4, 180, 360), L(1.6, -.6, 1.6, 0)]]],
+  n: [1, [[L(0, -1, 0, 0), L(0, 0, 0, -.5), A(.5, -.5, .5, .5, 180, 360), L(1, -.5, 1, 0)]]],
+  o: [1, [[A(.5, -.5, .5, .5, -60, -420)]]],
+  p: [1, [[L(0, -1, 0, 1), L(0, 1, 0, -.5), A(.5, -.5, .5, .5, 180, 540)]]],
+  q: [1.3, [[A(.5, -.5, .5, .5, -20, -380), L(.97, -.67, 1, -1), L(1, -1, 1, .75), A(1.25, .75, .25, .25, 180, 90)]]],
+  r: [.8, [[L(0, -1, 0, 0), L(0, 0, 0, -.55), A(.45, -.55, .45, .45, 180, 310)]]],
   s: [.85, [[A(.42, -.75, .4, .25, -30, -270), A(.42, -.25, .42, .25, -90, 150)]]],
-  t: [.8, [[L(.4, -1.6, .4, 0)], [L(0, -1, .8, -1)]]],
-  u: [1, [[L(0, -1, 0, -.5), A(.5, -.5, .5, .5, 180, 0)], [L(1, -1, 1, 0)]]],
+  t: [.8, [[L(.4, -2, .4, 0)], [L(0, -1, .8, -1)]]],
+  u: [1, [[L(0, -1, 0, -.5), A(.5, -.5, .5, .5, 180, 0), L(1, -.5, 1, -1), L(1, -1, 1, 0)]]],
   v: [1, [[L(0, -1, .5, 0), L(.5, 0, 1, -1)]]],
   w: [1.6, [[L(0, -1, .4, 0), L(.4, 0, .8, -1), L(.8, -1, 1.2, 0), L(1.2, 0, 1.6, -1)]]],
   x: [1, [[L(0, -1, 1, 0)], [L(1, -1, 0, 0)]]],
@@ -144,26 +144,34 @@ function mark(kind, cx, top) {
     case 'acute': return [[L(cx + .18, top - .62, cx - .1, top - .27)]];
     case 'grave': return [[L(cx - .18, top - .62, cx + .1, top - .27)]];
     case 'circ': return [[L(cx - .26, top - .25, cx, top - .58), L(cx, top - .58, cx + .26, top - .25)]];
-    case 'uml': return [[P(cx - .2, top - .42)], [P(cx + .2, top - .42)]];
+    case 'uml': return [[P(cx - .25, top - .42)], [P(cx + .25, top - .42)]];
     case 'tilde': return [[A(cx - .15, top - .4, .15, .12, 180, 360), A(cx + .15, top - .4, .15, .12, 180, 0)]];
-    case 'ring': return [[A(cx, top - .45, .17, .17, -90, -450)]];
+    case 'ring': return [[A(cx, top - .45, .19, .19, -90, -450)]];
     case 'cedil': return [[L(cx, .04, cx, .2), A(cx - .03, .34, .15, .14, -90, 140)]];
   }
   return [];
 }
 const QUOTES = /[‘’ʼ`´]/g;
-function clean(s) { return String(s || '').replace(QUOTES, "'").replace(/[‐-―]/g, '-').replace(/\s+/g, ' ').trim(); }
-// One display character → {w, strokes, base}; null if we can't draw it.
+const ASC = 'bdfhklt';
+function clean(s) { return String(s || '').normalize('NFC').replace(QUOTES, "'").replace(/[‐-―]/g, '-').replace(/\s+/g, ' ').trim(); }
+// One display character → {w, strokes, ch, nBase}; null if we can't draw it. Strokes from index nBase on are accent marks.
 function glyph(ch) {
-  if (G[ch]) return { w: G[ch][0], strokes: G[ch][1], ch };
+  if (G[ch]) return { w: G[ch][0], strokes: G[ch][1], ch, nBase: G[ch][1].length };
   const d = ch.normalize('NFD'), base = d[0], marks = [...d.slice(1)];
-  if (!G[base] || !marks.length || !marks.every(m => MARKS[m])) return null;
+  if (!G[base] || marks.length !== 1 || !MARKS[marks[0]]) return null;   // one mark per letter (stacked marks: not drawn)
+  const kind = MARKS[marks[0]];
   let [w, strokes] = G[base];
   const upper = base !== base.toLowerCase();
-  if (base === 'i' || base === 'j') strokes = strokes.filter(s => s[0][0] !== 'P');
-  const cx = base === 'i' ? .15 : base === 'j' ? .85 : w / 2, top = upper ? -2 : (base === 'i' || base === 'j' ? -1 : -1);
-  strokes = strokes.concat(...marks.map(m => mark(MARKS[m], cx, top)));
-  return { w, strokes, ch };
+  if (kind !== 'cedil' && (base === 'i' || base === 'j')) strokes = strokes.filter(s => s[0][0] !== 'P');
+  const cx = base === 'i' ? .15 : base === 'j' ? .85 : base === 'l' ? .15 : base === 't' ? .4 : w / 2;
+  const top = upper || ASC.includes(base) ? -2 : -1;
+  return { w, strokes: strokes.concat(mark(kind, cx, top)), ch, nBase: strokes.length };
+}
+// Letter bounds in units (marks included): [x0, y0, x1, y1]
+function bounds(g) {
+  let b = [0, 0, g.w, 0];
+  g.strokes.forEach(st => st.forEach(sg => sampleSeg(sg, 8).forEach(([x, y]) => { b = [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)]; })));
+  return b;
 }
 function unsupported(s) { return [...new Set([...clean(s)].filter(c => !glyph(c)))]; }
 function applyCase(s, mode) {
@@ -218,52 +226,95 @@ function colors(mono) {
 }
 
 // ---- drawing a word ----
-// st: {mode: 'dots'|'dash'|'grey'|'solid'|'outline'|'startonly'|'none', starts: 'full'|'small'|'none', dot:{r,sp}, c: colors, w: stroke width for solid}
+// st: {mode: 'dots'|'dash'|'grey'|'solid'|'outline'|'startonly'|'faint', starts: 'full'|'small'|'none', dot:{r,sp}, c: colors, w: stroke width for solid}
+// Start markers: 'full' = a numbered circle centred on the stroke's exact first point; when two strokes start at (nearly) the
+// same point, the later number sits just outside the letter, behind the stroke's direction, with a short leader to a small
+// dot on the exact start. Coral arrows show the direction at the start and at every turn-back (retrace) of the stroke.
+function arrowHead(ax, ay, dx, dy, h, fill) {
+  return `<path d="M${f(ax + dx * h * .6)} ${f(ay + dy * h * .6)}L${f(ax - dx * h * .5 - dy * h * .55)} ${f(ay - dy * h * .5 + dx * h * .55)}L${f(ax - dx * h * .5 + dy * h * .55)} ${f(ay - dy * h * .5 - dx * h * .55)}Z" fill="${fill}"/>`;
+}
+function segDir(sg, end) {   // unit direction at the start (or end) of one segment, in letter units
+  const p = sampleSeg(sg, 60); if (p.length < 2) return null;
+  const [a, b] = end ? [p[p.length - 2], p[p.length - 1]] : [p[0], p[1]], m = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+  return [(b[0] - a[0]) / m, (b[1] - a[1]) / m];
+}
 function drawWord(text, x0, base, u, st) {
   st = Object.assign({ dot: DOTS.large }, st); st.dot = st.noScale ? st.dot : scaleDot(st.dot, u);
-  const lay = layout(text), c = st.c; let dots = '', lines = '', marks = '', under = '';
-  const sw = st.w || Math.max(.9, u * .13);
+  const lay = layout(text), c = st.c; let dots = '', lines = '', marks = '', under = '', accents = '', leads = '';
+  const sw = st.w || Math.max(.9, u * .13), msw = Math.min(sw, Math.max(.5, u * .12));
   lay.items.forEach(({ g, x }) => {
-    const placed = [], startPts = [];
+    const placed = [], labels = [], ox = x0 + x * u;
     g.strokes.forEach((stroke, si) => {
-      const pts = strokePts(stroke, x0 + x * u, base, u), cl = cumLen(pts), len = cl[cl.length - 1];
-      const isDot = stroke.length === 1 && stroke[0][0] === 'P';
+      const pts = strokePts(stroke, ox, base, u), cl = cumLen(pts), len = cl[cl.length - 1];
+      const isDot = stroke.length === 1 && stroke[0][0] === 'P', isMark = si >= (g.nBase == null ? 99 : g.nBase);
       if (st.mode === 'dots' || st.mode === 'faint' || (isDot && (st.mode === 'dash' || st.mode === 'grey'))) {
-        const sp = st.dot.sp, n = isDot ? 0 : Math.max(1, Math.round(len / sp));
+        const sp = isMark ? Math.min(st.dot.sp, Math.max(.9, u * .12)) : st.dot.sp, rr = isMark ? Math.min(st.dot.r, Math.max(.45, u * .055)) : st.dot.r;
+        const n = isDot ? 0 : Math.max(1, Math.round(len / sp));
         for (let i = 0; i <= n; i++) {
           const p = isDot ? pts[0] : at(pts, cl, len * i / n);
-          if (placed.some(q => Math.hypot(q[0] - p[0], q[1] - p[1]) < sp * .62)) continue;
+          if (!isDot && placed.some(q => Math.hypot(q[0] - p[0], q[1] - p[1]) < sp * .62)) continue;
           placed.push(p);
-          dots += `<circle cx="${f(p[0])}" cy="${f(p[1])}" r="${f(isDot ? Math.max(st.dot.r, u * .07) : st.dot.r)}"/>`;
+          dots += `<circle cx="${f(p[0])}" cy="${f(p[1])}" r="${f(isDot ? Math.max(rr, u * (isMark ? .06 : .07)) : rr)}"/>`;
         }
       } else if (st.mode === 'dash') {
-        lines += `<path d="${polyD(pts)}" stroke-dasharray="${f(st.dot.sp * .55)} ${f(st.dot.sp * .45)}"/>`;
+        lines += `<path d="${polyD(pts)}" stroke-dasharray="${f(st.dot.sp * .55)} ${f(st.dot.sp * .45)}"${isMark ? ` stroke-width="${f(Math.min(st.dot.r * 1.1, msw))}"` : ''}/>`;
       } else if (st.mode === 'grey' || st.mode === 'solid') {
-        lines += isDot ? `<circle cx="${f(pts[0][0])}" cy="${f(pts[0][1])}" r="${f(sw * .75)}" stroke="none" fill="${st.mode === 'grey' ? c.grey : (st.color || c.ink)}"/>` : `<path d="${polyD(pts)}"/>`;
+        const col = st.mode === 'grey' ? c.grey : (st.color || c.ink);
+        if (isDot) accents += `<circle cx="${f(pts[0][0])}" cy="${f(pts[0][1])}" r="${f(isMark ? Math.max(.45, Math.min(sw * .75, u * .1)) : sw * .75)}" fill="${col}"/>`;
+        else if (isMark) accents += `<path d="${polyD(pts)}" fill="none" stroke="${col}" stroke-width="${f(msw)}" stroke-linecap="round" stroke-linejoin="round"/>`;
+        else lines += `<path d="${polyD(pts)}"/>`;
       } else if (st.mode === 'outline') {
-        under += isDot ? `<circle cx="${f(pts[0][0])}" cy="${f(pts[0][1])}" r="${f(sw * .62 + .7)}"/>` : `<path d="${polyD(pts)}"/>`;
+        if (isMark) accents += isDot ? `<circle cx="${f(pts[0][0])}" cy="${f(pts[0][1])}" r="${f(u * .1)}" fill="#fff" stroke="${c.ink}" stroke-width="${f(Math.max(.6, u * .025))}"/>`
+          : `<path d="${polyD(pts)}" fill="none" stroke="${c.ink}" stroke-width="${f(u * .09)}" stroke-linecap="round"/><path d="${polyD(pts)}" fill="none" stroke="#fff" stroke-width="${f(u * .09 - 2 * Math.max(.6, u * .025))}" stroke-linecap="round"/>`;
+        else under += isDot ? `<circle cx="${f(pts[0][0])}" cy="${f(pts[0][1])}" r="${f(sw * .62 + .7)}"/>` : `<path d="${polyD(pts)}"/>`;
       }
-      if (st.starts !== 'none') {
-        let [sx, sy] = pts[0];
-        if (st.starts === 'full') {
-          const r = Math.max(1.9, u * .17);
-          if (startPts.some(q => Math.hypot(q[0] - sx, q[1] - sy) < r * 1.6) && !isDot) { const q = at(pts, cl, Math.min(len * .45, r * 2.1)); sx = q[0]; sy = q[1]; }
-          startPts.push([sx, sy]);
-          if (!isDot && len > u * .45) {
-            const d = Math.min(len * .55, Math.max(u * 1.0, r * 3.2)), [ax, ay, dx, dy] = at(pts, cl, d), h = Math.max(1.7, u * .19);
-            marks += `<path d="M${f(ax + dx * h * .6)} ${f(ay + dy * h * .6)}L${f(ax - dx * h * .5 - dy * h * .55)} ${f(ay - dy * h * .5 + dx * h * .55)}L${f(ax - dx * h * .5 + dy * h * .55)} ${f(ay - dy * h * .5 - dx * h * .55)}Z" fill="${c.arrow}"/>`;
+      if (st.starts === 'none' || (isMark && st.starts !== 'full')) return;
+      const [sx, sy] = pts[0];
+      if (st.starts === 'full') {
+        const r = Math.max(1.9, u * .17);
+        let lx = sx, ly = sy;
+        if (labels.some(q => Math.hypot(q[0] - lx, q[1] - ly) < r * 2.15)) {
+          const d0 = isDot ? [0, 1] : segDir(stroke[0], false), cands = [[-d0[0], -d0[1]], [-d0[1], d0[0]], [d0[1], -d0[0]], [-.7, -.7], [.7, -.7]];
+          for (const [ux, uy] of cands) {
+            const tx = sx + ux * r * 2.3, ty = sy + uy * r * 2.3;
+            if (!labels.some(q => Math.hypot(q[0] - tx, q[1] - ty) < r * 2.15)) { lx = tx; ly = ty; break; }
           }
-          marks += `<circle cx="${f(sx)}" cy="${f(sy)}" r="${f(r)}" fill="${c.start}"/><text x="${f(sx)}" y="${f(sy + r * .45)}" font-size="${f(r * 1.3)}" text-anchor="middle" fill="#fff" font-weight="900">${si + 1}</text>`;
-        } else {
-          marks += `<circle cx="${f(sx)}" cy="${f(sy)}" r="${f(Math.max(1.3, st.dot.r * 1.25))}" fill="${c.start}"/>`;
+          leads += `<line x1="${f(sx)}" y1="${f(sy)}" x2="${f(lx)}" y2="${f(ly)}" stroke="${c.start}" stroke-width=".45"/>` + (labels.some(q => Math.hypot(q[0] - sx, q[1] - sy) < r) ? '' : `<circle cx="${f(sx)}" cy="${f(sy)}" r="${f(Math.max(.9, r * .42))}" fill="${c.start}"/>`);
         }
+        labels.push([lx, ly]);
+        if (!isDot && len > u * .45) {
+          const h = Math.max(1.7, u * .19), d = Math.min(len * .55, Math.max(u * 1.0, r * 3.2)), [ax, ay, dx, dy] = at(pts, cl, d);
+          marks += arrowHead(ax, ay, dx, dy, h, c.arrow);
+          // turn-backs: a segment that reverses the previous one's direction (push up after pull down, etc.)
+          let dd = 0;
+          stroke.forEach((sg, k) => {
+            const segPts = sampleSeg(sg, 60), segLen = cumLen(segPts).pop() * u;
+            if (k > 0) {
+              const pe = segDir(stroke[k - 1], true), ps = segDir(sg, false);
+              if (pe && ps && pe[0] * ps[0] + pe[1] * ps[1] < -.5) {
+                const [bx, by, ex, ey] = at(pts, cl, dd + Math.min(segLen * .5, Math.max(u * .5, r * 2.2)));
+                const off = Math.max(1.6, u * .16);
+                marks += arrowHead(bx + ey * off, by - ex * off, ex, ey, h * .85, c.arrow);
+              }
+            }
+            dd += segLen;
+          });
+        }
+        marks += `<circle cx="${f(lx)}" cy="${f(ly)}" r="${f(r)}" fill="${c.start}"/><text x="${f(lx)}" y="${f(ly + r * .45)}" font-size="${f(r * 1.3)}" text-anchor="middle" fill="#fff" font-weight="900">${si + 1}</text>`;
+      } else {
+        const rr = Math.max(1.1, st.dot.r * 1.2);
+        if (labels.some(q => Math.hypot(q[0] - sx, q[1] - sy) < .2)) return;
+        labels.push([sx, sy]);
+        marks += `<circle cx="${f(sx)}" cy="${f(sy)}" r="${f(rr)}" fill="${c.start}"/>`;
       }
     });
   });
   let s = '';
   if (under) s += `<g fill="none" stroke="${c.ink}" stroke-width="${f(sw + 1.4)}" stroke-linecap="round" stroke-linejoin="round">${under}</g><g fill="none" stroke="#fff" stroke-width="${f(sw)}" stroke-linecap="round" stroke-linejoin="round">${under.replace(/<circle([^>]*) r="([\d.]+)"/g, (m, a, r) => `<circle${a} r="${f(+r - .7)}" fill="#fff"`)}</g>`;
   if (lines) s += `<g fill="none" stroke="${st.mode === 'grey' ? c.grey : st.mode === 'solid' ? (st.color || c.ink) : c.dot}" stroke-width="${f(st.mode === 'dash' ? st.dot.r * 1.1 : sw)}" stroke-linecap="round" stroke-linejoin="round">${lines}</g>`;
+  if (accents) s += accents;
   if (dots) s += `<g fill="${st.mode === 'faint' ? c.faint : c.dot}">${dots}</g>`;
+  if (leads) s += leads;
   if (marks) s += `<g font-family="Nunito, Arial, sans-serif">${marks}</g>`;
   return s;
 }
@@ -302,7 +353,13 @@ function star(cx, cy, r, stroke, fill) {
   return `<path d="M${p.join('L')}Z" fill="${fill}" stroke="${stroke}" stroke-width="${f(Math.max(.5, r * .1))}" stroke-linejoin="round"/>`;
 }
 function heart(cx, cy, r, stroke) { return `<path d="M${f(cx)} ${f(cy + r * .9)}C${f(cx - r * 1.6)} ${f(cy - r * .1)} ${f(cx - r * .7)} ${f(cy - r * 1.3)} ${f(cx)} ${f(cy - r * .4)}C${f(cx + r * .7)} ${f(cy - r * 1.3)} ${f(cx + r * 1.6)} ${f(cy - r * .1)} ${f(cx)} ${f(cy + r * .9)}Z" fill="#fff" stroke="${stroke}" stroke-width="${f(Math.max(.5, r * .1))}" stroke-linejoin="round"/>`; }
-function fitU(text, want, width) { const w = layout(text).w; return w * want > width ? width / w : want; }
+// the largest u <= want at which the text, its left inset (pad u) and the dot/stroke overhang (2.5 mm) fit the width
+function fitU(text, want, width, pad = .3) { const w = layout(text).w; return Math.min(want, (width - 2.5) / (w + pad)); }
+const MIN_U = 4.5;   // smallest tracing size we print: capitals 9 mm, small letters 4.5 mm
+function words(o) {   // instruction words that match the chosen options
+  return { traced: o.style === 'dash' ? 'dashed' : o.style === 'grey' ? 'grey' : 'dotted', start: o.mono ? 'the numbered dot' : 'the green dot',
+    dotStart: o.mono ? 'the black dot' : 'the green dot', model: o.mono ? 'dark' : 'colored' };
+}
 const HEADROOM = .75, PITCH = 2 + 1 + HEADROOM + .35;   // row pitch in units (accents above caps, descenders below)
 function rowOf(text, x0, x1, base, u, st, firstSt, startonlyLast) {   // the name repeated across a row
   const w = layout(text).w * u, gap = 1.6 * u, k = Math.max(1, Math.floor((x1 - x0 + gap) / (w + gap)));
@@ -315,38 +372,53 @@ function rowOf(text, x0, x1, base, u, st, firstSt, startonlyLast) {   // the nam
   return s;
 }
 function tracePage(name, o) {
-  const a = area(o), u = fitU(name, o.u, a.x1 - a.x0), c = o.c, n = Math.max(3, Math.floor((a.y1 - a.y0) / (PITCH * u)));
-  const pitch = (a.y1 - a.y0) / n, st = { mode: o.style, starts: o.starts ? 'small' : 'none', dot: o.dot, c };
+  const a = area(o), u = fitU(name, o.u, a.x1 - a.x0), c = o.c, n = Math.max(4, Math.floor((a.y1 - a.y0) / (PITCH * u)));
+  const pitch = (a.y1 - a.y0) / n, st = { mode: o.style, starts: o.starts ? 'small' : 'none', dot: o.dot, c }, w = words(o);
+  // rows: model (numbered starts) → traced → (faint) → start dots only → on your own
+  const plan = Array.from({ length: n }, (_, i) => i === 0 ? 'model' : i === n - 1 ? 'alone' : i === n - 2 ? (o.starts ? 'startonly' : 'faint') : i === n - 3 && n >= 5 ? 'faint' : 'trace');
   let body = '';
-  for (let i = 0; i < n; i++) {
-    const base = a.y0 + i * pitch + (HEADROOM + 2) * u + (pitch - PITCH * u) / 2;
+  plan.forEach((kind, i) => {
+    const base = a.y0 + i * pitch + (HEADROOM + 2) * u + (pitch - PITCH * u) / 2, x = a.x0 + u * .3;
     body += guides(a.x0, a.x1, base, u, c);
-    if (i === n - 1) continue;   // last row: on your own
-    if (i === n - 2 && n >= 4) { body += rowOf(name, a.x0 + u * .3, a.x1, base, u, { mode: 'faint', starts: o.starts ? 'small' : 'none', dot: o.dot, c }); continue; }
-    body += rowOf(name, a.x0 + u * .3, a.x1, base, u, st, i === 0 && o.starts ? Object.assign({}, st, { starts: 'full' }) : null);
-  }
-  const sub = o.starts ? `${esc(name)} · Start at the green dot and follow the arrow. Last line: write it on your own.` : `${esc(name)} · Trace each line. Last line: write it on your own.`;
+    if (kind === 'alone') return;
+    if (kind === 'startonly') body += rowOf(name, x, a.x1, base, u, { mode: 'startonly', starts: 'small', dot: o.dot, c });
+    else if (kind === 'faint') body += rowOf(name, x, a.x1, base, u, { mode: 'faint', starts: o.starts ? 'small' : 'none', dot: o.dot, c });
+    else body += rowOf(name, x, a.x1, base, u, st, kind === 'model' && o.starts ? Object.assign({}, st, { starts: 'full' }) : null);
+  });
+  const sub = o.starts ? `${esc(name)} · Start at ${w.start} and follow the arrows. Then trace the ${w.traced} lines. Next: only the start dots. Last line: on your own.`
+    : `${esc(name)} · Trace the ${w.traced} letters, then the light ones. Last line: write it on your own.`;
   return [frame(o, 'Trace my name', sub, body)];
 }
 function lettersPages(name, o) {
-  const seen = [], c = o.c;
+  const seen = [], c = o.c, w = words(o);
   for (const ch of [...name]) if (ch !== ' ' && ch !== '-' && ch !== "'" && !seen.includes(ch)) seen.push(ch);
   const a = area(o), u = Math.min(o.u, 9.5), pitch = PITCH * u + 2, per = Math.max(1, Math.floor((a.y1 - a.y0) / pitch));
-  const pages = [];
-  for (let p = 0; p * per < seen.length; p++) {
+  const pages = [], nP = Math.ceil(seen.length / per);
+  for (let p = 0; p < nP; p++) {
     let body = '';
-    seen.slice(p * per, p * per + per).forEach((ch, i) => {
+    const mine = seen.slice(p * per, p * per + per);
+    mine.forEach((ch, i) => {
       const base = a.y0 + i * pitch + (HEADROOM + 2) * u + 1;
       body += guides(a.x0, a.x1, base, u, c);
-      const g = glyph(ch), gw = g.w * u, step = gw + Math.max(1.3 * u, 9), k = Math.max(2, Math.floor((a.x1 - a.x0 - u * .3 + step - gw) / step));
+      const g = glyph(ch), gw = g.w * u, step = gw + Math.max(1.3 * u, 9), k = Math.max(3, Math.floor((a.x1 - a.x0 - u * .3 + step - gw) / step));
       for (let j = 0; j < k; j++) {
         const x = a.x0 + u * .3 + j * step;
-        const mode = j === 0 ? 'solid' : j >= k - 2 ? 'faint' : o.style;
-        const starts = !o.starts ? 'none' : j === 1 ? 'full' : j === k - 2 ? 'small' : 'none';
-        body += drawWord(ch, x, base, u, { mode, starts: j === 0 ? 'none' : starts, dot: o.dot, c, color: c.accent, w: Math.max(1.2, u * .16) });
+        if (j === 0) { body += drawWord(ch, x, base, u, { mode: 'solid', starts: 'none', c, color: c.accent, w: Math.max(1.2, u * .16) }); continue; }
+        if (j === k - 1) { if (o.starts) body += drawWord(ch, x, base, u, { mode: 'startonly', starts: 'small', dot: o.dot, c }); continue; }
+        const mode = j === k - 2 ? 'faint' : o.style, starts = !o.starts ? 'none' : j === 1 ? 'full' : 'none';
+        body += drawWord(ch, x, base, u, { mode, starts, dot: o.dot, c });
       }
     });
-    const sub = `${esc(name)} · The colored letter shows the shape. Trace the dotted ones, then try the last two from the green dot.`;
+    // spare rows on the last page: the whole name, traced, then on your own
+    if (p === nP - 1) {
+      const left = per - mine.length, nu = fitU(name, Math.min(o.u, 9.5), a.x1 - a.x0);
+      for (let i = 0; i < left; i++) {
+        const base = a.y0 + (mine.length + i) * pitch + (HEADROOM + 2) * u + 1;
+        body += guides(a.x0, a.x1, base, nu, c);
+        if (i < left - 1) body += rowOf(name, a.x0 + nu * .3, a.x1, base, nu, { mode: o.style, starts: o.starts ? 'small' : 'none', dot: o.dot, c });
+      }
+    }
+    const sub = `${esc(name)} · The ${w.model} letter shows the shape. Trace the ${w.traced} ones` + (o.starts ? `, then write the last one from ${w.dotStart} on your own.` : `, then write it on your own.`);
     pages.push(frame(o, 'Letter by letter', sub, body));
   }
   return pages;
@@ -358,19 +430,29 @@ function warmupPage(name, o) {
     t => [t, -Math.sin(t / 14 * Math.PI) * 7],
     t => { const p = (t / 12) % 2; return [t, (p < 1 ? -1 + 2 * p : 3 - 2 * p) * 7]; },
     t => { const th = t / 2.4; return [2.4 * th - 5.5 * Math.sin(th), 5.5 * Math.cos(th) - 1]; },
-    t => [t, -Math.abs(Math.sin(t / 16 * Math.PI)) * 12 + 6],
+    'shapes',
     t => { const p = (t / 10) % 2; return [t, p < 1 ? 7 - 14 * p : 7]; },
   ];
   let body = '';
   shapes.forEach((fn, i) => {
     const cy = a.y0 + i * h + h * .55, xs = a.x0 + 12, xe = a.x1 - 12, len = xe - xs;
+    if (fn === 'shapes') {
+      const R = Math.min(10, h * .32), cxs = [0, 1, 2, 3].map(k => xs + R + k * (len - 2 * R) / 3);
+      const sh = [Array.from({ length: 73 }, (_, k) => [cxs[0] + R * Math.cos(-Math.PI / 2 - k * Math.PI / 36), cy + R * Math.sin(-Math.PI / 2 - k * Math.PI / 36)]),
+        [[cxs[1] - R, cy - R], [cxs[1] - R, cy + R], [cxs[1] + R, cy + R], [cxs[1] + R, cy - R], [cxs[1] - R, cy - R]],
+        [[cxs[2], cy - R], [cxs[2] - R * 1.1, cy + R], [cxs[2] + R * 1.1, cy + R], [cxs[2], cy - R]],
+        Array.from({ length: 81 }, (_, k) => { const t = k / 80 * 2 * Math.PI; return [cxs[3] + R * .062 * 16 * Math.pow(Math.sin(t), 3), cy - R * .062 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) - R * .1]; })];
+      sh.forEach(pl => { const dense = []; for (let k = 1; k < pl.length; k++) { const [x1, y1] = pl[k - 1], [x2, y2] = pl[k], m = Math.max(1, Math.ceil(Math.hypot(x2 - x1, y2 - y1) / .4)); for (let q = 0; q < m; q++) dense.push([x1 + (x2 - x1) * q / m, y1 + (y2 - y1) * q / m]); } dense.push(pl[pl.length - 1]);
+        body += dottedPolyline(dense, st) + `<circle cx="${f(dense[0][0])}" cy="${f(dense[0][1])}" r="${f(Math.max(2.2, o.dot.r * 1.6))}" fill="${c.start}"/>`; });
+      return;
+    }
     const pts = []; for (let t = 0; t <= len; t += .4) { const [x, y] = fn(t); pts.push([xs + x, cy + y]); }
     const stroke = [pts];   // pre-sampled
     body += dottedPolyline(pts, st);
     body += `<circle cx="${f(pts[0][0])}" cy="${f(pts[0][1])}" r="${f(Math.max(2.2, o.dot.r * 1.6))}" fill="${c.start}"/>` + star(pts[pts.length - 1][0] + 5.5, pts[pts.length - 1][1], 4.2, c.accent, o.mono ? '#fff' : '#F7C948');
     void stroke;
   });
-  return [frame(o, 'Pen control warm-up', `For ${esc(name)} · Start at the green dot and trace to the star. Go slowly and stay on the dots.`, body)];
+  return [frame(o, 'Pen control warm-up', `For ${esc(name)} · Start at ${words(o).dotStart} and trace to the star. Go slowly and stay on the line. Then trace the shapes.`, body)];
 }
 function dottedPolyline(pts, st) {
   const c = st.c, cl = cumLen(pts), len = cl[cl.length - 1];
@@ -381,34 +463,41 @@ function dottedPolyline(pts, st) {
   return `<g fill="${c.dot}">${s}</g>`;
 }
 function initialPage(name, o) {
-  const a = area(o), c = o.c, ch = [...name][0].toUpperCase(), g = glyph(ch) || glyph([...name][0]);
-  const u = Math.min(52, (a.x1 - a.x0 - 40) / g.w), x = (a.x0 + a.x1) / 2 - g.w * u / 2, base = a.y0 + 12 + 2 * u + 8;
-  let body = drawWord(g.ch, x, base, u, { mode: 'outline', starts: 'none', c, w: u * .5 });
-  const deco = [[a.x0 + 10, a.y0 + 12, 's'], [a.x1 - 10, a.y0 + 14, 'h'], [a.x0 + 12, base - u * .6, 'h'], [a.x1 - 12, base - u * 1.1, 's'], [a.x0 + 16, base + 8, 's'], [a.x1 - 16, base + 8, 'h']];
+  const a = area(o), c = o.c, first = [...name].find(ch => /\p{L}/u.test(ch)), ch = first.toUpperCase(), g = glyph(ch) || glyph(first);
+  const [bx0, by0, bx1, by1] = bounds(g), H = (a.y1 - a.y0) * .5, top = a.y0 + 6;
+  const u = Math.min(52, (a.x1 - a.x0 - 44) / (bx1 - bx0 + .5), H / (by1 - by0 + .5)), sw = u * .5;
+  const x = (a.x0 + a.x1) / 2 - (bx0 + bx1) / 2 * u, base = top + sw / 2 + 1.4 - by0 * u, bottom = base + by1 * u + sw / 2 + 1.4;
+  let body = drawWord(g.ch, x, base, u, { mode: 'outline', starts: 'none', c, w: sw });
+  const deco = [[a.x0 + 10, top + 8, 's'], [a.x1 - 10, top + 10, 'h'], [a.x0 + 12, (top + bottom) / 2, 'h'], [a.x1 - 12, (top + bottom) / 2 - 8, 's'], [a.x0 + 16, bottom - 6, 's'], [a.x1 - 16, bottom - 6, 'h']];
   deco.forEach(([dx, dy, k]) => body += k === 's' ? star(dx, dy, 6.5, c.ink, '#fff') : heart(dx, dy, 6, c.ink));
-  const ty = base + 22;
+  const ty = bottom + 13;
   body += `<text x="${f((a.x0 + a.x1) / 2)}" y="${f(ty)}" font-size="9" font-weight="900" text-anchor="middle" fill="${c.title}">${esc(g.ch)} is for ${esc(name)}</text>`;
   const u2 = Math.min(o.u, (a.y1 - ty - 10) / (PITCH)), b2 = ty + 8 + (HEADROOM + 2) * u2;
-  if (b2 + u2 < a.y1 + 2) { body += guides(a.x0, a.x1, b2, u2, c); body += rowOf(g.ch, a.x0 + u2 * .3, a.x1, b2, u2, { mode: o.style, starts: o.starts ? 'small' : 'none', dot: o.dot, c }, o.starts ? { mode: o.style, starts: 'full', dot: o.dot, c } : null); }
+  if (u2 >= MIN_U && b2 + u2 < a.y1 + 2) { body += guides(a.x0, a.x1, b2, u2, c); body += rowOf(g.ch, a.x0 + u2 * .3, a.x1, b2, u2, { mode: o.style, starts: o.starts ? 'small' : 'none', dot: o.dot, c }, o.starts ? { mode: o.style, starts: 'full', dot: o.dot, c } : null); }
   return [frame(o, 'Color my letter', `${esc(name)} · Color the big letter, the stars and the hearts. Then trace the letter below.`, body)];
 }
 function huntPage(name, o) {
-  const a = area(o), c = o.c, r = rng('hunt|' + name), letters = [...new Set([...name].filter(ch => glyph(ch) && !' -\''.includes(ch)))];
-  const up = o.caseMode === 'upper', pool = [...(up ? 'ABCDEFGHJKLMNOPRSTUVWXYZ' : 'abcdefghkmnoprstuvwxyz')].filter(ch => !letters.some(l => l.toLowerCase() === ch.toLowerCase()));
-  const cols = 7, rows = 7, cell = Math.min((a.x1 - a.x0) / cols, 22), gx = (a.x0 + a.x1) / 2 - cols * cell / 2;
-  const total = cols * rows, targets = Math.min(Math.max(letters.length * 3, 12), 20);
+  const a = area(o), c = o.c, r = rng('hunt|' + name), letters = [...new Set([...name].filter(ch => glyph(ch) && /\p{L}/u.test(ch)))];
+  const notMine = ch => !letters.some(l => l.toLowerCase() === ch.toLowerCase()) && glyph(ch);
+  const up = name === name.toUpperCase() && name !== name.toLowerCase();
+  let pool = [...(up ? 'ABCDEFGHJKLMNOPRSTUVWXYZ' : 'abcdefghkmnoprstuvwxyz')].filter(notMine);
+  if (pool.length < 3) pool = pool.concat([...(up ? 'abcdefghkmnoprstuvwxyz' : 'ABCDEFGHJKLMNOPRSTUVWXYZ')].filter(notMine));
+  if (!pool.length) pool = letters.slice();
+  const kRows0 = Math.ceil(letters.length / Math.min(letters.length, 10)), cols = 7, cell = Math.min((a.x1 - a.x0) / cols, 22);
+  const rows = Math.max(4, Math.min(7, Math.floor((a.y1 - (a.y0 + 18 + kRows0 * 24)) / cell))), gx = (a.x0 + a.x1) / 2 - cols * cell / 2;
+  const total = cols * rows, targets = Math.min(Math.max(letters.length * 3, 12), 24, total - 8);
   let cells = Array.from({ length: targets }, (_, i) => letters[i % letters.length]);
   while (cells.length < total) cells.push(pool[Math.floor(r() * pool.length)]);
   cells = shuffle(cells, r);
-  // key row: the letters to find, with a box for the count
-  const ku = 4.2, kStep = Math.min(26, (a.x1 - a.x0) / letters.length);
-  let body = wrapText('Find these letters. Count them and write the number in the box.', a.x0, a.y0 + 2, 4.4, a.x1 - a.x0, 5.2, `font-weight="800" fill="${c.sub}"`) + ``;
+  // key: the letters to find, each with a box for the count (2 rows for long names)
+  const ku = 4.2, kPer = Math.min(letters.length, 10), kRows = Math.ceil(letters.length / kPer), kStep = (a.x1 - a.x0) / kPer, bw = Math.min(12, kStep - 3);
+  let body = wrapText('Find these letters. Count them and write the number in the box.', a.x0, a.y0 + 2, 4.4, a.x1 - a.x0, 5.2, `font-weight="800" fill="${c.sub}"`);
   letters.forEach((ch, i) => {
-    const g = glyph(ch), x = a.x0 + i * kStep + kStep / 2 - g.w * ku / 2;
-    body += drawWord(ch, x, a.y0 + 17, ku, { mode: 'solid', starts: 'none', c, color: c.accent, w: 1.5 });
-    body += `<rect x="${f(a.x0 + i * kStep + kStep / 2 - 6)}" y="${f(a.y0 + 23)}" width="12" height="11" rx="2" fill="#fff" stroke="${c.ink}" stroke-width=".5"/>`;
+    const g = glyph(ch), col = i % kPer, ky = a.y0 + 17 + Math.floor(i / kPer) * 24, x = a.x0 + col * kStep + kStep / 2 - g.w * ku / 2;
+    body += drawWord(ch, x, ky, ku, { mode: 'solid', starts: 'none', c, color: c.accent, w: 1.3 });
+    body += `<rect x="${f(a.x0 + col * kStep + kStep / 2 - bw / 2)}" y="${f(ky + 6)}" width="${f(bw)}" height="11" rx="2" fill="#fff" stroke="${c.ink}" stroke-width=".5"/>`;
   });
-  const gy = a.y0 + 42, gu = cell * .2;
+  const gy = a.y0 + 18 + kRows * 24, gu = cell * .2;
   cells.forEach((ch, i) => {
     const cx = gx + (i % cols) * cell, cy = gy + Math.floor(i / cols) * cell, g = glyph(ch);
     body += `<rect x="${f(cx + .8)}" y="${f(cy + .8)}" width="${f(cell - 1.6)}" height="${f(cell - 1.6)}" rx="3" fill="${i % 2 ? c.soft : '#fff'}" stroke="${c.desc}" stroke-width=".4"/>`;
@@ -417,33 +506,39 @@ function huntPage(name, o) {
   return [frame(o, 'Letter hunt', `${esc(name)} · Circle every letter of your name.`, body)];
 }
 function buildPage(name, o) {
-  const a = area(o), c = o.c, r = rng('build|' + name), chars = [...name].filter(ch => !' -\''.includes(ch) && glyph(ch));
-  const n = chars.length, perRow = Math.min(n, 8), s = Math.min(26, (a.x1 - a.x0) / perRow - 2.5), u = s * .25;
-  const rowsN = Math.ceil(n / perRow);
-  let body = wrapText('1. Cut out the letter squares at the bottom.  2. Glue them in order on the matching letters.', a.x0, a.y0 + 2, 4.4, a.x1 - a.x0, 5.2, `font-weight="800" fill="${c.sub}"`) + ``;
-  const place = (i, y0) => { const row = Math.floor(i / perRow), col = i % perRow, inRow = Math.min(perRow, n - row * perRow), w = inRow * (s + 2.5) - 2.5; return [(a.x0 + a.x1) / 2 - w / 2 + col * (s + 2.5), y0 + row * (s + 4)]; };
-  chars.forEach((ch, i) => {
-    const [x, y] = place(i, a.y0 + 10), g = glyph(ch);
+  // letter squares to glue on; hyphens and apostrophes are printed in place, spaces stay as gaps
+  const a = area(o), c = o.c, r = rng('build|' + name), all = [...name].filter(ch => glyph(ch));
+  const isL = ch => /\p{L}/u.test(ch), chars = all.filter(isL), n = chars.length;
+  const slots = all.length, perRow = Math.min(slots, 8), s = Math.min(26, (a.x1 - a.x0) / perRow - 2.5), gp = 2.5;
+  const rowsN = Math.ceil(slots / perRow);
+  let body = wrapText('1. Cut out the letter squares at the bottom.  2. Glue them in order on the matching letters.', a.x0, a.y0 + 2, 4.4, a.x1 - a.x0, 5.2, `font-weight="800" fill="${c.sub}"`);
+  all.forEach((ch, i) => {
+    const row = Math.floor(i / perRow), col = i % perRow, inRow = Math.min(perRow, slots - row * perRow), w = inRow * (s + gp) - gp;
+    const x = (a.x0 + a.x1) / 2 - w / 2 + col * (s + gp), y = a.y0 + 10 + row * (s + 4);
+    if (ch === ' ') return;
+    if (!isL(ch)) { body += boxed(ch, x, y, s, { mode: 'solid', starts: 'none', c, color: c.ink }); return; }
     body += `<rect x="${f(x)}" y="${f(y)}" width="${f(s)}" height="${f(s)}" rx="2.5" fill="#fff" stroke="${c.top}" stroke-width=".6"/>`;
-    body += drawWord(ch, x + s / 2 - g.w * u / 2, y + s * .7, u, { mode: 'grey', starts: 'none', c, w: Math.max(1, u * .22) });
+    body += boxed(ch, x, y, s, { mode: 'grey', starts: 'none', c });
   });
   const cutY = a.y0 + 10 + rowsN * (s + 4) + 16;
   body += `<line x1="${a.x0}" x2="${a.x1}" y1="${f(cutY - 8)}" y2="${f(cutY - 8)}" stroke="${c.desc}" stroke-width=".4"/>`;
   body += scissors(a.x0 + 2, cutY + 1, c) + `<text x="${a.x0 + 14}" y="${f(cutY + 2.6)}" font-size="4" font-weight="800" fill="${c.sub}">Cut along the dashed lines</text>`;
   let order = shuffle(chars.map((ch, i) => i), r); if (n > 1 && order.every((v, i) => v === i)) order = order.slice(1).concat(order[0]);
-  const ts = s + 2, tu = ts * .25, tPer = Math.min(n, Math.floor((a.x1 - a.x0) / ts)), tRows = Math.ceil(n / tPer), tw = tPer * ts, tx0 = (a.x0 + a.x1) / 2 - tw / 2, ty0 = cutY + 9;
+  const ts = s - 2, tPer = Math.min(n, Math.floor((a.x1 - a.x0) / ts)), tRows = Math.ceil(n / tPer), tw = tPer * ts, tx0 = (a.x0 + a.x1) / 2 - tw / 2, ty0 = cutY + 9;
+  let tiles = '';
+  order.forEach((ci, i) => { const x = tx0 + (i % tPer) * ts, y = ty0 + Math.floor(i / tPer) * ts; tiles += `<rect x="${f(x)}" y="${f(y)}" width="${f(ts)}" height="${f(ts)}" fill="${c.tile}"/>` + boxed(chars[ci], x, y, ts, { mode: 'solid', starts: 'none', c, color: c.ink }); });
   for (let rI = 0; rI < tRows; rI++) {   // shared dashed grid: one cut line between neighbours
     const inRow = Math.min(tPer, n - rI * tPer), y = ty0 + rI * ts;
-    body += `<g fill="none" stroke="${c.ink}" stroke-width=".5" stroke-dasharray="2.2 1.6"><rect x="${f(tx0)}" y="${f(y)}" width="${f(inRow * ts)}" height="${f(ts)}"/>`;
-    for (let k = 1; k < inRow; k++) body += `<line x1="${f(tx0 + k * ts)}" x2="${f(tx0 + k * ts)}" y1="${f(y)}" y2="${f(y + ts)}"/>`;
-    body += '</g>';
+    tiles += `<g fill="none" stroke="${c.ink}" stroke-width=".5" stroke-dasharray="2.2 1.6"><rect x="${f(tx0)}" y="${f(y)}" width="${f(inRow * ts)}" height="${f(ts)}"/>`;
+    for (let k = 1; k < inRow; k++) tiles += `<line x1="${f(tx0 + k * ts)}" x2="${f(tx0 + k * ts)}" y1="${f(y)}" y2="${f(y + ts)}"/>`;
+    tiles += '</g>';
   }
-  order.forEach((ci, i) => {
-    const ch = chars[ci], g = glyph(ch), x = tx0 + (i % tPer) * ts, y = ty0 + Math.floor(i / tPer) * ts;
-    body = body.replace(/(<g fill="none" stroke="[^"]+" stroke-width="\.5" stroke-dasharray)/, `<rect x="${f(x)}" y="${f(y)}" width="${f(ts)}" height="${f(ts)}" fill="${c.tile}"/>$1`);
-    body += drawWord(ch, x + ts / 2 - g.w * tu / 2, y + ts * .7, tu, { mode: 'solid', starts: 'none', c, color: c.ink, w: Math.max(1.2, tu * .24) });
-  });
+  body += tiles;
   return [frame(o, 'Build my name', `${esc(name)} · Grown-ups: please do the cutting with young children.`, body)];
+}
+function boxed(ch, x, y, size, st, fill = .62) {   // the letter centred in a size×size box by its real bounds
+  const g = glyph(ch), [bx0, by0, bx1, by1] = bounds(g), u = Math.min(size * fill / (by1 - by0), size * .8 / (bx1 - bx0), size * .34);
+  return drawWord(ch, x + size / 2 - (bx0 + bx1) / 2 * u, y + size / 2 - (by0 + by1) / 2 * u, u, Object.assign({ noScale: false }, st, { w: st.w || Math.max(1.2, u * .26) }));
 }
 function scissors(x, y, c) { return `<g fill="none" stroke="${c.ink}" stroke-width=".7"><circle cx="${f(x + 2)}" cy="${f(y - 2.2)}" r="1.8"/><circle cx="${f(x + 2)}" cy="${f(y + 2.2)}" r="1.8"/><path d="M${f(x + 3.5)} ${f(y - 1.2)}L${f(x + 10)} ${f(y + 2)}M${f(x + 3.5)} ${f(y + 1.2)}L${f(x + 10)} ${f(y - 2)}"/></g>`; }
 function rainbowPage(name, o) {
@@ -457,36 +552,43 @@ function rainbowPage(name, o) {
   return [frame(o, 'Rainbow writing', `${esc(name)} · Big letters, three colors.`, body)];
 }
 function countPage(name, o) {
-  const a = area(o), c = o.c, r = rng('count|' + name), chars = [...name].filter(ch => glyph(ch) && !' -\''.includes(ch)), n = chars.length;
-  const per = Math.min(n, 10), s = Math.min(22, (a.x1 - a.x0) / per - 2), u = s * .25, rowsC = Math.ceil(n / per);
-  let body = wrapText('Trace each letter, then color its box. How many letters are in your name?', a.x0, a.y0 + 2, 4.4, a.x1 - a.x0, 5.2, `font-weight="800" fill="${c.sub}"`) + ``;
-  chars.forEach((ch, i) => { const inRow = Math.min(per, n - Math.floor(i / per) * per), x = (a.x0 + a.x1) / 2 - (inRow * (s + 2) - 2) / 2 + (i % per) * (s + 2), yb = a.y0 + 8 + Math.floor(i / per) * (s + 3), g = glyph(ch); body += `<rect x="${f(x)}" y="${f(yb)}" width="${f(s)}" height="${f(s)}" rx="2.5" fill="#fff" stroke="${c.ink}" stroke-width=".6"/>` + drawWord(ch, x + s / 2 - g.w * u / 2, yb + s * .7, u, { mode: 'grey', starts: 'none', c, w: Math.max(1.4, u * .3) }); });
+  const a = area(o), c = o.c, r = rng('count|' + name), chars = [...name].filter(ch => glyph(ch) && /\p{L}/u.test(ch)), n = chars.length;
+  const per = Math.min(n, 10), s = Math.min(22, (a.x1 - a.x0) / per - 2), rowsC = Math.ceil(n / per);
+  let body = wrapText('Trace each letter, then color its box. How many letters are in your name?', a.x0, a.y0 + 2, 4.4, a.x1 - a.x0, 5.2, `font-weight="800" fill="${c.sub}"`);
+  chars.forEach((ch, i) => { const inRow = Math.min(per, n - Math.floor(i / per) * per), x = (a.x0 + a.x1) / 2 - (inRow * (s + 2) - 2) / 2 + (i % per) * (s + 2), yb = a.y0 + 8 + Math.floor(i / per) * (s + 3); body += `<rect x="${f(x)}" y="${f(yb)}" width="${f(s)}" height="${f(s)}" rx="2.5" fill="#fff" stroke="${c.ink}" stroke-width=".6"/>` + boxed(ch, x, yb, s, { mode: 'grey', starts: 'none', c }, .7); });
   const qy = a.y0 + 8 + rowsC * (s + 3) + 13;
   body += `<text x="${a.x0}" y="${f(qy)}" font-size="6" font-weight="800" fill="${c.title}">My name has</text><rect x="${a.x0 + 42}" y="${f(qy - 9)}" width="18" height="13" rx="2.5" fill="#fff" stroke="${c.ink}" stroke-width=".6"/><text x="${a.x0 + 64}" y="${f(qy)}" font-size="6" font-weight="800" fill="${c.title}">letters.</text>`;
-  // match capital ↔ small
+  // match capital ↔ small (up to 7 letters; the title says so when there are more)
   const set = []; chars.forEach(ch => { const lo = ch.toLowerCase(); if (!set.includes(lo) && glyph(lo) && glyph(lo.toUpperCase())) set.push(lo); });
   const pairs = set.slice(0, 7), my = qy + 14;
-  body += `<text x="${a.x0}" y="${f(my)}" font-size="4.6" font-weight="800" fill="${c.sub}">Draw a line from each big letter to its small letter.</text>`;
+  body += `<text x="${a.x0}" y="${f(my)}" font-size="4.6" font-weight="800" fill="${c.sub}">Draw a line from each big letter to its small letter${set.length > 7 ? ' (7 of your letters)' : ''}.</text>`;
   const right = shuffle(pairs, r); if (pairs.length > 1 && right.every((v, i) => v === pairs[i])) right.push(right.shift());
-  const rowH = Math.min(22, (a.y1 - my - 8) / Math.max(1, pairs.length)), mu = Math.min(5.5, rowH * .3), lx = a.x0 + 30, rx = a.x1 - 40;
+  const pu = 6.5, wy = a.y1 - (HEADROOM + 2 + 1) * pu - 8;
+  const rowH = Math.min(22, (wy - 10 - my - 8) / Math.max(1, pairs.length)), mu = Math.min(5.5, rowH * .3), lx = a.x0 + 30, rx = a.x1 - 40;
   pairs.forEach((lo, i) => {
     const y = my + 8 + i * rowH + rowH * .65, gU = glyph(lo.toUpperCase()), gL = glyph(right[i]);
     body += drawWord(gU.ch, lx - gU.w * mu / 2, y, mu, { mode: 'solid', starts: 'none', c, color: c.accent, w: 1.6 }) + `<circle cx="${lx + 14}" cy="${f(y - mu)}" r="1.6" fill="${c.ink}"/>`;
     body += `<circle cx="${rx - 14}" cy="${f(y - mu * .5)}" r="1.6" fill="${c.ink}"/>` + drawWord(gL.ch, rx - gL.w * mu / 2, y, mu, { mode: 'solid', starts: 'none', c, color: c.accent, w: 1.6 });
   });
+  // writing prompt
+  const pb = a.y1 - pu - 4;
+  body += `<text x="${a.x0}" y="${f(pb - (HEADROOM + 2) * pu - 2)}" font-size="5.2" font-weight="800" fill="${c.title}">My name is</text>` + guides(a.x0, a.x1, pb, pu, c);
   return [frame(o, 'Count and match', `${esc(name)}`, body)];
 }
 function sleevePage(name, o) {
-  const a = area(o), c = o.c, u = fitU(name, Math.max(o.u, 11), a.x1 - a.x0 - 6), pitch = PITCH * u + 6, n = Math.min(4, Math.floor((a.y1 - a.y0 - 6) / pitch));
+  // reusable page: strong dots (ink colour), no faint row: traced rows, start dots only, on your own
+  const a = area(o), u = fitU(name, Math.max(o.u, 11), a.x1 - a.x0 - 4), pitch = PITCH * u + 6, n = Math.max(3, Math.min(4, Math.floor((a.y1 - a.y0 - 6) / pitch)));
+  const c = Object.assign({}, o.c, { dot: o.c.ink, grey: o.mono ? '#9a9a9a' : '#8FA0AE' }), w = words(o);
   let body = `<rect x="${a.x0 - 2}" y="${a.y0 - 6}" width="${f(a.x1 - a.x0 + 4)}" height="${f(a.y1 - a.y0 + 8)}" rx="6" fill="none" stroke="${c.desc}" stroke-width=".6" stroke-dasharray="3 2"/>`;
   const st = { mode: o.style, starts: o.starts ? 'small' : 'none', dot: o.dot, c };
   for (let i = 0; i < n; i++) {
-    const base = a.y0 + 4 + i * pitch + (HEADROOM + 2) * u;
+    const base = a.y0 + 4 + i * pitch + (HEADROOM + 2) * u, x = a.x0 + 2 + u * .3;
     body += guides(a.x0 + 2, a.x1 - 2, base, u, c);
     if (i === n - 1) continue;
-    body += rowOf(name, a.x0 + 2 + u * .3, a.x1 - 2, base, u, i === n - 2 ? { mode: 'faint', starts: st.starts, dot: o.dot, c } : st, i === 0 && o.starts ? Object.assign({}, st, { starts: 'full' }) : null);
+    if (i === n - 2 && o.starts && n >= 4) { body += rowOf(name, x, a.x1 - 2, base, u, { mode: 'startonly', starts: 'small', dot: o.dot, c }); continue; }
+    body += rowOf(name, x, a.x1 - 2, base, u, st, i === 0 && o.starts ? Object.assign({}, st, { starts: 'full' }) : null);
   }
-  return [frame(o, 'Dry-erase page', `${esc(name)} · Slip this page into a clear sheet protector. Trace with a dry-erase marker, wipe, try again.`, body)];
+  return [frame(o, 'Dry-erase page', `${esc(name)} · Slip this page into a clear sheet protector. Trace with a dry-erase marker, wipe, try again. Start at ${w.start}.`, body)];
 }
 function certPage(name, o) {
   const [W, H] = PAPER[o.paper], c = o.c, a = area(o);
@@ -503,14 +605,25 @@ function certPage(name, o) {
   return [frame(o, 'Certificate', '', body)];
 }
 const MAKE = { trace: tracePage, letters: lettersPages, warmup: warmupPage, initial: initialPage, hunt: huntPage, build: buildPage, rainbow: rainbowPage, count: countPage, sleeve: sleevePage, cert: certPage };
+// One typed name → {name (as printed), ok, why, capMM (capital height on the trace page), shrunk}
+function check(raw, d) {
+  const name = applyCase(raw, d.caseMode), bad = unsupported(name), [W] = PAPER[d.paper] || PAPER.letter, width = W - 30;
+  if (!/\p{L}/u.test(name)) return { name, ok: false, why: 'no letters' };
+  if (bad.length) return { name, ok: false, why: 'unsupported', bad };
+  const want = SIZES[d.size] || SIZES.large, u = fitU(name, want, width);
+  if (u < MIN_U) return { name, ok: false, why: 'too long' };
+  return { name, ok: true, capMM: Math.round(2 * u), shrunk: u < want - .05 };
+}
 // d: {names: [..], caseMode, size, dot, style, starts, paper, mono, pages: {key: bool}}
 function pages(d) {
-  const o = { paper: d.paper, mono: d.mono, c: colors(d.mono), u: SIZES[d.size] || SIZES.large, dot: DOTS[d.dot] || DOTS.large, style: d.style || 'dots', starts: d.starts !== false, caseMode: d.caseMode };
+  const o = { paper: d.paper in PAPER ? d.paper : 'letter', mono: !!d.mono, c: colors(d.mono), u: SIZES[d.size] || SIZES.large, dot: DOTS[d.dot] || DOTS.large,
+    style: ['dots', 'dash', 'grey'].includes(d.style) ? d.style : 'dots', starts: d.starts !== false, caseMode: d.caseMode };
   const out = [];
-  d.names.forEach(raw => { const name = clean([...applyCase(raw, d.caseMode)].filter(ch => glyph(ch)).join('')); if (!name || !/\p{L}/u.test(name)) return; PAGES.forEach(([k]) => { if (d.pages[k] !== false) out.push(...MAKE[k](name, o)); }); });
+  d.names.forEach(raw => { const ck = check(raw, Object.assign({}, d, { paper: o.paper })); if (!ck.ok) return; PAGES.forEach(([k]) => { if (d.pages[k] !== false) out.push(...MAKE[k](ck.name, o)); }); });
   return out;
 }
-root.NT = { pages, PAGES, applyCase, unsupported, layout, glyph, clean, SIZES, DOTS, PAPER, _G: G };
+function pagesFor(name, d) { return pages(Object.assign({}, d, { names: [name] })); }
+root.NT = { pages, pagesFor, check, MIN_U, PAGES, applyCase, unsupported, layout, glyph, clean, SIZES, DOTS, PAPER, _G: G };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
 <script>
@@ -518,6 +631,7 @@ const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAl
 const KEY = 'mts-name-tracing', MAXN = 40, MAXC = 24;
 $('#pages').innerHTML = NT.PAGES.map(([k, t]) => `<label><input type="checkbox" class="pg" value="${k}" checked> ${t}</label>`).join('');
 function names() { return $('#names').value.split(/\n/).map(NT.clean).filter(Boolean); }
+const OPTS = { case: ['first', 'upper', 'lower', 'asis'], size: ['large', 'medium', 'small'], dot: ['large', 'medium', 'small'], style: ['dots', 'dash', 'grey'], paper: ['letter', 'a4'] };
 function data() {
   return { names: names().slice(0, MAXN).map(n => [...n].slice(0, MAXC).join('')), caseMode: $('#case').value, size: $('#size').value, dot: $('#dot').value,
     style: $('#style').value, starts: $('#starts').checked, paper: $('#paper').value, mono: $('#mono').checked,
@@ -527,38 +641,67 @@ function setPaper() {
   const a4 = $('#paper').value === 'a4';
   $('#pagesize').textContent = a4 ? '@page { size: 210mm 297mm; margin: 0; }' : '@page { size: 8.5in 11in; margin: 0; }';
 }
+function fitPreview() {   // phone: scale the page previews to the screen width
+  const mm = $('#paper').value === 'a4' ? 210 : 215.9, px = mm / 25.4 * 96, avail = Math.min(window.innerWidth, document.documentElement.clientWidth) - 20;
+  const z = window.matchMedia('screen and (max-width: 860px)').matches ? Math.min(1, avail / px) : 1;
+  $$('#preview .page').forEach(p => p.style.zoom = z === 1 ? '' : z.toFixed(3));
+}
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+let job = 0, busy = false;
 function render() {
   setPaper();
-  const d = data(), all = names(), msg = $('#msg'), warn = [];
-  const bad = [...new Set(all.flatMap(n => NT.unsupported(n)))];
-  if (bad.length) warn.push(`These characters can't be traced and are left out: ${bad.join(' ')}`);
+  const d = data(), all = names(), msg = $('#msg'), warn = [], my = ++job;
   if (all.length > MAXN) warn.push(`Only the first ${MAXN} names are made. Make the rest in a second go.`);
-  const long = all.filter(n => [...n].length > MAXC); if (long.length) warn.push(`Names are cut to ${MAXC} letters: ${long.join(', ')}`);
-  const W = (d.paper === 'a4' ? 210 : 215.9) - 30, u = NT.SIZES[d.size];
-  const shrunk = d.names.map(n => NT.applyCase(n, d.caseMode)).filter(n => NT.layout(n).w * u > W);
-  if (shrunk.length && d.pages.trace !== false) warn.push(`Long name${shrunk.length > 1 ? 's' : ''}: ${shrunk.join(', ')}: the letters are made smaller to fit the line. Medium or Small letter size fits more.`);
-  const html = d.names.length ? NT.pages(d).join('') : '';
-  $('#preview').innerHTML = html;
-  const n = $('#preview').querySelectorAll('.page').length;
-  msg.className = 'msg' + (n ? '' : ' err');
-  msg.innerHTML = (n ? `Ready: ${n} page${n === 1 ? '' : 's'} for ${d.names.length} name${d.names.length === 1 ? '' : 's'}. Check them below, then tap Print / Save as PDF.`
-    : (d.names.length ? 'Tick at least one page.' : 'Type a name to start.')) + warn.map(w => `<span class="warn">${w.replace(/</g, '&lt;')}</span>`).join('');
+  const long = all.filter(n => [...n].length > MAXC); if (long.length) warn.push(`Names longer than ${MAXC} characters are cut: ${long.join(', ')}`);
+  const checks = d.names.map(n => NT.check(n, d)), ok = checks.filter(c => c.ok), skipped = checks.filter(c => !c.ok);
+  skipped.forEach(c => warn.push(c.why === 'unsupported' ? `No pages for “${c.name}”: we can't draw ${c.bad.join(' ')} yet. Type the name with a letter we can draw (for example without the mark), or leave it out.`
+    : c.why === 'too long' ? `No pages for “${c.name}”: too long to trace at a size a child can use. Use the first name, or put first and last name on separate lines.`
+    : `No pages for “${c.name}”: there are no letters in it.`));
+  const shrunk = ok.filter(c => c.shrunk);
+  if (shrunk.length && d.pages.trace !== false) warn.push(`Printed smaller so it fits on the line: ${shrunk.map(c => `${c.name} (capital letters ${c.capMM} mm tall)`).join(', ')}.`);
+  const tail = warn.map(w => `<span class="warn">${esc(w)}</span>`).join('');
+  const nPages = Object.values(d.pages).filter(Boolean).length;
+  if (!d.names.length || !ok.length || !nPages) {
+    $('#preview').innerHTML = '';
+    msg.className = 'msg err';
+    msg.innerHTML = (!d.names.length ? 'Type a name to start.' : !ok.length ? 'No pages yet: see the note below.' : 'Tick at least one page.') + tail;
+    save(); busy = false; return false;
+  }
+  // build name by name, so a class list shows progress and never leaves old pages behind
+  const out = []; let i = 0; busy = true;
+  $('#preview').innerHTML = '';
+  msg.className = 'msg';
+  const step = () => {
+    if (my !== job) return;
+    try { out.push(NT.pagesFor(ok[i].name, Object.assign({}, d, { caseMode: 'asis' })).join('')); }
+    catch (e) { busy = false; $('#preview').innerHTML = ''; msg.className = 'msg err'; msg.innerHTML = `Something went wrong making the pages for “${esc(ok[i].name)}”. Try the name another way, or leave it out.` + tail; return; }
+    i++;
+    if (i < ok.length) { msg.innerHTML = `Making pages: ${i} of ${ok.length} names…` + tail; setTimeout(step, 0); return; }
+    $('#preview').innerHTML = out.join(''); fitPreview(); busy = false;
+    const n = $('#preview').querySelectorAll('.page').length;
+    msg.innerHTML = `Ready: ${n} page${n === 1 ? '' : 's'} for ${ok.length} name${ok.length === 1 ? '' : 's'} (${d.paper === 'a4' ? 'A4' : 'US Letter'}). Check them below, then tap Print / Save as PDF.` + tail;
+  };
+  step();
   save();
-  return n > 0;
+  return true;
 }
 let timer = 0; const later = () => { clearTimeout(timer); timer = setTimeout(render, 250); };
+let canSave = true;
 function save() {
   try { const st = { pages: $$('.pg').map(c => c.checked), starts: $('#starts').checked, mono: $('#mono').checked };
-    ['names', 'case', 'size', 'dot', 'style', 'paper'].forEach(id => st[id] = $('#' + id).value); localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {}
+    ['names', 'case', 'size', 'dot', 'style', 'paper'].forEach(id => st[id] = $('#' + id).value); localStorage.setItem(KEY, JSON.stringify(st)); canSave = true; }
+  catch (e) { if (canSave) $('#privacy').innerHTML = '🔒 Nothing you type leaves this device: no account, no upload. This browser does not let us keep the form, so it will be empty next time.'; canSave = false; }
 }
 function load(st) {
-  ['names', 'case', 'size', 'dot', 'style', 'paper'].forEach(id => { if (st[id] != null && $('#' + id)) $('#' + id).value = st[id]; });
-  (st.pages || []).forEach((v, i) => { if ($$('.pg')[i]) $$('.pg')[i].checked = v; });
+  if (typeof st.names === 'string') $('#names').value = st.names;
+  Object.keys(OPTS).forEach(id => { if (OPTS[id].includes(st[id])) $('#' + id).value = st[id]; });
+  if (Array.isArray(st.pages)) st.pages.forEach((v, i) => { if ($$('.pg')[i] && typeof v === 'boolean') $$('.pg')[i].checked = v; });
   if (typeof st.starts === 'boolean') $('#starts').checked = st.starts;
   if (typeof st.mono === 'boolean') $('#mono').checked = st.mono;
 }
-$('#print').onclick = () => { if (!render()) { $('#names').focus(); return; } (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => setTimeout(() => window.print(), 300)); };
-$('#demo').onclick = () => { $('#names').value = 'Emma'; render(); $('#preview').scrollIntoView({ behavior: 'smooth' }); };
+$('#print').onclick = () => { if (!render()) { $('#names').focus(); return; } const go = () => busy ? setTimeout(go, 150) : (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => setTimeout(() => window.print(), 300)); go(); };
+$('#demo').onclick = () => { if (names().length && !confirm('Replace the names you typed with the example name Emma?')) return; $('#names').value = 'Emma'; render(); $('#preview').scrollIntoView({ behavior: 'smooth' }); };
+window.addEventListener('resize', fitPreview);
 $('#clear').onclick = () => {
   if (!confirm('Clear every field and remove your saved form from this browser?')) return;
   $('#names').value = ''; $('#case').value = 'first'; $('#size').value = 'large'; $('#dot').value = 'large'; $('#style').value = 'dots'; $('#paper').value = 'letter';
@@ -573,7 +716,7 @@ const q = new URLSearchParams(location.search);
 if (q.get('paper') === 'a4') $('#paper').value = 'a4';
 if (q.get('mono')) $('#mono').checked = true;
 if (q.get('names')) $('#names').value = q.get('names').split('|').join('\n');
-['size', 'dot', 'style', 'case'].forEach(k => { if (q.get(k)) $('#' + k).value = q.get(k); });
+['size', 'dot', 'style', 'case'].forEach(k => { if (OPTS[k].includes(q.get(k))) $('#' + k).value = q.get(k); });
 render();
 </script>
 </body></html>
